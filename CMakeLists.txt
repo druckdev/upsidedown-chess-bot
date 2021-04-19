@@ -9,4 +9,16 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 
-add_executable(bot src/main.c)
+# directories
+set(SRC_DIR src)
+set(INC_DIR inc)
+
+# sources
+set(SOURCES ${SRC_DIR}/main.c ${SRC_DIR}/board.c ${SRC_DIR}/chess.c)
+set(HEADERS ${INC_DIR}/main.h ${INC_DIR}/board.h ${INC_DIR}/chess.h)
+
+# executables
+add_executable(bot ${SOURCES} ${HEADERS})
+
+# includes
+target_include_directories(bot PRIVATE inc)
