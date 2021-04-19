@@ -7,4 +7,6 @@ project(UpsideDownChessBot VERSION 0.1)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS True)
+
 add_executable(bot src/main.c)
