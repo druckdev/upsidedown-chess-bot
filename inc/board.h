@@ -17,8 +17,6 @@ enum POS {
     A8, B8, C8, D8, E8, F8, G8, H8,
 };
 
-enum PIECE board[64];
-
 char* pos_to_str(enum POS pos);
 
 void print_board(enum PIECE board[]);
