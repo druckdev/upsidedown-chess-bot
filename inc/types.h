@@ -6,29 +6,30 @@
 /**
  * A linked list for integer values.
  */
-struct int_list {
-    struct int_list* next;
-    int elem;
+struct list {
+    struct list* next;
+    void* elem;
 };
 
 /**
- * Prepends one integer element to `list`. If `list` is `NULL` it creates a new
- * `int_list` with that one element.
+ * Prepends one element to `list`. If `list` is `NULL` it creates a new `list`
+ * with that one element.
  * Runtime: O(1)
  */
-struct int_list* int_list_push(struct int_list* list, int elem);
+struct list* list_push(struct list* list, void* elem);
 
 /**
  * Pops the first element off of `list`, *NOT* returning its element, but the
- * new `int_list`.
+ * new `list`.
+ * *NOTE:* This function does *NOT* free `elem`.
  * Runtime: O(1)
  */
-struct int_list* int_list_pop(struct int_list* list);
+struct list* list_pop(struct list* list);
 
 /**
  * Appends `second` to `first`.
  * Runtime: O(n)
  */
-struct int_list* int_list_append_int_list(struct int_list* first, struct int_list* second);
+struct list* list_append_list(struct list* first, struct list* second);
 
 #endif /* TYPES_H */
