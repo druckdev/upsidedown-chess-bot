@@ -2,47 +2,23 @@
 
 #include "board.h"
 #include "chess.h"
+#include "generator.h"
+#include "bot.h"
 
-struct list {};
-struct move {};
+uint32_t value[] = {0,1,4,4,5,9,1000000};
 
-#define bool int
-
-struct list
-generate_moves(struct chess* game)
+int
+get_piece_value(enum PIECE piece)
 {
-    // TODO(Aurel): Stub. Fill this with code.
-    assert(("Not implemented yet", 0 != 0));
+    return value[piece];
 }
-
-struct list
-evaluate_moves(struct chess* game, struct list moves)
-{
-    // TODO(Aurel): Stub. Fill this with code.
-    assert(("Not implemented yet", 0 != 0));
-}
-
-struct move
-choose_move(struct chess* game, struct list moves_sorted)
-{
-    // TODO(Aurel): Stub. Fill this with code.
-    assert(("Not implemented yet", 0 != 0));
-}
-
-bool
-execute_move(struct chess* game, struct move move)
-{
-    // TODO(Aurel): Stub. Fill this with code.
-    assert(("Not implemented yet", 0 != 0));
-}
-
 
 void
 run_chess(struct chess* game)
 {
     while (!game->checkmate) {
         struct list moves = generate_moves(game);
-        struct list moves_sorted = evaluate_moves(game, moves);
+        struct move move = choose_move(game, moves);
 
     }
 }

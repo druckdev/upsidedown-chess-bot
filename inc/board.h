@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-enum PIECE { PAWN = 1, BISHOP = 2, KNIGHT = 3, ROOK = 4, QUEEN = 5, KING = 6 };
-// TODO(Aurel): Check if theses values are correct.
+#include "types.h"
+#include "chess.h"
 
 enum POS {
     A1, B1, C1, D1, E1, F1, G1, H1,
@@ -16,6 +16,9 @@ enum POS {
     A7, B7, C7, D7, E7, F7, G7, H7,
     A8, B8, C8, D8, E8, F8, G8, H8,
 };
+
+
+bool execute_move(struct chess* game, struct move move);
 
 char* pos_to_str(enum POS pos);
 

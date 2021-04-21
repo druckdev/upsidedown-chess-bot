@@ -1,7 +1,10 @@
 #ifndef CHESS_H
 #define CHESS_H
 
-#include "board.h"
+#include <stdint.h>
+
+enum PIECE { PAWN = 1, BISHOP = 2, KNIGHT = 3, ROOK = 4, QUEEN = 5, KING = 6 };
+// TODO(Aurel): Check if theses values are correct.
 
 /*
  * TODO: These are just stubs to get a general idea of what we need.
@@ -14,7 +17,11 @@ struct chess {
     uint32_t checkmate;
 };
 
+struct move {};
 struct chess init_chess();
+
 void run_chess();
+
+int get_piece_value(enum PIECE piece);
 
 #endif /* CHESS_H */

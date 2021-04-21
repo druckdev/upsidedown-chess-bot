@@ -1,8 +1,17 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include "board.h"
+
+bool
+execute_move(struct chess* game, struct move move)
+{
+    // TODO(Aurel): Stub. Fill this with code.
+    assert(("Not implemented yet", 0 != 0));
+}
+
 
 char*
 pos_to_str(enum POS pos)
