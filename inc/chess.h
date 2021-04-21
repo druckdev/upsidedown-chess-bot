@@ -12,12 +12,13 @@ enum PIECE { PAWN = 1, BISHOP = 2, KNIGHT = 3, ROOK = 4, QUEEN = 5, KING = 6 };
  */
 enum COLOR { WHITE, BLACK };
 struct chess {
-    enum PIECE board[64];
-    enum COLOR moving;
-    uint32_t checkmate;
+	enum PIECE board[64];
+	enum COLOR moving;
+	uint32_t checkmate;
 };
 
-struct move {};
+struct move {
+};
 struct chess init_chess();
 
 void run_chess();

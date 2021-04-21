@@ -3,6 +3,7 @@
 
 #define bool int
 
-struct list{};
+struct list {
+};
 
 #endif /* TYPES_H */
