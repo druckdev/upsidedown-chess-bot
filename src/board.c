@@ -99,7 +99,7 @@ pos_to_str(enum POS pos)
 }
 
 void
-print_board(enum PIECE board[])
+print_board(struct PIECE board[])
 {
 	for (int pos = 0; pos < 64; ++pos) {
 		if (pos % 8 == 0)
@@ -107,8 +107,8 @@ print_board(enum PIECE board[])
 
 		printf("[");
 
-		enum PIECE piece = board[pos];
-		switch (piece) {
+		struct PIECE piece = board[pos];
+		switch (piece.type) {
 		// clang-format off
         case PAWN: printf("P"); break;
         case BISHOP: printf("B"); break;
