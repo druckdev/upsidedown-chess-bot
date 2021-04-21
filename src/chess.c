@@ -8,7 +8,7 @@
 uint32_t value[] = { 0, 1, 4, 4, 5, 9, 1000000 };
 
 int
-get_piece_value(enum PIECE piece)
+get_piece_value(enum PIECE_E piece)
 {
 	return value[piece];
 }
