@@ -12,31 +12,31 @@ generate_moves(struct chess* game)
 }
 
 struct list*
-generate_moves_queen(struct PIECE* board[], enum POS pos)
+generate_moves_queen(struct PIECE board[], enum POS pos)
 {
 }
 
 struct list*
-generate_moves_king(struct PIECE* board[], enum POS pos)
+generate_moves_king(struct PIECE board[], enum POS pos)
 {
 }
 
 struct list*
-generate_moves_rook(struct PIECE* board[], enum POS pos)
+generate_moves_rook(struct PIECE board[], enum POS pos)
 {
 }
 
 struct list*
-generate_moves_knight(struct PIECE* board[], enum POS pos)
+generate_moves_knight(struct PIECE board[], enum POS pos)
 {
 }
 
 struct list*
-generate_moves_pawn(struct PIECE* board[], enum POS pos)
+generate_moves_pawn(struct PIECE board[], enum POS pos)
 {
 }
 
 struct list*
-generate_moves_bishop(struct PIECE* board[], enum POS pos)
+generate_moves_bishop(struct PIECE board[], enum POS pos)
 {
 }
