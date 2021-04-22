@@ -7,8 +7,8 @@
  * A linked list for integer values.
  */
 struct list {
-    struct list* next;
-    void* elem;
+	struct list* next;
+	void* elem;
 };
 
 /**
