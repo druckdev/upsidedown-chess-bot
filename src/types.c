@@ -7,6 +7,9 @@ struct list*
 list_push(struct list* list, void* elem)
 {
     struct list* list_elem = malloc(sizeof(struct list));
+    if(!list_elem)
+        return NULL;
+
     list_elem->elem = elem;
 
     if (list)
