@@ -12,8 +12,10 @@ list_push(struct list* list, void* elem)
 		return NULL;
 
 	struct list_elem* list_elem = malloc(sizeof(struct list_elem));
-	if (!list_elem)
+	if (!list_elem) {
+		free(list);
 		return NULL;
+	}
 
 	list_elem->prev = NULL;
 	list_elem->next = NULL;
