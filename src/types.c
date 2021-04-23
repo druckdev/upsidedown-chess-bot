@@ -4,7 +4,7 @@
 #include "types.h"
 
 struct list*
-list_push(struct list* list, void* elem)
+list_push(struct list* list, void* object)
 {
 	if (!list)
 		list = malloc(sizeof(struct list));
@@ -19,7 +19,7 @@ list_push(struct list* list, void* elem)
 
 	list_elem->prev = NULL;
 	list_elem->next = NULL;
-	list_elem->elem = elem;
+	list_elem->object = object;
 
 	if (!list->last) {
 		list->first = list_elem;
@@ -44,14 +44,14 @@ list_pop(struct list* list)
 		return NULL;
 
 	struct list_elem* list_elem = list->last;
-	void* elem                  = list_elem->elem;
+	void* object                  = list_elem->object;
 
 	list->last = list_elem->prev;
 	if (list->last)
 		list->last->next = NULL;
 
 	free(list_elem);
-	return elem;
+	return object;
 }
 
 struct list*
