@@ -16,14 +16,14 @@ struct list {
 };
 
 /**
- * Prepends one element to `list`. If `list` is `NULL` it creates a new `list`
- * with that one element.
+ * Appends one element to `list`. If `list` is `NULL` it creates a new `list`
+ * with that one new element.
  * Runtime: O(1)
  */
 struct list* list_push(struct list* list, void* elem);
 
 /**
- * Pops the first element off of `list`, returning its element and updating the
+ * Pops the last element off of `list`, returning its element and updating the
  * list.
  * *NOTE:* This function does *NOT* free `elem`.
  * Runtime: O(1)
