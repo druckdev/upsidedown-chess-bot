@@ -4,11 +4,15 @@
 #define bool int
 
 /**
- * A linked list for integer values.
+ * A doubly linked list.
  */
-struct list {
-	struct list* next;
+struct list_elem {
+	struct list_elem *prev, *next;
 	void* elem;
+};
+
+struct list {
+	struct list_elem *first, *last;
 };
 
 /**
@@ -19,16 +23,16 @@ struct list {
 struct list* list_push(struct list* list, void* elem);
 
 /**
- * Pops the first element off of `list`, *NOT* returning its element, but the
- * new `list`.
+ * Pops the first element off of `list`, returning its element and updating the
+ * list.
  * *NOTE:* This function does *NOT* free `elem`.
  * Runtime: O(1)
  */
-struct list* list_pop(struct list* list);
+void* list_pop(struct list* list);
 
 /**
  * Appends `second` to `first`.
- * Runtime: O(n)
+ * Runtime: O(1)
  */
 struct list* list_append_list(struct list* first, struct list* second);
 
