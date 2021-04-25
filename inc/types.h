@@ -1,8 +1,6 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#define bool int
-
 /**
  * A doubly linked list.
  */
