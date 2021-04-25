@@ -4,31 +4,35 @@
 #define bool int
 
 /**
- * A linked list for integer values.
+ * A doubly linked list.
  */
+struct list_elem {
+	struct list_elem *prev, *next;
+	void* object;
+};
+
 struct list {
-	struct list* next;
-	void* elem;
+	struct list_elem *first, *last;
 };
 
 /**
- * Prepends one element to `list`. If `list` is `NULL` it creates a new `list`
- * with that one element.
+ * Appends one element to `list`. If `list` is `NULL` it creates a new `list`
+ * with that one new element as its object.
  * Runtime: O(1)
  */
-struct list* list_push(struct list* list, void* elem);
+struct list* list_push(struct list* list, void* object);
 
 /**
- * Pops the first element off of `list`, *NOT* returning its element, but the
- * new `list`.
- * *NOTE:* This function does *NOT* free `elem`.
+ * Pops the last element off of `list`, returning its element and updating the
+ * list.
+ * *NOTE:* This function does *NOT* free the object.
  * Runtime: O(1)
  */
-struct list* list_pop(struct list* list);
+void* list_pop(struct list* list);
 
 /**
  * Appends `second` to `first`.
- * Runtime: O(n)
+ * Runtime: O(1)
  */
 struct list* list_append_list(struct list* first, struct list* second);
 

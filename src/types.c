@@ -4,43 +4,72 @@
 #include "types.h"
 
 struct list*
-list_push(struct list* list, void* elem)
+list_push(struct list* list, void* object)
 {
-	struct list* list_elem = malloc(sizeof(struct list));
-	if (!list_elem)
+	if (!list)
+		list = malloc(sizeof(struct list));
+	if (!list)
 		return NULL;
 
-	list_elem->elem = elem;
+	struct list_elem* list_elem = malloc(sizeof(struct list_elem));
+	if (!list_elem) {
+		free(list);
+		return NULL;
+	}
 
-	if (list)
-		list_elem->next = list;
+	list_elem->prev   = NULL;
+	list_elem->next   = NULL;
+	list_elem->object = object;
 
-	return list_elem;
+	if (!list->last) {
+		list->first = list_elem;
+		list->last  = list_elem;
+		return list;
+	}
+
+	list->last->next = list_elem;
+	list_elem->prev  = list->last;
+	list->last       = list_elem;
+	return list;
 }
 
-struct list*
+void*
 list_pop(struct list* list)
 {
 	if (!list)
 		return NULL;
 
-	struct list* new_list = list->next;
-	free(list);
-	return new_list;
+	// empty list
+	if (!list->last)
+		return NULL;
+
+	struct list_elem* list_elem = list->last;
+	void* object                = list_elem->object;
+
+	list->last = list_elem->prev;
+	if (list->last)
+		list->last->next = NULL;
+
+	free(list_elem);
+	return object;
 }
 
 struct list*
 list_append_list(struct list* first, struct list* second)
 {
-	if (!first)
+	// if null or empty return other list
+	if (!first || !first->first)
 		return second;
-	if (!second)
+	if (!second || !second->first)
 		return first;
 
-	struct list* last = first;
-	while (last->next != NULL)
-		last = last->next;
+	// link the two lists together
+	first->last->next   = second->first;
+	second->first->prev = first->last;
 
-	last->next = second;
+	// update first and free second instance
+	first->last = second->last;
+	free(second);
+
 	return first;
 }
