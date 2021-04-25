@@ -1,9 +1,10 @@
 #include <stdio.h>
 
-#include "board.h"
-#include "main.h"
-
 #include "types.h"
+
+#include "board.h"
+#include "generator.h"
+#include "main.h"
 
 void
 list_example()
@@ -28,4 +29,5 @@ main(int argc, char* argv[])
 {
 	printf("Upside Down Chess Bot version %'.1f\n", VERSION);
 	//list_example(); // An example on how to use the list.
+	//test_move_generator();
 }
