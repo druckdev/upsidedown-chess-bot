@@ -92,7 +92,7 @@ pos_to_str(enum POS pos)
     case H8: str = "H8"; break;
 
     default: return NULL;
-    // clang-format on
+		// clang-format on
 	}
 
 	return str;
@@ -110,14 +110,14 @@ print_board(struct PIECE board[])
 		struct PIECE piece = board[pos];
 		switch (piece.type) {
 		// clang-format off
-        case PAWN: printf("P"); break;
-        case BISHOP: printf("B"); break;
-        case KNIGHT: printf("K"); break;
-        case ROOK: printf("R"); break;
-        case QUEEN: printf("Q"); break;
-        case KING: printf("K"); break;
+		case PAWN: piece.color == WHITE ? printf("P") : printf("p"); break;
+		case BISHOP: piece.color == WHITE ? printf("B") : printf("b"); break;
+		case KNIGHT: piece.color == WHITE ? printf("K") : printf("k"); break;
+		case ROOK: piece.color == WHITE ? printf("R") : printf("r"); break;
+		case QUEEN: piece.color == WHITE ? printf("Q") : printf("q"); break;
+		case KING: piece.color == WHITE ? printf("K") : printf("k"); break;
         default: printf(" "); break;
-        // clang-format on
+			// clang-format on
 		}
 		printf("]");
 	}
