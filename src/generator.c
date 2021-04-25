@@ -166,8 +166,11 @@ generate_moves(struct chess* game)
 }
 
 struct list*
-generate_moves_queen(struct PIECE* board[], enum POS pos)
+generate_moves_queen(struct PIECE board[], enum POS pos)
 {
+	struct list* vertical_moves = generate_orthogonal_moves(board, pos, -1);
+	struct list* diagonal_moves = generate_diagonal_moves(board, pos, -1);
+	return list_append_list(vertical_moves, diagonal_moves);
 }
 
 struct list*
@@ -176,8 +179,9 @@ generate_moves_king(struct PIECE* board[], enum POS pos)
 }
 
 struct list*
-generate_moves_rook(struct PIECE* board[], enum POS pos)
+generate_moves_rook(struct PIECE board[], enum POS pos)
 {
+	return generate_orthogonal_moves(board, pos, -1);
 }
 
 struct list*
@@ -191,6 +195,7 @@ generate_moves_pawn(struct PIECE* board[], enum POS pos)
 }
 
 struct list*
-generate_moves_bishop(struct PIECE* board[], enum POS pos)
+generate_moves_bishop(struct PIECE board[], enum POS pos)
 {
+	return generate_diagonal_moves(board, pos, -1);
 }
