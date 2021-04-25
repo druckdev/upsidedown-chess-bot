@@ -6,4 +6,6 @@
 
 struct list* generate_moves(struct chess* game);
 
+void test_move_generator();
+
 #endif /* GENERATOR_H */

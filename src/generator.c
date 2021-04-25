@@ -199,3 +199,93 @@ generate_moves_bishop(struct PIECE board[], enum POS pos)
 {
 	return generate_diagonal_moves(board, pos, -1);
 }
+
+void
+test_moves_queen()
+{
+	printf("\n\nTesting queen moves...\n");
+	enum POS pos           = E4;
+	struct PIECE board[64] = { 0 };
+	struct PIECE queen     = { QUEEN, WHITE };
+	struct PIECE b_bishop  = { BISHOP, BLACK };
+	struct PIECE w_bishop  = { BISHOP, WHITE };
+	board[pos]             = queen;
+	board[C6]              = b_bishop;
+	board[F5]              = w_bishop;
+	print_board(board);
+
+	struct list* moves = generate_moves_queen(board, pos);
+	if (!moves)
+		return;
+
+	struct list_elem* cur = moves->first;
+	printf("Moves:\n");
+	while (cur) {
+		struct move* move = (struct move*)cur->object;
+		printf("%s -> %s\n", pos_to_str(move->start), pos_to_str(move->target));
+		cur = cur->next;
+	}
+}
+
+void
+test_moves_bishop()
+{
+	printf("\n\nTesting bishop moves...\n");
+	enum POS pos           = E4;
+	struct PIECE board[64] = { 0 };
+	struct PIECE bishop    = { BISHOP, WHITE };
+	struct PIECE b_bishop  = { BISHOP, BLACK };
+	struct PIECE w_bishop  = { BISHOP, WHITE };
+	board[pos]             = bishop;
+	board[C2]              = b_bishop;
+	board[H7]              = w_bishop;
+	print_board(board);
+
+	struct list* moves = generate_moves_bishop(board, pos);
+	//struct list* moves = generate_vertical_moves(board, pos, -1);
+	if (!moves)
+		return;
+
+	struct list_elem* cur = moves->first;
+	printf("Moves:\n");
+	while (cur) {
+		struct move* move = (struct move*)cur->object;
+		printf("%s -> %s\n", pos_to_str(move->start), pos_to_str(move->target));
+		cur = cur->next;
+	}
+}
+
+void
+test_moves_rook()
+{
+	printf("\n\nTesting rook moves...\n");
+	enum POS pos           = E4;
+	struct PIECE board[64] = { 0 };
+	struct PIECE rook      = { ROOK, WHITE };
+	struct PIECE b_bishop  = { BISHOP, BLACK };
+	struct PIECE w_bishop  = { BISHOP, WHITE };
+	board[pos]             = rook;
+	board[E8]              = b_bishop;
+	board[H4]              = w_bishop;
+	print_board(board);
+
+	struct list* moves = generate_moves_rook(board, pos);
+	if (!moves)
+		return;
+
+	struct list_elem* cur = moves->first;
+	printf("Moves:\n");
+	while (cur) {
+		struct move* move = (struct move*)cur->object;
+		printf("%s -> %s\n", pos_to_str(move->start), pos_to_str(move->target));
+		cur = cur->next;
+	}
+}
+
+void
+test_move_generator()
+{
+	test_moves_queen();
+	test_moves_bishop();
+	test_moves_rook();
+}
