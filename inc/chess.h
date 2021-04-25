@@ -6,7 +6,15 @@
 #define WIDTH 8
 #define HEIGHT 8
 
-enum PIECE_E { PAWN = 1, BISHOP = 2, KNIGHT = 3, ROOK = 4, QUEEN = 5, KING = 6 };
+enum PIECE_E {
+	EMPTY  = 0,
+	PAWN   = 1,
+	BISHOP = 2,
+	KNIGHT = 3,
+	ROOK   = 4,
+	QUEEN  = 5,
+	KING   = 6
+};
 // TODO(Aurel): Check if theses values are correct.
 
 /*
