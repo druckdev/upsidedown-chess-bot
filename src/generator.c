@@ -159,13 +159,6 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range)
 }
 
 struct list*
-generate_moves(struct chess* game)
-{
-	// TODO(Aurel): Stub. Fill this with code.
-	assert(("Not implemented yet", 0 != 0));
-}
-
-struct list*
 generate_moves_queen(struct PIECE board[], enum POS pos)
 {
 	struct list* vertical_moves = generate_orthogonal_moves(board, pos, -1);
@@ -198,6 +191,50 @@ struct list*
 generate_moves_bishop(struct PIECE board[], enum POS pos)
 {
 	return generate_diagonal_moves(board, pos, -1);
+}
+
+struct list*
+generate_moves(struct chess* game)
+{
+	struct list* moves  = NULL;
+	struct PIECE* board = game->board;
+	for (enum POS pos = 0; pos < 64; ++pos) {
+		// if the `pos` is not occupied there are no moves to generate
+		if (!is_occupied(board, pos))
+			continue;
+
+		// only the player moving can actually move pieces
+		if (board[pos].color != game->moving)
+			continue;
+
+		// TODO(Aurel): Change the signatures of the generator functions. We
+		// don't want to have to pass &board as that is just incorrect and won't
+		// work. The calls should all look like that of the bishop.
+		switch (board[pos].type) {
+		case PAWN:
+			moves = list_append_list(moves, generate_moves_pawn(&board, pos));
+			break;
+		case BISHOP:
+			moves = list_append_list(moves, generate_moves_bishop(board, pos));
+			break;
+		case KNIGHT:
+			moves = list_append_list(moves, generate_moves_knight(&board, pos));
+			break;
+		case ROOK:
+			moves = list_append_list(moves, generate_moves_rook(board, pos));
+			break;
+		case QUEEN:
+			moves = list_append_list(moves, generate_moves_queen(board, pos));
+			break;
+		case KING:
+			moves = list_append_list(moves, generate_moves_king(&board, pos));
+			break;
+		default:
+			fprintf(stderr, "Unexpected piece type %i (This should not be 0!)",
+			        board[pos].type);
+		}
+	}
+	return moves;
 }
 
 void

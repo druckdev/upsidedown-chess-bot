@@ -4,6 +4,9 @@
 #include "chess.h"
 #include "types.h"
 
+/**
+ * Generates all moves possible in the current chess-game state.
+ */
 struct list* generate_moves(struct chess* game);
 
 void test_move_generator();
