@@ -237,6 +237,39 @@ generate_moves(struct chess* game)
 	return moves;
 }
 
+/*-------------------
+ * Tests
+ * ------------------*/
+
+void
+test_generate_moves()
+{
+	printf("\n\nTesting move generator for entire board...\n");
+
+	struct chess chess = { 0 };
+	chess.moving       = WHITE;
+
+	struct PIECE queen    = { QUEEN, WHITE };
+	struct PIECE b_bishop = { BISHOP, BLACK };
+	struct PIECE w_bishop = { BISHOP, WHITE };
+	chess.board[F4]       = queen;
+	chess.board[C6]       = b_bishop;
+	chess.board[F5]       = w_bishop;
+	print_board(chess.board);
+
+	struct list* moves = generate_moves(&chess);
+	if (!moves)
+		return;
+
+	struct list_elem* cur = moves->first;
+	printf("Moves:\n");
+	while (cur) {
+		struct move* move = (struct move*)cur->object;
+		printf("%s -> %s\n", pos_to_str(move->start), pos_to_str(move->target));
+		cur = cur->next;
+	}
+}
+
 void
 test_moves_queen()
 {
@@ -322,6 +355,7 @@ test_moves_rook()
 void
 test_move_generator()
 {
+	test_generate_moves();
 	test_moves_queen();
 	test_moves_bishop();
 	test_moves_rook();
