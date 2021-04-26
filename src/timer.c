@@ -1,78 +1,107 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include <time.h>
-#define TOTAL_TIME 10 * (60 * 1000) // total time 10 minutes in ms
+#include <unistd.h> // for sleep()
+// #include <conio.h> // for keyboard hit
 
-void timeDelay(ms)
+// unsigned int MAX_TIME = 10 * 60; // 10min e.g. 600s
+unsigned int MAX_TIME = 10 * 60 * 1000; // 10min in millisecond
+// game ends because overtime or because of checkmate or bot goes full skynet, whatever comes first
+unsigned int GAME_END = 0;
+
+// count timer
+unsigned int bot_current_time = 0;
+
+// count timer switch
+// 1 our turn -> count time
+// 0 not our turn -> not counting
+unsigned int bot_turn = 0;
+
+// to know when we should start counting our time again and when to stop
+void switch_bot_timer()
 {
-    clock_t delay = ms + clock();
-    while (delay > clock())
-        ;
+    if (bot_turn == 1)
+    {
+        bot_turn = 0; // stop counting
+    }
+    else
+    {
+        bot_turn = 1; // start counting again
+    }
 }
 
-void start_timer(void) // get start time
+// gives back the current bot time
+unsigned int return_time_current_bot()
 {
-    long counter = 0;
-    int flag = 0;
+    return bot_current_time;
+}
+
+// gives back remaining time until bot lose the game
+unsigned int remaining_time_current_bot()
+{
+    return MAX_TIME - return_time_current_bot();
+}
+
+// see method name
+void check_over_time_limit()
+{
+    if (bot_current_time > MAX_TIME)
+    {
+        bot_turn = 0; // stop counting
+        printf("\nBot lose because timeout");
+        printf("\nEnding game");
+        GAME_END = 1; // end the game
+    }
+}
+
+// time counting thread
+void *time_counter(void *args)
+{
+    // time loop
     while (1)
     {
-        timeDelay(1);
-        if (counter < TOTAL_TIME && flag == 0)
+        if (bot_turn == 1)
         {
-            counter++;
-            continue;
+            bot_current_time++;
+            check_over_time_limit();
+            if (bot_current_time % 1000 == 0) // for test purpose
+            {
+                printf("\nCurrent current bot time: %d s", bot_current_time / 1000);
+            }
         }
-        else
+
+        if (GAME_END) // ending when our time runs out see check_over_time_limit()
         {
-            printf("Time is out!\n");
-            break;
+            break; // jump out of while
         }
+        usleep(1 * 1000); // usleep takes microseconds
     }
+    printf("\nEnding thread");
+    pthread_exit(0); // stop thread
 }
 
-void pause_timer() // pause time counting after one move
+int main()
 {
-    while (!flag == 0)
-    {
-        sleep();
-    }
-}
+    pthread_t game_thread;
+    pthread_t time_counter_thread;
 
-void continue_timer()
-{
-    while (flag == 0)
-        start_timer();
-}
+    pthread_create(&time_counter_thread, NULL, time_counter, NULL);
 
-int get_remaining_move_time() //calculate remaining time
-{
-
-    float timeLeft = (float)TOTAL_TIME;
-    clock_t start_t, end_t;
-
+    int curr;
+    printf("Switch bot <s> or Stop with <q> : ");
     while (1)
     {
-        start_t = clock();
-
-        generate_moves();
-        evaluate_moves();
-        choose_move();
-        execute_move();
-
-        end_t = clock();
-
-        float used_t = (long double)(end_t - start_t) / CLOCKS_PER_SEC;
-        timeLeft = (int)(((timeLeft / 1000) - used_t) * 1000);
-
-        if (/* condition */)
+        curr = getchar(); // stop the programm from terminating immediately
+        if (curr == 'q')
         {
-            break; // jump out of the loop and return the left time
+            return 0;
         }
+        if (curr == 's')
+        {
+            switch_bot_timer();
+            printf("\nbot turn %d", bot_turn);
+        }
+        sleep(0.1);
     }
-
-    return timeLeft;
-}
-
-void stop_timer()
-{
 }
