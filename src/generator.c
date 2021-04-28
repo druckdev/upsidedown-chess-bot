@@ -220,8 +220,11 @@ generate_moves_queen(struct PIECE board[], enum POS pos)
 }
 
 struct list*
-generate_moves_king(struct PIECE* board[], enum POS pos)
+generate_moves_king(struct PIECE board[], enum POS pos)
 {
+	struct list* vertical_moves = generate_orthogonal_moves(board, pos, 1);
+	struct list* diagonal_moves = generate_diagonal_moves(board, pos, 1);
+	return list_append_list(vertical_moves, diagonal_moves);
 }
 
 struct list*
@@ -284,7 +287,7 @@ generate_moves(struct chess* game)
 			moves = list_append_list(moves, generate_moves_queen(board, pos));
 			break;
 		case KING:
-			moves = list_append_list(moves, generate_moves_king(&board, pos));
+			moves = list_append_list(moves, generate_moves_king(board, pos));
 			break;
 		default:
 			fprintf(stderr, "Unexpected piece type %i (This should not be 0!)",
