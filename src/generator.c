@@ -410,10 +410,91 @@ test_moves_rook()
 }
 
 void
+test_moves_king()
+{
+	printf("\n\nTesting king moves...\n");
+	enum POS pos           = E4;
+	struct PIECE board[64] = { 0 };
+	struct PIECE w_king    = { KING, WHITE };
+	struct PIECE b_queen   = { QUEEN, BLACK };
+	board[pos]             = w_king;
+	board[D6]              = b_queen;
+	print_board(board);
+
+	struct list* moves = generate_moves_king(board, pos);
+	
+	if (!moves)
+		return;
+
+	struct list_elem* cur = moves->first;
+	printf("Moves:\n");
+	while (cur) {
+		struct move* move = (struct move*)cur->object;
+		printf("%s -> %s\n", pos_to_str(move->start), pos_to_str(move->target));
+		cur = cur->next;
+	}
+}
+
+void
+test_moves_knight()
+{
+	printf("\n\nTesting knight moves...\n");
+	enum POS pos           = G5;
+	struct PIECE board[64] = { 0 };
+	struct PIECE w_knight  = { KNIGHT, WHITE };
+	struct PIECE b_queen   = { QUEEN, BLACK };
+	board[pos]             = w_knight;
+	board[F7]              = b_queen;
+	print_board(board);
+
+	struct list* moves = generate_moves_knight(board, pos);
+	
+	if (!moves)
+		return;
+
+	struct list_elem* cur = moves->first;
+	printf("Moves:\n");
+	while (cur) {
+		struct move* move = (struct move*)cur->object;
+		printf("%s -> %s\n", pos_to_str(move->start), pos_to_str(move->target));
+		cur = cur->next;
+	}
+}
+
+void
+test_moves_pawn()
+{
+	printf("\n\nTesting pawn moves...\n");
+	enum POS pos           = G2;
+	struct PIECE board[64] = { 0 };
+	struct PIECE b_pawn    = { PAWN, BLACK };
+	struct PIECE w_knight  = { KNIGHT, WHITE };
+	board[pos]             = b_pawn;
+	board[H1]              = w_knight;
+	print_board(board);
+
+	struct list* moves = generate_moves_pawn(board, pos);
+	
+	if (!moves)
+		return;
+
+	struct list_elem* cur = moves->first;
+	printf("Moves:\n");
+	while (cur) {
+		struct move* move = (struct move*)cur->object;
+		printf("%s -> %s\n", pos_to_str(move->start), pos_to_str(move->target));
+		cur = cur->next;
+	}
+}
+
+void
 test_move_generator()
 {
 	test_generate_moves();
 	test_moves_queen();
 	test_moves_bishop();
 	test_moves_rook();
+	test_moves_pawn();
+	// test_moves_knight();
+	// test_moves_king();
 }
