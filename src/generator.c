@@ -9,6 +9,10 @@
 #include "generator.h"
 #include "types.h"
 
+/*---------------------------------
+ * Helpers for position validation
+ * --------------------------------*/
+
 bool
 is_valid_pos(enum POS pos)
 {
@@ -35,6 +39,10 @@ is_occupied_by_enemy(struct PIECE board[], enum POS pos, enum POS target)
 		return true;
 	return false;
 }
+
+/*-----------------------------
+ * Helpers for move generation
+ * ----------------------------*/
 
 /**
  * @arg range: Use this parameter to only calculate orthogonal moves up to a
@@ -211,6 +219,11 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor)
 
 	return moves;
 }
+
+/*-----------------------------
+ * Piece based move generators
+ * ----------------------------*/
+
 struct list*
 generate_moves_queen(struct PIECE board[], enum POS pos)
 {
@@ -252,6 +265,10 @@ generate_moves_bishop(struct PIECE board[], enum POS pos)
 {
 	return generate_diagonal_moves(board, pos, -1);
 }
+
+/*-------------------
+ * Inteface
+ * ------------------*/
 
 struct list*
 generate_moves(struct chess* game)
