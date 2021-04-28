@@ -158,6 +158,59 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range)
 	return moves;
 }
 
+/**
+ * @arg factor: Use this parameter to decide whther to subtract (factor = -1) or add
+ * (factor = 1) values.
+ */
+struct list*
+generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor)
+{
+	struct list* moves = NULL;
+
+	for (int i=-1; i <= 1; i++) {
+		// value the start position needs to be modified by
+		int move_by = (WIDTH + i) * factor; 
+		
+		int target = pos + move_by;
+
+		// valid y pos
+		if (!is_valid_pos(target))
+			continue;
+
+		// valid x, rows should not vary by more than one, on wrap around this is more
+		int start_col = pos % 8;
+		int target_col = target % 8;
+		bool valid_x = start_col == target_col ||
+						start_col-1 == target_col ||
+						start_col+1 == target_col; 
+
+		if (!valid_x) 
+			continue;
+
+		// valid by pawn rules
+		bool occupied = is_occupied(board, target); 
+		bool occupied_by_enemy = is_occupied_by_enemy(board, pos, target);
+
+		// diagonal
+		if (i != 0)
+			if (!occupied || !occupied_by_enemy) // not occupied by enemy
+				continue;
+		
+		// straight
+		if (occupied && !occupied_by_enemy) // occupied by ally
+			continue;
+		
+		
+		// add move if it passed all tests
+		struct move* move = malloc(sizeof(move)); 
+		move->start = pos; 
+		move->target = target;
+		
+		moves = list_push(moves, move);
+	}
+
+	return moves;
+}
 struct list*
 generate_moves_queen(struct PIECE board[], enum POS pos)
 {
@@ -183,8 +236,12 @@ generate_moves_knight(struct PIECE* board[], enum POS pos)
 }
 
 struct list*
-generate_moves_pawn(struct PIECE* board[], enum POS pos)
+generate_moves_pawn(struct PIECE board[], enum POS pos)
 {
+	if (board[pos].type == BLACK)
+		return generate_moves_pawn_helper(board, pos, 1); 
+	
+	return generate_moves_pawn_helper(board, pos, -1);
 }
 
 struct list*
@@ -212,7 +269,7 @@ generate_moves(struct chess* game)
 		// work. The calls should all look like that of the bishop.
 		switch (board[pos].type) {
 		case PAWN:
-			moves = list_append_list(moves, generate_moves_pawn(&board, pos));
+			moves = list_append_list(moves, generate_moves_pawn(board, pos));
 			break;
 		case BISHOP:
 			moves = list_append_list(moves, generate_moves_bishop(board, pos));
