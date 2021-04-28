@@ -220,6 +220,33 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor)
 	return moves;
 }
 
+struct list*
+generate_moves_knight_helper(struct PIECE board[], enum POS pos, enum POS target, struct list* moves)
+{
+	bool valid_y = is_valid_pos(target);
+	bool occupied_by_ally = is_occupied(board, target) && 
+					 		!is_occupied_by_enemy(board, pos, target);
+	
+	// rows should not vary by more than two, on wrap around this is more
+	int start_col = pos % 8;
+	int target_col = target % 8;
+
+	bool valid_x = start_col-1 == target_col ||
+					start_col+1 == target_col ||
+					start_col-2 == target_col ||
+					start_col+2 == target_col; 
+
+	if (valid_x && valid_y && !occupied_by_ally) {
+		struct move* move = malloc(sizeof(move));
+		move->start = pos;
+		move->target = target;
+
+		moves = list_push(moves, move);
+	}
+
+	return moves;
+}
+
 /*-----------------------------
  * Piece based move generators
  * ----------------------------*/
@@ -247,8 +274,20 @@ generate_moves_rook(struct PIECE board[], enum POS pos)
 }
 
 struct list*
-generate_moves_knight(struct PIECE* board[], enum POS pos)
-{
+generate_moves_knight(struct PIECE board[], enum POS pos)
+{	
+	struct list* moves = NULL;
+	int possible_offsets[] = { 6, 10, 15, 17 };
+
+	for (int i=0; i < 4; i++) {
+		// downwards
+		moves = generate_moves_knight_helper(board, pos, pos + possible_offsets[i], moves); 
+
+		// upwards
+		moves = generate_moves_knight_helper(board, pos, pos - possible_offsets[i], moves); 
+	}
+
+	return moves;
 }
 
 struct list*
@@ -295,7 +334,7 @@ generate_moves(struct chess* game)
 			moves = list_append_list(moves, generate_moves_bishop(board, pos));
 			break;
 		case KNIGHT:
-			moves = list_append_list(moves, generate_moves_knight(&board, pos));
+			moves = list_append_list(moves, generate_moves_knight(board, pos));
 			break;
 		case ROOK:
 			moves = list_append_list(moves, generate_moves_rook(board, pos));
@@ -515,6 +554,6 @@ test_move_generator()
 	test_moves_bishop();
 	test_moves_rook();
 	test_moves_pawn();
-	// test_moves_knight();
+	test_moves_knight();
 	// test_moves_king();
 }
