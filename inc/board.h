@@ -21,7 +21,7 @@ enum POS {
 
 bool execute_move(struct chess* game, struct move move);
 
-char* pos_to_str(enum POS pos);
+char* pos_to_str(enum POS pos, char* str);
 
 void print_board(enum PIECE board[]);
 
