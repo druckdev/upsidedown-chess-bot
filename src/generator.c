@@ -82,7 +82,7 @@ generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range)
 			    prev_target_col + 1 != target_col)
 				break; // we must have wrapped around a border
 
-			struct move* move = malloc(sizeof(struct move));
+			struct move* move = malloc(sizeof(*move));
 			// TODO(Aurel): Should we cleanup the list moves?
 			if (!move)
 				return NULL;
@@ -145,7 +145,7 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range)
 			    prev_target_col + 1 != target_col)
 				break; // we must have wrapped around the border
 
-			struct move* move = malloc(sizeof(struct move));
+			struct move* move = malloc(sizeof(*move));
 			// TODO(Aurel): Should we cleanup the list moves?
 			if (!move)
 				return NULL;
