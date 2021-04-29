@@ -88,6 +88,7 @@ generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range)
 				return NULL;
 			move->start  = pos;
 			move->target = target;
+			move->hit    = hit;
 
 			moves = list_push(moves, move);
 			if (!moves)
@@ -151,6 +152,7 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range)
 				return NULL;
 			move->start  = pos;
 			move->target = target;
+			move->hit    = hit;
 
 			moves = list_push(moves, move);
 			if (!moves)
@@ -213,6 +215,7 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor)
 		struct move* move = malloc(sizeof(*move)); 
 		move->start = pos; 
 		move->target = target;
+		move->hit         = occupied_by_enemy;
 		
 		moves = list_push(moves, move);
 	}
@@ -223,10 +226,10 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor)
 struct list*
 generate_moves_knight_helper(struct PIECE board[], enum POS pos, enum POS target, struct list* moves)
 {
-	bool valid_y = is_valid_pos(target);
-	bool occupied_by_ally = is_occupied(board, target) && 
-					 		!is_occupied_by_enemy(board, pos, target);
-	
+	bool valid_y           = is_valid_pos(target);
+	bool occupied_by_enemy = is_occupied_by_enemy(board, pos, target);
+	bool occupied_by_ally  = is_occupied(board, target) && !occupied_by_enemy;
+
 	// rows should not vary by more than two, on wrap around this is more
 	int start_col = pos % 8;
 	int target_col = target % 8;
@@ -240,6 +243,7 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos, enum POS target
 		struct move* move = malloc(sizeof(*move));
 		move->start = pos;
 		move->target = target;
+		move->hit         = occupied_by_enemy;
 
 		moves = list_push(moves, move);
 	}

@@ -1,6 +1,7 @@
 #ifndef CHESS_H
 #define CHESS_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #define WIDTH 8
@@ -48,6 +49,7 @@ struct chess {
 
 struct move {
 	enum POS start, target;
+	bool hit;
 };
 struct chess init_chess();
 
