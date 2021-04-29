@@ -16,7 +16,6 @@ enum PIECE_E {
 	QUEEN  = 5,
 	KING   = 6
 };
-// TODO(Aurel): Check if theses values are correct.
 
 /*
  * TODO: These are just stubs to get a general idea of what we need.
