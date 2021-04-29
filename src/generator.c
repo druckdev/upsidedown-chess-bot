@@ -210,7 +210,7 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor)
 		
 		
 		// add move if it passed all tests
-		struct move* move = malloc(sizeof(move)); 
+		struct move* move = malloc(sizeof(*move)); 
 		move->start = pos; 
 		move->target = target;
 		
@@ -237,7 +237,7 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos, enum POS target
 					start_col+2 == target_col; 
 
 	if (valid_x && valid_y && !occupied_by_ally) {
-		struct move* move = malloc(sizeof(move));
+		struct move* move = malloc(sizeof(*move));
 		move->start = pos;
 		move->target = target;
 
