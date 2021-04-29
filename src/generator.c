@@ -12,6 +12,61 @@
 /*---------------------------------
  * Helpers for position validation
  * --------------------------------*/
+struct list* generate_moves_queen(struct PIECE board[], enum POS pos);
+struct list* generate_moves_king(struct PIECE board[], enum POS pos);
+struct list* generate_moves_rook(struct PIECE board[], enum POS pos);
+struct list* generate_moves_knight(struct PIECE board[], enum POS pos);
+struct list* generate_moves_pawn(struct PIECE board[], enum POS pos);
+struct list* generate_moves_bishop(struct PIECE board[], enum POS pos);
+
+struct list* generate_orthogonal_moves(struct PIECE board[], enum POS pos,
+                                       int range);
+
+// TODO(Aurel): Test this!!!
+bool
+is_checkless_move(struct PIECE board[], enum POS start, enum POS target)
+{
+	struct PIECE new_board[64];
+	memcpy(new_board, board, 64 * sizeof(*board));
+
+	// TODO(Aurel): Move out to function `execute_move` or something alike.
+	struct PIECE moved_piece = board[start];
+	new_board[start].type    = EMPTY;
+	new_board[target]        = moved_piece;
+
+	struct list* new_moves;
+
+	// clang-format off
+	switch (new_board[target].type) {
+	case QUEEN: new_moves = generate_moves_queen(new_board, target); break;
+	case KING: new_moves = generate_moves_king(new_board, target); break;
+	case ROOK: new_moves = generate_moves_rook(new_board, target); break;
+	case KNIGHT: new_moves = generate_moves_knight(new_board, target); break;
+	case PAWN: new_moves = generate_moves_pawn(new_board, target); break;
+	case BISHOP: new_moves = generate_moves_bishop(new_board, target); break;
+	default: assert(("Invalid code path.", 0 != 0)); break;
+	}
+	// clang-format on
+
+	while (new_moves->last) {
+		struct move* cur_move = (struct move*)list_pop(new_moves);
+		if (!cur_move->hit) {
+			free(cur_move);
+			continue;
+		}
+
+		if (new_board[cur_move->target].type == KING) {
+			free(cur_move);
+			while (new_moves->last) {
+				struct move* cur_move = (struct move*)list_pop(new_moves);
+				free(cur_move);
+			}
+			return false;
+		}
+		free(cur_move);
+	}
+	return true;
+}
 
 bool
 is_valid_pos(enum POS pos)
@@ -82,6 +137,13 @@ generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range)
 			    prev_target_col + 1 != target_col)
 				break; // we must have wrapped around a border
 
+			/*
+			 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
+			 * be the last check!
+			 */
+			if (!is_checkless_move(board, pos, target))
+				continue;
+
 			struct move* move = malloc(sizeof(*move));
 			// TODO(Aurel): Should we cleanup the list moves?
 			if (!move)
@@ -146,6 +208,13 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range)
 			    prev_target_col + 1 != target_col)
 				break; // we must have wrapped around the border
 
+			/*
+			 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
+			 * be the last check!
+			 */
+			if (!is_checkless_move(board, pos, target))
+				continue;
+
 			struct move* move = malloc(sizeof(*move));
 			// TODO(Aurel): Should we cleanup the list moves?
 			if (!move)
@@ -209,8 +278,14 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor)
 		// straight
 		if (occupied && !occupied_by_enemy) // occupied by ally
 			continue;
-		
-		
+
+		/*
+		 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
+		 * be the last check!
+		 */
+		if (!is_checkless_move(board, pos, target))
+			continue;
+
 		// add move if it passed all tests
 		struct move* move = malloc(sizeof(*move)); 
 		move->start = pos; 
@@ -240,6 +315,13 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos, enum POS target
 					start_col+2 == target_col; 
 
 	if (valid_x && valid_y && !occupied_by_ally) {
+		/*
+		 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
+		 * be the last check!
+		 */
+		if (!is_checkless_move(board, pos, target))
+			return NULL;
+
 		struct move* move = malloc(sizeof(*move));
 		move->start = pos;
 		move->target = target;
