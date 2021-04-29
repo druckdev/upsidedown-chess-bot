@@ -13,15 +13,21 @@
 /*---------------------------------
  * Helpers for position validation
  * --------------------------------*/
-struct list* generate_moves_queen(struct PIECE board[], enum POS pos);
-struct list* generate_moves_king(struct PIECE board[], enum POS pos);
-struct list* generate_moves_rook(struct PIECE board[], enum POS pos);
-struct list* generate_moves_knight(struct PIECE board[], enum POS pos);
-struct list* generate_moves_pawn(struct PIECE board[], enum POS pos);
-struct list* generate_moves_bishop(struct PIECE board[], enum POS pos);
+struct list* generate_moves_queen(struct PIECE board[], enum POS pos,
+                                  bool check_checkless);
+struct list* generate_moves_king(struct PIECE board[], enum POS pos,
+                                 bool check_checkless);
+struct list* generate_moves_rook(struct PIECE board[], enum POS pos,
+                                 bool check_checkless);
+struct list* generate_moves_knight(struct PIECE board[], enum POS pos,
+                                   bool check_checkless);
+struct list* generate_moves_pawn(struct PIECE board[], enum POS pos,
+                                 bool check_checkless);
+struct list* generate_moves_bishop(struct PIECE board[], enum POS pos,
+                                   bool check_checkless);
 
 struct list* generate_orthogonal_moves(struct PIECE board[], enum POS pos,
-                                       int range);
+                                       int range, bool check_checkless);
 
 // TODO(Aurel): Test this!!!
 bool
@@ -39,12 +45,12 @@ is_checkless_move(struct PIECE board[], enum POS start, enum POS target)
 
 	// clang-format off
 	switch (new_board[target].type) {
-	case QUEEN: new_moves = generate_moves_queen(new_board, target); break;
-	case KING: new_moves = generate_moves_king(new_board, target); break;
-	case ROOK: new_moves = generate_moves_rook(new_board, target); break;
-	case KNIGHT: new_moves = generate_moves_knight(new_board, target); break;
-	case PAWN: new_moves = generate_moves_pawn(new_board, target); break;
-	case BISHOP: new_moves = generate_moves_bishop(new_board, target); break;
+	case QUEEN: new_moves = generate_moves_queen(new_board, target, false); break;
+	case KING: new_moves = generate_moves_king(new_board, target, false); break;
+	case ROOK: new_moves = generate_moves_rook(new_board, target, false); break;
+	case KNIGHT: new_moves = generate_moves_knight(new_board, target, false); break;
+	case PAWN: new_moves = generate_moves_pawn(new_board, target, false); break;
+	case BISHOP: new_moves = generate_moves_bishop(new_board, target, false); break;
 	default: assert(("Invalid code path.", 0 != 0)); break;
 	}
 	// clang-format on
@@ -106,7 +112,8 @@ is_occupied_by_enemy(struct PIECE board[], enum POS pos, enum POS target)
  * "unlimited" range, meaning until the end of the board is reached.
  */
 struct list*
-generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range)
+generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range,
+                          bool check_checkless)
 {
 	struct list* moves = NULL;
 	int offsets[]      = { +1, -1, +8, -8 };
@@ -142,7 +149,7 @@ generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range)
 			 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 			 * be the last check!
 			 */
-			if (!is_checkless_move(board, pos, target))
+			if (check_checkless && !is_checkless_move(board, pos, target))
 				continue;
 
 			struct move* move = malloc(sizeof(*move));
@@ -173,7 +180,8 @@ generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range)
  * "unlimited" range, meaning until the end of the board is reached.
  */
 struct list*
-generate_diagonal_moves(struct PIECE board[], enum POS pos, int range)
+generate_diagonal_moves(struct PIECE board[], enum POS pos, int range,
+                        bool check_checkless)
 {
 	if (range < -1) {
 		fprintf(stderr, "Parameter `range` can't be lower than -1.\n");
@@ -213,7 +221,7 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range)
 			 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 			 * be the last check!
 			 */
-			if (!is_checkless_move(board, pos, target))
+			if (check_checkless && !is_checkless_move(board, pos, target))
 				continue;
 
 			struct move* move = malloc(sizeof(*move));
@@ -243,7 +251,8 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range)
  * (factor = 1) values.
  */
 struct list*
-generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor)
+generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor,
+                           bool check_checkless)
 {
 	struct list* moves = NULL;
 
@@ -283,7 +292,7 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor)
 		 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 		 * be the last check!
 		 */
-		if (!is_checkless_move(board, pos, target))
+		if (check_checkless && !is_checkless_move(board, pos, target))
 			continue;
 
 		// add move if it passed all tests
@@ -300,7 +309,8 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor)
 
 struct list*
 generate_moves_knight_helper(struct PIECE board[], enum POS pos,
-                             enum POS target, struct list* moves)
+                             enum POS target, struct list* moves,
+                             bool check_checkless)
 {
 	bool valid_y           = is_valid_pos(target);
 	bool occupied_by_enemy = is_occupied_by_enemy(board, pos, target);
@@ -318,15 +328,14 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos,
 		 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 		 * be the last check!
 		 */
-		if (!is_checkless_move(board, pos, target))
-			return NULL;
+		if (!check_checkless || is_checkless_move(board, pos, target)) {
+			struct move* move = malloc(sizeof(*move));
+			move->start       = pos;
+			move->target      = target;
+			move->hit         = occupied_by_enemy;
 
-		struct move* move = malloc(sizeof(*move));
-		move->start       = pos;
-		move->target      = target;
-		move->hit         = occupied_by_enemy;
-
-		moves = list_push(moves, move);
+			moves = list_push(moves, move);
+		}
 	}
 
 	return moves;
@@ -337,59 +346,63 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos,
  * ----------------------------*/
 
 struct list*
-generate_moves_queen(struct PIECE board[], enum POS pos)
+generate_moves_queen(struct PIECE board[], enum POS pos, bool check_checkless)
 {
-	struct list* vertical_moves = generate_orthogonal_moves(board, pos, -1);
-	struct list* diagonal_moves = generate_diagonal_moves(board, pos, -1);
+	struct list* vertical_moves =
+			generate_orthogonal_moves(board, pos, -1, check_checkless);
+	struct list* diagonal_moves =
+			generate_diagonal_moves(board, pos, -1, check_checkless);
 	return list_append_list(vertical_moves, diagonal_moves);
 }
 
 struct list*
-generate_moves_king(struct PIECE board[], enum POS pos)
+generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless)
 {
-	struct list* vertical_moves = generate_orthogonal_moves(board, pos, 1);
-	struct list* diagonal_moves = generate_diagonal_moves(board, pos, 1);
+	struct list* vertical_moves =
+			generate_orthogonal_moves(board, pos, 1, check_checkless);
+	struct list* diagonal_moves =
+			generate_diagonal_moves(board, pos, 1, check_checkless);
 	return list_append_list(vertical_moves, diagonal_moves);
 }
 
 struct list*
-generate_moves_rook(struct PIECE board[], enum POS pos)
+generate_moves_rook(struct PIECE board[], enum POS pos, bool check_checkless)
 {
-	return generate_orthogonal_moves(board, pos, -1);
+	return generate_orthogonal_moves(board, pos, -1, check_checkless);
 }
 
 struct list*
-generate_moves_knight(struct PIECE board[], enum POS pos)
+generate_moves_knight(struct PIECE board[], enum POS pos, bool check_checkless)
 {
 	struct list* moves     = NULL;
 	int possible_offsets[] = { 6, 10, 15, 17 };
 
 	for (int i = 0; i < 4; i++) {
 		// downwards
-		moves = generate_moves_knight_helper(board, pos,
-		                                     pos + possible_offsets[i], moves);
+		moves = generate_moves_knight_helper(
+				board, pos, pos + possible_offsets[i], moves, check_checkless);
 
 		// upwards
-		moves = generate_moves_knight_helper(board, pos,
-		                                     pos - possible_offsets[i], moves);
+		moves = generate_moves_knight_helper(
+				board, pos, pos - possible_offsets[i], moves, check_checkless);
 	}
 
 	return moves;
 }
 
 struct list*
-generate_moves_pawn(struct PIECE board[], enum POS pos)
+generate_moves_pawn(struct PIECE board[], enum POS pos, bool check_checkless)
 {
 	if (board[pos].type == BLACK)
-		return generate_moves_pawn_helper(board, pos, 1);
+		return generate_moves_pawn_helper(board, pos, 1, check_checkless);
 
-	return generate_moves_pawn_helper(board, pos, -1);
+	return generate_moves_pawn_helper(board, pos, -1, check_checkless);
 }
 
 struct list*
-generate_moves_bishop(struct PIECE board[], enum POS pos)
+generate_moves_bishop(struct PIECE board[], enum POS pos, bool check_checkless)
 {
-	return generate_diagonal_moves(board, pos, -1);
+	return generate_diagonal_moves(board, pos, -1, check_checkless);
 }
 
 /*-------------------
@@ -415,22 +428,28 @@ generate_moves(struct chess* game)
 		// work. The calls should all look like that of the bishop.
 		switch (board[pos].type) {
 		case PAWN:
-			moves = list_append_list(moves, generate_moves_pawn(board, pos));
+			moves = list_append_list(moves,
+			                         generate_moves_pawn(board, pos, true));
 			break;
 		case BISHOP:
-			moves = list_append_list(moves, generate_moves_bishop(board, pos));
+			moves = list_append_list(moves,
+			                         generate_moves_bishop(board, pos, true));
 			break;
 		case KNIGHT:
-			moves = list_append_list(moves, generate_moves_knight(board, pos));
+			moves = list_append_list(moves,
+			                         generate_moves_knight(board, pos, true));
 			break;
 		case ROOK:
-			moves = list_append_list(moves, generate_moves_rook(board, pos));
+			moves = list_append_list(moves,
+			                         generate_moves_rook(board, pos, true));
 			break;
 		case QUEEN:
-			moves = list_append_list(moves, generate_moves_queen(board, pos));
+			moves = list_append_list(moves,
+			                         generate_moves_queen(board, pos, true));
 			break;
 		case KING:
-			moves = list_append_list(moves, generate_moves_king(board, pos));
+			moves = list_append_list(moves,
+			                         generate_moves_king(board, pos, true));
 			break;
 		default:
 			fprintf(stderr, "Unexpected piece type %i (This should not be 0!)",
@@ -487,7 +506,7 @@ test_moves_queen()
 	board[F5]              = w_bishop;
 	print_board(board);
 
-	struct list* moves = generate_moves_queen(board, pos);
+	struct list* moves = generate_moves_queen(board, pos, true);
 	if (!moves)
 		return;
 
@@ -514,7 +533,7 @@ test_moves_bishop()
 	board[H7]              = w_bishop;
 	print_board(board);
 
-	struct list* moves = generate_moves_bishop(board, pos);
+	struct list* moves = generate_moves_bishop(board, pos, true);
 	//struct list* moves = generate_vertical_moves(board, pos, -1);
 	if (!moves)
 		return;
@@ -542,7 +561,7 @@ test_moves_rook()
 	board[H4]              = w_bishop;
 	print_board(board);
 
-	struct list* moves = generate_moves_rook(board, pos);
+	struct list* moves = generate_moves_rook(board, pos, true);
 	if (!moves)
 		return;
 
@@ -567,7 +586,7 @@ test_moves_king()
 	board[D6]              = b_queen;
 	print_board(board);
 
-	struct list* moves = generate_moves_king(board, pos);
+	struct list* moves = generate_moves_king(board, pos, true);
 
 	if (!moves)
 		return;
@@ -593,7 +612,7 @@ test_moves_knight()
 	board[F7]              = b_queen;
 	print_board(board);
 
-	struct list* moves = generate_moves_knight(board, pos);
+	struct list* moves = generate_moves_knight(board, pos, true);
 
 	if (!moves)
 		return;
@@ -619,7 +638,7 @@ test_moves_pawn()
 	board[H1]              = w_knight;
 	print_board(board);
 
-	struct list* moves = generate_moves_pawn(board, pos);
+	struct list* moves = generate_moves_pawn(board, pos, true);
 
 	if (!moves)
 		return;
