@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <stdio.h>
 
@@ -246,10 +247,10 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor)
 {
 	struct list* moves = NULL;
 
-	for (int i=-1; i <= 1; i++) {
+	for (int i = -1; i <= 1; i++) {
 		// value the start position needs to be modified by
-		int move_by = (WIDTH + i) * factor; 
-		
+		int move_by = (WIDTH + i) * factor;
+
 		int target = pos + move_by;
 
 		// valid y pos
@@ -257,24 +258,23 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor)
 			continue;
 
 		// valid x, rows should not vary by more than one, on wrap around this is more
-		int start_col = pos % 8;
+		int start_col  = pos % 8;
 		int target_col = target % 8;
-		bool valid_x = start_col == target_col ||
-						start_col-1 == target_col ||
-						start_col+1 == target_col; 
+		bool valid_x = start_col == target_col || start_col - 1 == target_col ||
+					   start_col + 1 == target_col;
 
-		if (!valid_x) 
+		if (!valid_x)
 			continue;
 
 		// valid by pawn rules
-		bool occupied = is_occupied(board, target); 
+		bool occupied          = is_occupied(board, target);
 		bool occupied_by_enemy = is_occupied_by_enemy(board, pos, target);
 
 		// diagonal
 		if (i != 0)
 			if (!occupied || !occupied_by_enemy) // not occupied by enemy
 				continue;
-		
+
 		// straight
 		if (occupied && !occupied_by_enemy) // occupied by ally
 			continue;
@@ -287,11 +287,11 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor)
 			continue;
 
 		// add move if it passed all tests
-		struct move* move = malloc(sizeof(*move)); 
-		move->start = pos; 
-		move->target = target;
+		struct move* move = malloc(sizeof(*move));
+		move->start       = pos;
+		move->target      = target;
 		move->hit         = occupied_by_enemy;
-		
+
 		moves = list_push(moves, move);
 	}
 
@@ -299,20 +299,19 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor)
 }
 
 struct list*
-generate_moves_knight_helper(struct PIECE board[], enum POS pos, enum POS target, struct list* moves)
+generate_moves_knight_helper(struct PIECE board[], enum POS pos,
+                             enum POS target, struct list* moves)
 {
 	bool valid_y           = is_valid_pos(target);
 	bool occupied_by_enemy = is_occupied_by_enemy(board, pos, target);
 	bool occupied_by_ally  = is_occupied(board, target) && !occupied_by_enemy;
 
 	// rows should not vary by more than two, on wrap around this is more
-	int start_col = pos % 8;
+	int start_col  = pos % 8;
 	int target_col = target % 8;
 
-	bool valid_x = start_col-1 == target_col ||
-					start_col+1 == target_col ||
-					start_col-2 == target_col ||
-					start_col+2 == target_col; 
+	bool valid_x = start_col - 1 == target_col || start_col + 1 == target_col ||
+				   start_col - 2 == target_col || start_col + 2 == target_col;
 
 	if (valid_x && valid_y && !occupied_by_ally) {
 		/*
@@ -323,8 +322,8 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos, enum POS target
 			return NULL;
 
 		struct move* move = malloc(sizeof(*move));
-		move->start = pos;
-		move->target = target;
+		move->start       = pos;
+		move->target      = target;
 		move->hit         = occupied_by_enemy;
 
 		moves = list_push(moves, move);
@@ -361,16 +360,18 @@ generate_moves_rook(struct PIECE board[], enum POS pos)
 
 struct list*
 generate_moves_knight(struct PIECE board[], enum POS pos)
-{	
-	struct list* moves = NULL;
+{
+	struct list* moves     = NULL;
 	int possible_offsets[] = { 6, 10, 15, 17 };
 
-	for (int i=0; i < 4; i++) {
+	for (int i = 0; i < 4; i++) {
 		// downwards
-		moves = generate_moves_knight_helper(board, pos, pos + possible_offsets[i], moves); 
+		moves = generate_moves_knight_helper(board, pos,
+		                                     pos + possible_offsets[i], moves);
 
 		// upwards
-		moves = generate_moves_knight_helper(board, pos, pos - possible_offsets[i], moves); 
+		moves = generate_moves_knight_helper(board, pos,
+		                                     pos - possible_offsets[i], moves);
 	}
 
 	return moves;
@@ -380,8 +381,8 @@ struct list*
 generate_moves_pawn(struct PIECE board[], enum POS pos)
 {
 	if (board[pos].type == BLACK)
-		return generate_moves_pawn_helper(board, pos, 1); 
-	
+		return generate_moves_pawn_helper(board, pos, 1);
+
 	return generate_moves_pawn_helper(board, pos, -1);
 }
 
@@ -567,7 +568,7 @@ test_moves_king()
 	print_board(board);
 
 	struct list* moves = generate_moves_king(board, pos);
-	
+
 	if (!moves)
 		return;
 
@@ -593,7 +594,7 @@ test_moves_knight()
 	print_board(board);
 
 	struct list* moves = generate_moves_knight(board, pos);
-	
+
 	if (!moves)
 		return;
 
@@ -619,7 +620,7 @@ test_moves_pawn()
 	print_board(board);
 
 	struct list* moves = generate_moves_pawn(board, pos);
-	
+
 	if (!moves)
 		return;
 
