@@ -254,7 +254,7 @@ struct list*
 generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor,
                            bool check_checkless)
 {
-	struct list* moves = NULL;
+	struct list* moves;
 
 	for (int i = -1; i <= 1; i++) {
 		// value the start position needs to be modified by
