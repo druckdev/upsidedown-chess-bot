@@ -18,6 +18,6 @@ run_chess(struct chess* game)
 {
 	while (!game->checkmate) {
 		struct list* moves = generate_moves(game);
-		struct move move  = choose_move(game, *moves);
+		struct move move   = choose_move(game, *moves);
 	}
 }
