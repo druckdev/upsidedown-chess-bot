@@ -27,5 +27,7 @@ int
 main(int argc, char* argv[])
 {
 	printf("Upside Down Chess Bot version %'.1f\n", VERSION);
+	struct chess chess = init_chess();
+	run_chess(&chess);
 	//list_example(); // An example on how to use the list.
 }
