@@ -35,10 +35,10 @@ opponent_move(struct move* move)
 	move->target = atoi(move_str + 2 + (move->start > 9));
 
 	size_t last_komma_index = 3 + (move->start > 9) + (move->target > 9);
-	move->promotes_to = 0;
+	move->promotes_to       = 0;
 	if (bytes_read > last_komma_index) {
 		enum PIECE_E promotes_to;
-		switch (move_str[last_komma_index +1]) {
+		switch (move_str[last_komma_index + 1]) {
 		case 'Q':
 			promotes_to = QUEEN;
 			break;
@@ -103,13 +103,13 @@ init_chess(enum COLOR c)
 void
 run_chess(struct chess* game)
 {
-	// print_board(game->board);
+	//print_board(game->board);
 
 	if (game->moving == BLACK) {
 		// Let opponent make the first move
 		struct move move;
 		assert(execute_move(game->board, opponent_move(&move)));
-		// print_board(game->board);
+		//print_board(game->board);
 	}
 
 	while (!game->checkmate) {
@@ -119,10 +119,10 @@ run_chess(struct chess* game)
 		assert(execute_move(game->board, move));
 		// TODO!
 		// list_free(moves);
-		// print_board(game->board);
+		//print_board(game->board);
 
 		struct move oppo_move;
 		assert(execute_move(game->board, opponent_move(&oppo_move)));
-		// print_board(game->board);
+		//print_board(game->board);
 	}
 }

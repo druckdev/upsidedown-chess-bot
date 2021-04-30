@@ -120,7 +120,7 @@ print_board(struct PIECE board[])
 		if (pos % 8 == 0) {
 			if (pos != 0)
 				printf(" %li", row);
-			size_t first_index_of_row = 8 * ( 9 - row );
+			size_t first_index_of_row = 8 * (9 - row);
 			printf("\n");
 			if (first_index_of_row < 10)
 				printf(" ");
