@@ -2,6 +2,7 @@
 #include <sys/types.h>
 
 #include "bot.h"
+#include "board.h"
 #include "chess.h"
 #include "types.h"
 
@@ -19,7 +20,7 @@ rate_board (struct chess *chess, struct move move)
 {
 	int rating = 0;
 	for (size_t i = 0; i < sizeof(chess->board) / sizeof(*chess->board); ++i) {
-		rating += PIECE_VALUES[chess->board[i]];
+		rating += PIECE_VALUES[chess->board[i].type];
 	}
 	chess->rating = rating;
 

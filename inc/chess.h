@@ -51,6 +51,7 @@ struct chess {
 struct move {
 	enum POS start, target;
 	bool hit;
+	enum PIECE_E promotes_to;
 };
 struct chess init_chess();
 
