@@ -311,12 +311,14 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 	return moves;
 }
 
-struct list*
+struct move*
 generate_moves_knight_helper(struct PIECE board[], enum POS pos,
                              enum POS target, struct list* moves,
                              bool check_checkless)
 {
-	bool valid_y           = is_valid_pos(target);
+	if (!is_valid_pos(target))
+		return NULL;
+
 	bool occupied_by_enemy = is_occupied_by_enemy(board, pos, target);
 	bool occupied_by_ally  = is_occupied(board, target) && !occupied_by_enemy;
 
@@ -324,25 +326,28 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos,
 	int start_col  = pos % 8;
 	int target_col = target % 8;
 
-	bool valid_x = start_col - 1 == target_col || start_col + 1 == target_col ||
-				   start_col - 2 == target_col || start_col + 2 == target_col;
+	if (!(start_col - 1 == target_col || start_col + 1 == target_col ||
+	      start_col - 2 == target_col || start_col + 2 == target_col))
+		return NULL;
 
-	if (valid_x && valid_y && !occupied_by_ally) {
-		/*
-		 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
-		 * be the last check!
-		 */
-		if (!check_checkless || is_checkless_move(board, pos, target)) {
-			struct move* move = malloc(sizeof(*move));
-			move->start       = pos;
-			move->target      = target;
-			move->hit         = occupied_by_enemy;
+	if (occupied_by_ally)
+		return NULL;
 
-			moves = list_push(moves, move);
-		}
-	}
+	/*
+	 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
+	 * be the last check!
+	 */
+	if (check_checkless && is_checkless_move(board, pos, target))
+		return NULL;
 
-	return moves;
+	struct move* move = malloc(sizeof(*move));
+	if (!move)
+		return NULL;
+	move->start  = pos;
+	move->target = target;
+	move->hit    = occupied_by_enemy;
+
+	return move;
 }
 
 /*-----------------------------
@@ -378,17 +383,17 @@ generate_moves_rook(struct PIECE board[], enum POS pos, bool check_checkless)
 struct list*
 generate_moves_knight(struct PIECE board[], enum POS pos, bool check_checkless)
 {
-	struct list* moves     = NULL;
-	int possible_offsets[] = { 6, 10, 15, 17 };
-
+	struct list* moves = NULL;
+	int offsets[]      = { 6, 10, 15, 17 };
 	for (int i = 0; i < 4; i++) {
 		// downwards
-		moves = generate_moves_knight_helper(
-				board, pos, pos + possible_offsets[i], moves, check_checkless);
-
+		list_push(moves,
+		          generate_moves_knight_helper(board, pos, pos + offsets[i],
+		                                       moves, check_checkless));
 		// upwards
-		moves = generate_moves_knight_helper(
-				board, pos, pos - possible_offsets[i], moves, check_checkless);
+		list_push(moves,
+		          generate_moves_knight_helper(board, pos, pos - offsets[i],
+		                                       moves, check_checkless));
 	}
 
 	return moves;
