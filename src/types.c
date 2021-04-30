@@ -6,13 +6,23 @@
 struct list*
 list_push(struct list* list, void* object)
 {
-	if (!list)
+	if (!object)
+		return list;
+
+	if (!list) {
 		list = malloc(sizeof(struct list));
-	if (!list)
-		return NULL;
+		if (!list)
+			return NULL;
+		list->first = NULL;
+		list->last  = NULL;
+	}
+	if (!object)
+		return list;
 
 	struct list_elem* list_elem = malloc(sizeof(struct list_elem));
 	if (!list_elem) {
+		// TODO(Aurel): Replace the free with a function that destroys the
+		// entire list.
 		free(list);
 		return NULL;
 	}
