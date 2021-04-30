@@ -10,7 +10,8 @@ bool
 execute_move(struct chess* game, struct move move)
 {
 	// TODO(Aurel): Stub. Fill this with code.
-	assert(("Not implemented yet", 0 != 0));
+	// assert(("Not implemented yet", 0 != 0));
+	return 1;
 }
 
 /*
