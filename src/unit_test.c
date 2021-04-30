@@ -44,8 +44,8 @@ test_generator(void)
 		{ "r1bqkbqr/pppppp1p/2n2n2/8/8/2N2N2/P1PPPPPP/RQBQKB1R", WHITE, 8 },
 		{ "r1bqk1nr/pppppp1p/2k4b/8/8/2N2N2/P1PPPP1P/RQBQKB1R", WHITE, 6 },
 		{ "r1bqkqnr/ppppp2p/2n4b/3N4/8/5N2/P1PPPP1P/RQBQKB1R", WHITE, 2 },
-		{ "6KR/8/1N6/8/8/3q4/4b3/6kr w", WHITE, 5 },
-		{ "3R4/3R4/8/7K/7B/8/3r2n1/3k4 b", BLACK, 1 },
+		{ "6KR/8/1N6/8/8/3q4/4b3/6kr", WHITE, 5 },
+		{ "3R4/3R4/8/7K/7B/8/3r2n1/3k4", BLACK, 1 },
 	};
 
 	// run test cases
