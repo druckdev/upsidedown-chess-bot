@@ -49,7 +49,7 @@ print_board(enum PIECE board[])
         case QUEEN: printf("Q"); break;
         case KING: printf("K"); break;
         default: printf(" "); break;
-        // clang-format on
+			// clang-format on
 		}
 		printf("]");
 	}
