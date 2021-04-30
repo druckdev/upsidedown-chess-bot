@@ -28,7 +28,15 @@ test_generator(void)
 	};
 
 	// define test cases
-	struct test_case tests[17] = {
+	struct test_case tests[24] = {
+		{ "8/8/8/8/8/3k4/8/8", BLACK, 8}, // test king
+		{ "8/8/8/8/3r4/8/8/8", BLACK, 14}, // test rook
+		{ "8/8/8/8/3b4/8/8/8", BLACK, 13}, // test bishop
+		{ "8/8/8/8/3p4/8/8/8", BLACK, 1}, // test pawn (black)
+		{ "8/8/8/8/3P4/8/8/8", WHITE, 1}, // test pawn (white)
+		{ "8/8/8/8/3q4/8/8/8", BLACK, 27}, // test queen
+		{ "8/8/8/8/3n4/8/8/8", BLACK, 8}, // test knight
+
 		{ "RNBKQB1R/PPPPPPPP/8/3N4/8/5n2/pppppp1p/rnbkqbrr", WHITE, 12 },
 		{ "RNBKQB1R/PPPPPPPP/8/8/4N3/2n5/pppppppp/r1bkqbnr", BLACK, 12 },
 		{ "RqBQKB1R/P1PPPPQP/2n2N2/8/8/5N2/pbpppppp/rq2kbnr", BLACK, 2 },
