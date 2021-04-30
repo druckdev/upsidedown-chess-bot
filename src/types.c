@@ -19,9 +19,9 @@ list_push(struct list* list, void* object)
 
 	struct list_elem* list_elem = malloc(sizeof(struct list_elem));
 	if (!list_elem) {
-		// TODO(Aurel): Replace the free with a function that destroys the
-		// entire list.
-		free(list);
+		if (!list->last)
+			// list is empty so we free it as we probably have created it
+			free(list);
 		return NULL;
 	}
 
