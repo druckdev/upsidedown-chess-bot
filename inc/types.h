@@ -34,4 +34,11 @@ void* list_pop(struct list* list);
  */
 struct list* list_append_list(struct list* first, struct list* second);
 
+/**
+ * counts elements in `list`.
+ * Runtime: O(n)
+ */
+int list_count(struct list* list);
+
+
 #endif /* TYPES_H */
