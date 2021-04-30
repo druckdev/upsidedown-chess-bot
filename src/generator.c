@@ -313,8 +313,7 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 
 struct move*
 generate_moves_knight_helper(struct PIECE board[], enum POS pos,
-                             enum POS target, struct list* moves,
-                             bool check_checkless)
+                             enum POS target, bool check_checkless)
 {
 	if (!is_valid_pos(target))
 		return NULL;
@@ -389,11 +388,11 @@ generate_moves_knight(struct PIECE board[], enum POS pos, bool check_checkless)
 		// downwards
 		list_push(moves,
 		          generate_moves_knight_helper(board, pos, pos + offsets[i],
-		                                       moves, check_checkless));
+		                                       check_checkless));
 		// upwards
 		list_push(moves,
 		          generate_moves_knight_helper(board, pos, pos - offsets[i],
-		                                       moves, check_checkless));
+		                                       check_checkless));
 	}
 
 	return moves;
