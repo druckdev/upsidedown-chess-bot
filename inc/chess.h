@@ -19,10 +19,16 @@ struct chess {
 	int rating;
 };
 
-struct chess init_chess();
+static enum PIECE DEFAULT_BOARD[64] = {
+	       ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK,
+	       PAWN, PAWN,   PAWN,   PAWN,  PAWN, PAWN,   PAWN,   PAWN,
 
-void run_chess();
+	[48] = PAWN, PAWN,   PAWN,   PAWN,  PAWN, PAWN,   PAWN,   PAWN,
+	       ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK
+};
 
 int get_piece_value(enum PIECE piece);
+struct chess init_chess();
+void run_chess(struct chess* game);
 
 #endif /* CHESS_H */
