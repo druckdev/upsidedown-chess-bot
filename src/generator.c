@@ -675,3 +675,55 @@ test_move_generator()
 	test_moves_knight();
 	// test_moves_king();
 }
+
+/*-------------------
+ * Benchmarks
+ * ------------------*/
+
+#include <time.h>
+
+void
+benchmark_move_generator()
+{
+	struct chess chess = init_chess();
+	printf("Benchmarking function generate_moves() with board");
+	print_board(chess.board);
+
+	// TODO(Aurel): Run multiple times and take average.
+
+	// benchmark CPU-time
+	struct timespec t_start_cpu, t_end_cpu;
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_cpu);
+
+	/* functions to benchmark */
+	struct list* moves_cpu = generate_moves(&chess);
+	/* \functions to benchmark */
+
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_cpu);
+
+	double t_elapsed_cpu_sec = (t_end_cpu.tv_sec - t_start_cpu.tv_sec) +
+							   (t_end_cpu.tv_nsec - t_start_cpu.tv_nsec) * 1e-6;
+	size_t t_elapsed_cpu_nanosec =
+			(t_end_cpu.tv_sec - t_start_cpu.tv_sec) * 1e6 +
+			(t_end_cpu.tv_nsec - t_start_cpu.tv_nsec);
+
+	// benchmark wall-time ("actual" time)
+	struct timespec t_start_wall, t_end_wall;
+	clock_gettime(CLOCK_MONOTONIC, &t_start_wall);
+
+	/* functions to benchmark */
+	struct list* moves_wall = generate_moves(&chess);
+	/* \functions to benchmark */
+
+	clock_gettime(CLOCK_MONOTONIC, &t_end_wall);
+	float t_elapsed_wall_sec =
+			(t_end_wall.tv_sec - t_start_wall.tv_sec) +
+			(t_end_wall.tv_nsec - t_start_wall.tv_nsec) * 1e-6;
+	size_t t_elapsed_wall_nanosec =
+			(t_end_wall.tv_sec - t_start_wall.tv_sec) * 1e6 +
+			(t_end_wall.tv_nsec - t_start_wall.tv_nsec);
+
+	printf("Elapsed CPU-time:\t%f s\t%li ns\nelapsed wall-time:\t%f s\t%li ns\n",
+	       t_elapsed_cpu_sec, t_elapsed_cpu_nanosec, t_elapsed_wall_sec,
+	       t_elapsed_wall_nanosec);
+}
