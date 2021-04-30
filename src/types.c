@@ -16,8 +16,6 @@ list_push(struct list* list, void* object)
 		list->first = NULL;
 		list->last  = NULL;
 	}
-	if (!object)
-		return list;
 
 	struct list_elem* list_elem = malloc(sizeof(struct list_elem));
 	if (!list_elem) {
