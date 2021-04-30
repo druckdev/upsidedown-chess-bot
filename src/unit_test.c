@@ -61,7 +61,7 @@ test_generator(void)
 
 		// verify generator
 		struct list* list = generate_moves(&chess);
-		int list_length   = list_count(list);
+		int list_length   = list->count;
 		TEST_ASSERT(list_length == tests[i].move_cnt);
 	}
 }
