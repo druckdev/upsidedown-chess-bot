@@ -13,44 +13,34 @@
 /*---------------------------------
  * Helpers for position validation
  * --------------------------------*/
-struct list* generate_moves_queen(struct PIECE board[], enum POS pos,
-                                  bool check_checkless);
-struct list* generate_moves_king(struct PIECE board[], enum POS pos,
-                                 bool check_checkless);
-struct list* generate_moves_rook(struct PIECE board[], enum POS pos,
-                                 bool check_checkless);
-struct list* generate_moves_knight(struct PIECE board[], enum POS pos,
-                                   bool check_checkless);
-struct list* generate_moves_pawn(struct PIECE board[], enum POS pos,
-                                 bool check_checkless);
-struct list* generate_moves_bishop(struct PIECE board[], enum POS pos,
-                                   bool check_checkless);
-
-struct list* generate_orthogonal_moves(struct PIECE board[], enum POS pos,
-                                       int range, bool check_checkless);
+// clang-format off
+struct list* generate_moves_queen(struct PIECE board[], enum POS pos, bool check_checkless);
+struct list* generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless);
+struct list* generate_moves_rook(struct PIECE board[], enum POS pos, bool check_checkless);
+struct list* generate_moves_knight(struct PIECE board[], enum POS pos, bool check_checkless);
+struct list* generate_moves_pawn(struct PIECE board[], enum POS pos, bool check_checkless);
+struct list* generate_moves_bishop(struct PIECE board[], enum POS pos, bool check_checkless);
+// clang-format on
 
 // TODO(Aurel): Test this!!!
 bool
-is_checkless_move(struct PIECE board[], enum POS start, enum POS target)
+is_checkless_move(struct PIECE board[], struct move* move)
 {
 	struct PIECE new_board[64];
 	memcpy(new_board, board, 64 * sizeof(*board));
 
-	// TODO(Aurel): Move out to function `execute_move` or something alike.
-	struct PIECE moved_piece = board[start];
-	new_board[start].type    = EMPTY;
-	new_board[target]        = moved_piece;
+	assert(execute_move(new_board, move));
 
 	struct list* new_moves;
 
 	// clang-format off
-	switch (new_board[target].type) {
-	case QUEEN:  new_moves = generate_moves_queen (new_board, target, false); break;
-	case KING:   new_moves = generate_moves_king  (new_board, target, false); break;
-	case ROOK:   new_moves = generate_moves_rook  (new_board, target, false); break;
-	case KNIGHT: new_moves = generate_moves_knight(new_board, target, false); break;
-	case PAWN:   new_moves = generate_moves_pawn  (new_board, target, false); break;
-	case BISHOP: new_moves = generate_moves_bishop(new_board, target, false); break;
+	switch (new_board[move->target].type) {
+	case QUEEN:  new_moves = generate_moves_queen (new_board, move->target, false); break;
+	case KING:   new_moves = generate_moves_king  (new_board, move->target, false); break;
+	case ROOK:   new_moves = generate_moves_rook  (new_board, move->target, false); break;
+	case KNIGHT: new_moves = generate_moves_knight(new_board, move->target, false); break;
+	case PAWN:   new_moves = generate_moves_pawn  (new_board, move->target, false); break;
+	case BISHOP: new_moves = generate_moves_bishop(new_board, move->target, false); break;
 	default: assert(("Invalid code path.", 0 != 0)); break;
 	}
 	// clang-format on
@@ -149,7 +139,8 @@ generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range,
 			 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 			 * be the last check!
 			 */
-			if (check_checkless && !is_checkless_move(board, pos, target))
+			struct move test_move = { pos, target, hit, EMPTY };
+			if (check_checkless && !is_checkless_move(board, &test_move))
 				continue;
 
 			struct move* move = malloc(sizeof(*move));
@@ -221,7 +212,8 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range,
 			 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 			 * be the last check!
 			 */
-			if (check_checkless && !is_checkless_move(board, pos, target))
+			struct move test_move = { pos, target, hit, EMPTY };
+			if (check_checkless && !is_checkless_move(board, &test_move))
 				continue;
 
 			struct move* move = malloc(sizeof(*move));
@@ -294,18 +286,25 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 		 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 		 * be the last check!
 		 */
-		if (check_checkless && !is_checkless_move(board, pos, target))
-			continue;
+		enum PIECE_E promotes_to = (target < 8 || target > 55) ? QUEEN : EMPTY;
+		for (; promotes_to <= QUEEN && promotes_to != PAWN; promotes_to--) {
+			struct move test_move = { pos, target, occupied_by_enemy,
+				                      promotes_to };
 
-		// add move if it passed all tests
-		struct move* move = malloc(sizeof(*move));
-		if (!move)
-			return NULL;
-		move->start  = pos;
-		move->target = target;
-		move->hit    = occupied_by_enemy;
+			if (check_checkless && !is_checkless_move(board, &test_move))
+				continue;
 
-		moves = list_push(moves, move);
+			// add move if it passed all tests
+			struct move* move = malloc(sizeof(*move));
+			if (!move)
+				return NULL;
+			move->start       = pos;
+			move->target      = target;
+			move->hit         = occupied_by_enemy;
+			move->promotes_to = promotes_to;
+
+			moves = list_push(moves, move);
+		}
 	}
 
 	return moves;
@@ -336,7 +335,8 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos,
 	 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 	 * be the last check!
 	 */
-	if (check_checkless && is_checkless_move(board, pos, target))
+	struct move test_move = { pos, target, occupied_by_enemy, EMPTY };
+	if (check_checkless && is_checkless_move(board, &test_move))
 		return NULL;
 
 	struct move* move = malloc(sizeof(*move));
@@ -493,7 +493,8 @@ test_generate_moves()
 	char pos_str[3];
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
-		printf("%s -> %s\n", pos_to_str(move->start, pos_str), pos_to_str(move->target, pos_str));
+		printf("%s -> %s\n", pos_to_str(move->start, pos_str),
+		       pos_to_str(move->target, pos_str));
 		cur = cur->next;
 	}
 }
@@ -521,7 +522,8 @@ test_moves_queen()
 	char pos_str[3];
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
-		printf("%s -> %s\n", pos_to_str(move->start, pos_str), pos_to_str(move->target, pos_str));
+		printf("%s -> %s\n", pos_to_str(move->start, pos_str),
+		       pos_to_str(move->target, pos_str));
 		cur = cur->next;
 	}
 }
@@ -550,7 +552,8 @@ test_moves_bishop()
 	char pos_str[3];
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
-		printf("%s -> %s\n", pos_to_str(move->start, pos_str), pos_to_str(move->target, pos_str));
+		printf("%s -> %s\n", pos_to_str(move->start, pos_str),
+		       pos_to_str(move->target, pos_str));
 		cur = cur->next;
 	}
 }
@@ -578,7 +581,8 @@ test_moves_rook()
 	char pos_str[3];
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
-		printf("%s -> %s\n", pos_to_str(move->start, pos_str), pos_to_str(move->target, pos_str));
+		printf("%s -> %s\n", pos_to_str(move->start, pos_str),
+		       pos_to_str(move->target, pos_str));
 		cur = cur->next;
 	}
 }
@@ -605,7 +609,8 @@ test_moves_king()
 	char pos_str[3];
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
-		printf("%s -> %s\n", pos_to_str(move->start, pos_str), pos_to_str(move->target, pos_str));
+		printf("%s -> %s\n", pos_to_str(move->start, pos_str),
+		       pos_to_str(move->target, pos_str));
 		cur = cur->next;
 	}
 }
@@ -632,7 +637,8 @@ test_moves_knight()
 	char pos_str[3];
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
-		printf("%s -> %s\n", pos_to_str(move->start, pos_str), pos_to_str(move->target, pos_str));
+		printf("%s -> %s\n", pos_to_str(move->start, pos_str),
+		       pos_to_str(move->target, pos_str));
 		cur = cur->next;
 	}
 }
@@ -659,7 +665,8 @@ test_moves_pawn()
 	char pos_str[3];
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
-		printf("%s -> %s\n", pos_to_str(move->start, pos_str), pos_to_str(move->target, pos_str));
+		printf("%s -> %s\n", pos_to_str(move->start, pos_str),
+		       pos_to_str(move->target, pos_str));
 		cur = cur->next;
 	}
 }

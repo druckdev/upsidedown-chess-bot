@@ -7,11 +7,19 @@
 #include "board.h"
 
 bool
-execute_move(struct chess* game, struct move move)
+execute_move(struct PIECE* board, struct move* move)
 {
-	// TODO(Aurel): Stub. Fill this with code.
-	// assert(("Not implemented yet", 0 != 0));
-	return 1;
+	// printf("exec: %i, %i, %i\n", move->start, move->target, move->promotes_to);
+	if (!board || !move)
+		return false;
+
+	board[move->target]     = board[move->start];
+	board[move->start].type = EMPTY;
+
+	if (move->promotes_to != EMPTY)
+		board[move->target].type = move->promotes_to;
+
+	return true;
 }
 
 /*
@@ -128,7 +136,7 @@ print_board(struct PIECE board[])
 		case KING:   piece.color == WHITE ? printf("K") : printf("k"); break;
         default: printf(" "); break;
 		}
-			// clang-format on
+		// clang-format on
 		printf("]");
 	}
 	printf(" %li\n   ", row);
