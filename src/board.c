@@ -2,6 +2,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
+
 
 #include "board.h"
 
@@ -96,6 +98,60 @@ pos_to_str(enum POS pos)
 	}
 
 	return str;
+}
+
+void
+board_from_fen(char* fen, struct PIECE board[]) { 
+  int cnt = 0;
+  for (int i=0; fen[i] != '\0'; i++) {
+    switch (fen[i]) {
+    // clang-format off
+      case 'r': board[cnt].type  = ROOK; 
+                board[cnt].color = BLACK; 
+                break; 
+      case 'q': board[cnt].type  = QUEEN;
+                board[cnt].color = BLACK;
+                break; 
+      case 'p': board[cnt].type  = PAWN;
+                board[cnt].color = BLACK;
+                break; 
+      case 'k': board[cnt].type  = KING;
+                board[cnt].color = BLACK;
+                break; 
+      case 'b': board[cnt].type  = BISHOP;
+                board[cnt].color = BLACK;
+                break; 
+      case 'n': board[cnt].type  = KNIGHT;
+                board[cnt].color = BLACK;
+                break;  
+      case 'R': board[cnt].type  = ROOK;
+                board[cnt].color = WHITE;
+                break; 
+      case 'Q': board[cnt].type  = QUEEN;
+                board[cnt].color = WHITE;
+                break; 
+      case 'P': board[cnt].type  = PAWN;
+                board[cnt].color = WHITE;
+                break; 
+      case 'K': board[cnt].type  = KING;
+                board[cnt].color = WHITE;
+                break; 
+      case 'B': board[cnt].type  = BISHOP;
+                board[cnt].color = WHITE;
+                break; 
+      case 'N': board[cnt].type  = KNIGHT;
+                board[cnt].color = WHITE;
+                break;
+      case '/': cnt--; break;  
+
+      default : for(int j=0; j < atoi(&fen[i]); j++) {
+                  board[cnt+j].type = EMPTY;
+                }
+                cnt += atoi(&fen[i])-1;
+      //clang-format on
+    }
+    cnt++;
+  }
 }
 
 void
