@@ -21,6 +21,8 @@ rate_board (struct chess *chess, struct move move)
 	for (size_t i = 0; i < sizeof(chess->board) / sizeof(*chess->board); ++i) {
 		rating += PIECE_VALUES[chess->board[i]];
 	}
+	chess->rating = rating;
+
 	return rating;
 }
 
