@@ -170,9 +170,18 @@ board_from_fen(char* fen, struct PIECE board[])
 void
 print_board(struct PIECE board[])
 {
+	printf("\n   ");
+	for (char label = 'A'; label <= 'H'; ++label) {
+		printf (" %c ", label);
+	}
+
+	size_t row = 9;
 	for (int pos = 0; pos < 64; ++pos) {
-		if (pos % 8 == 0)
-			printf("\n");
+		if (pos % 8 == 0) {
+			if (pos != 0)
+				printf(" %i", row);
+			printf("\n %i ", --row);
+		}
 
 		printf("[");
 
@@ -189,6 +198,11 @@ print_board(struct PIECE board[])
 		}
 		// clang-format on
 		printf("]");
+	}
+	printf(" %i\n   ", row);
+
+	for (char label = 'A'; label <= 'H'; ++label) {
+		printf (" %c ", label);
 	}
 	printf("\n");
 }
