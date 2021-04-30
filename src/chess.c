@@ -31,6 +31,7 @@ opponent_move()
 
 	printf("Read: %s", move_str);
 
+	// TODO: Format check and error handling
 	move.from = atoi(move_str);
 	// Convert second value after the comma which changes its position depending
 	// on the number of digits of `from`.
