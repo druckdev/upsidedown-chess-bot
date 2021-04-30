@@ -115,7 +115,7 @@ struct list*
 generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range,
                           bool check_checkless)
 {
-	struct list* moves = NULL;
+	struct list* moves = calloc(1, sizeof(*moves));
 	int offsets[]      = { +1, -1, +8, -8 };
 
 	bool hit;
@@ -188,7 +188,7 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range,
 		return NULL;
 	}
 
-	struct list* moves = NULL;
+	struct list* moves = calloc(1, sizeof(*moves));
 	int offsets[]      = { 7, 9, -7, -9 };
 
 	bool hit;
@@ -254,7 +254,7 @@ struct list*
 generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
                            bool check_checkless)
 {
-	struct list* moves;
+	struct list* moves = calloc(1, sizeof(*moves));
 
 	int factor = board[pos].color == WHITE ? 1 : -1;
 
@@ -383,7 +383,7 @@ generate_moves_rook(struct PIECE board[], enum POS pos, bool check_checkless)
 struct list*
 generate_moves_knight(struct PIECE board[], enum POS pos, bool check_checkless)
 {
-	struct list* moves = NULL;
+	struct list* moves = calloc(1, sizeof(*moves));
 	int offsets[]      = { 6, 10, 15, 17 };
 	for (int i = 0; i < 4; i++) {
 		// downwards
@@ -418,7 +418,7 @@ generate_moves_bishop(struct PIECE board[], enum POS pos, bool check_checkless)
 struct list*
 generate_moves(struct chess* game)
 {
-	struct list* moves  = NULL;
+	struct list* moves = calloc(1, sizeof(*moves));
 	struct PIECE* board = game->board;
 	for (enum POS pos = 0; pos < 64; ++pos) {
 		// if the `pos` is not occupied there are no moves to generate
