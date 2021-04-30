@@ -16,6 +16,7 @@ struct chess {
 	enum PIECE board[64];
 	enum COLOR moving;
 	uint32_t checkmate;
+	int rating;
 };
 
 struct move {
