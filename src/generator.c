@@ -707,9 +707,8 @@ benchmark_move_generator()
 	// TODO(Aurel): Run multiple times and take average.
 
 	for (size_t i = 0; i < sizeof(chess_games) / sizeof(*chess_games); ++i) {
-		printf("Benchmarking board");
+		printf("\nBenchmarking board");
 		print_board(chess_games[i].board);
-
 
 #define ITERATIONS 10
 
@@ -718,52 +717,54 @@ benchmark_move_generator()
 		double t_elapsed_wall_sec[ITERATIONS];
 		size_t t_elapsed_wall_nanosec[ITERATIONS];
 
+		struct list* moves;
 		for (size_t j = 0; j < ITERATIONS; ++j) {
-		        // benchmark CPU-time
-				struct timespec t_start_cpu, t_end_cpu;
-				clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_cpu);
-			
-				/* functions to benchmark */
-				struct list* moves_cpu = generate_moves(&chess_games[i]);
-				/* \functions to benchmark */
-				clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_cpu);
-			
-				t_elapsed_cpu_sec[j] = (t_end_cpu.tv_sec - t_start_cpu.tv_sec) +
-										   (t_end_cpu.tv_nsec - t_start_cpu.tv_nsec) * 1e-9;
-				t_elapsed_cpu_nanosec[j] =
-						(t_end_cpu.tv_sec - t_start_cpu.tv_sec) * 1e9 +
-						(t_end_cpu.tv_nsec - t_start_cpu.tv_nsec);
-			
-				// benchmark wall-time ("actual" time)
-				struct timespec t_start_wall, t_end_wall;
-				clock_gettime(CLOCK_MONOTONIC, &t_start_wall);
-			
-				/* functions to benchmark */
-				struct list* moves_wall = generate_moves(&chess_games[i]);
-				/* \functions to benchmark */
-			
-				clock_gettime(CLOCK_MONOTONIC, &t_end_wall);
-				t_elapsed_wall_sec[j] =
-						(t_end_wall.tv_sec - t_start_wall.tv_sec) +
-						(t_end_wall.tv_nsec - t_start_wall.tv_nsec) * 1e-9;
-				t_elapsed_wall_nanosec[j] =
-						(t_end_wall.tv_sec - t_start_wall.tv_sec) * 1e9 +
-						(t_end_wall.tv_nsec - t_start_wall.tv_nsec);
-			
+			// benchmark CPU-time
+			struct timespec t_start_cpu, t_end_cpu;
+			clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_cpu);
+
+			/* functions to benchmark */
+			moves = generate_moves(&chess_games[i]);
+			/* \functions to benchmark */
+			clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_cpu);
+
+			t_elapsed_cpu_sec[j] =
+					(t_end_cpu.tv_sec - t_start_cpu.tv_sec) +
+					(t_end_cpu.tv_nsec - t_start_cpu.tv_nsec) * 1e-9;
+			t_elapsed_cpu_nanosec[j] =
+					(t_end_cpu.tv_sec - t_start_cpu.tv_sec) * 1e9 +
+					(t_end_cpu.tv_nsec - t_start_cpu.tv_nsec);
+
+			// benchmark wall-time ("actual" time)
+			struct timespec t_start_wall, t_end_wall;
+			clock_gettime(CLOCK_MONOTONIC, &t_start_wall);
+
+			/* functions to benchmark */
+			moves = generate_moves(&chess_games[i]);
+			/* \functions to benchmark */
+
+			clock_gettime(CLOCK_MONOTONIC, &t_end_wall);
+			t_elapsed_wall_sec[j] =
+					(t_end_wall.tv_sec - t_start_wall.tv_sec) +
+					(t_end_wall.tv_nsec - t_start_wall.tv_nsec) * 1e-9;
+			t_elapsed_wall_nanosec[j] =
+					(t_end_wall.tv_sec - t_start_wall.tv_sec) * 1e9 +
+					(t_end_wall.tv_nsec - t_start_wall.tv_nsec);
 		}
 
 		for (int j = 1; j < ITERATIONS; ++j) {
-			t_elapsed_cpu_sec      [j] += t_elapsed_cpu_sec      [ j] ;
-			t_elapsed_cpu_nanosec  [j] += t_elapsed_cpu_nanosec  [ j];
-			t_elapsed_wall_sec     [j] += t_elapsed_wall_sec     [ j];
-			t_elapsed_wall_nanosec [j] += t_elapsed_wall_nanosec [ j];
+			t_elapsed_cpu_sec[j] += t_elapsed_cpu_sec[j];
+			t_elapsed_cpu_nanosec[j] += t_elapsed_cpu_nanosec[j];
+			t_elapsed_wall_sec[j] += t_elapsed_wall_sec[j];
+			t_elapsed_wall_nanosec[j] += t_elapsed_wall_nanosec[j];
 		}
-		t_elapsed_cpu_sec      [0] /= ITERATIONS;
-		t_elapsed_cpu_nanosec  [0] /= ITERATIONS;
-		t_elapsed_wall_sec     [0] /= ITERATIONS;
-		t_elapsed_wall_nanosec [0] /= ITERATIONS;
+		t_elapsed_cpu_sec[0] /= ITERATIONS;
+		t_elapsed_cpu_nanosec[0] /= ITERATIONS;
+		t_elapsed_wall_sec[0] /= ITERATIONS;
+		t_elapsed_wall_nanosec[0] /= ITERATIONS;
+		printf("Generated moves:\t%li\n", moves->count);
 		printf("Average elapsed CPU-time over %i iterations:\t%lf s\t%li ns\nAverage elapsed wall-time over %i iterations:\t%lf s\t%li ns\n",
-				ITERATIONS, t_elapsed_cpu_sec[0], t_elapsed_cpu_nanosec[0],
-				ITERATIONS, t_elapsed_wall_sec[0], t_elapsed_wall_nanosec[0]);
+		       ITERATIONS, t_elapsed_cpu_sec[0], t_elapsed_cpu_nanosec[0],
+		       ITERATIONS, t_elapsed_wall_sec[0], t_elapsed_wall_nanosec[0]);
 	}
 }
