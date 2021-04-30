@@ -1,5 +1,8 @@
 #include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "board.h"
 #include "bot.h"
@@ -10,6 +13,52 @@ int
 get_piece_value(enum PIECE piece)
 {
 	return PIECE_VALUES[piece];
+}
+
+struct move
+opponent_move()
+{
+	struct move move;
+
+	char move_str[8];
+
+	ssize_t bytes_read = read(STDIN_FILENO, move_str, sizeof(move_str) - 1);
+	if (bytes_read < 0) {
+		perror("Error reading");
+		exit(1);
+	}
+	move_str[bytes_read] = '\0';
+
+	printf("Read: %s", move_str);
+
+	move.from = atoi(move_str);
+	// Convert second value after the comma which changes its position depending
+	// on the number of digits of `from`.
+	move.to = atoi(move_str + 2 + move.from / 10);
+
+	move.promotes_to = 0;
+	if (move_str[bytes_read - 1] != ',') {
+		// This move promotes
+		enum PIECE promotes_to;
+		switch (move_str[bytes_read - 1]) {
+		case 'Q':
+			promotes_to = QUEEN;
+			break;
+		case 'R':
+			promotes_to = ROOK;
+			break;
+		case 'K':
+			promotes_to = KING;
+			break;
+		case 'B':
+			promotes_to = BISHOP;
+			break;
+		default:
+			break; // Default of 0 already set.
+		}
+		move.promotes_to = promotes_to;
+	}
+	return move;
 }
 
 struct chess

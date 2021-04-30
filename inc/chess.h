@@ -28,6 +28,7 @@ static enum PIECE DEFAULT_BOARD[64] = {
 };
 
 int get_piece_value(enum PIECE piece);
+struct move opponent_move();
 struct chess init_chess();
 void run_chess(struct chess* game);
 
