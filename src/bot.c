@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <sys/types.h>
 
 #include "bot.h"
 #include "chess.h"
@@ -12,6 +13,16 @@ evaluate_moves(struct chess* game, struct list moves)
     assert(("Not implemented yet", 0 != 0));
 }
 */
+
+int
+rate_board (struct chess *chess, struct move move)
+{
+	int rating = 0;
+	for (size_t i = 0; i < sizeof(chess->board) / sizeof(*chess->board); ++i) {
+		rating += PIECE_VALUES[chess->board[i]];
+	}
+	return rating;
+}
 
 struct move
 choose_move(struct chess* game, struct list moves_sorted)
