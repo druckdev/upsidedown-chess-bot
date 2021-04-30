@@ -19,6 +19,11 @@ enum POS {
 };
 // clang-format on
 
+struct move {
+	enum POS from, to;
+	enum PIECE promotes_to;
+};
+
 bool execute_move(struct chess* game, struct move move);
 
 char* pos_to_str(enum POS pos, char* str);

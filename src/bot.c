@@ -2,6 +2,7 @@
 #include <sys/types.h>
 
 #include "bot.h"
+#include "board.h"
 #include "chess.h"
 #include "types.h"
 

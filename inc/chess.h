@@ -19,8 +19,6 @@ struct chess {
 	int rating;
 };
 
-struct move {
-};
 struct chess init_chess();
 
 void run_chess();
