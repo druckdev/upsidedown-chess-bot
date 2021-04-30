@@ -51,17 +51,26 @@ test_generator(void)
 	// run test cases
 	int tests_length = sizeof(tests) / sizeof(*tests);
 	for (int i = 0; i < tests_length; i++) {
-		printf("\n\nTEST : %s", tests[i].fen);
+		printf("TEST : %s \n", tests[i].fen);
 
 		// init game
-		struct chess chess = { 0 };
+		struct chess chess;
 		chess.moving       = tests[i].moving;
 		board_from_fen(tests[i].fen, chess.board);
 
 		// verify generator
 		struct list* list = generate_moves(&chess);
 		int list_length   = list_count(list);
+		
+		// pretty print board
+		print_board(chess.board, list);
+
+		// pretty print moves
+		printf("Expected : %d , Got : %d \n\n", tests[i].move_cnt, list_length);
+
 		TEST_ASSERT(list_length == tests[i].move_cnt);
+
+		printf("\n-------------------------------------------\n");
 	}
 }
 
