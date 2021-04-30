@@ -40,5 +40,4 @@ struct list* list_append_list(struct list* first, struct list* second);
  */
 int list_count(struct list* list);
 
-
 #endif /* TYPES_H */
