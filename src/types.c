@@ -89,9 +89,9 @@ list_count(struct list* list)
 {
 	struct list_elem* next = list->first;
 	int count              = 0;
-	while (next != NULL) {
+	while (next) {
 		next = next->next;
 		count++;
 	}
-	return 7;
+	return count;
 }
