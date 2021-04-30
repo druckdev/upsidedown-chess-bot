@@ -256,7 +256,7 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 {
 	struct list* moves = calloc(1, sizeof(*moves));
 
-	int factor = board[pos].color == WHITE ? 1 : -1;
+	int factor = board[pos].color == WHITE ? -1 : 1;
 
 	for (int i = -1; i <= 1; i++) {
 		// value the start position needs to be modified by
