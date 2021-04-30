@@ -26,12 +26,7 @@ opponent_move(struct move* move)
 		exit(1);
 	}
 
-	for (--bytes_read; bytes_read >= 0 && move_str[bytes_read] != ',';
-	     --bytes_read) {
-		move_str[bytes_read] = '\0';
-	}
-
-	// printf("Read: %s\n", move_str);
+	//printf("Read: %s\n", move_str);
 
 	// TODO: Format check and error handling
 	move->start = atoi(move_str);
