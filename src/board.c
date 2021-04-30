@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 #include "board.h"
 
 bool
@@ -101,11 +100,12 @@ pos_to_str(enum POS pos)
 }
 
 void
-board_from_fen(char* fen, struct PIECE board[]) { 
-  int cnt = 0;
-  for (int i=0; fen[i] != '\0'; i++) {
-    switch (fen[i]) {
-    // clang-format off
+board_from_fen(char* fen, struct PIECE board[])
+{
+	int cnt = 0;
+	for (int i = 0; fen[i] != '\0'; i++) {
+		switch (fen[i]) {
+			// clang-format off
       case 'r': board[cnt].type  = ROOK; 
                 board[cnt].color = BLACK; 
                 break; 
