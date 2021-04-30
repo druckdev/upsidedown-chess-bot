@@ -77,11 +77,11 @@ list_append_list(struct list* first, struct list* second)
 int
 list_count(struct list* list)
 {
-	// struct list_elem* next = list->first;
-	// int count = 0;
-	// while (next != NULL) {
-	// 	next = next->next;
-	// 	count++;
-	// }
+	struct list_elem* next = list->first;
+	int count = 0;
+	while (next != NULL) {
+		next = next->next;
+		count++;
+	}
 	return 7;
 }
