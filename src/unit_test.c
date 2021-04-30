@@ -21,6 +21,12 @@ tearDown(void)
 void
 test_generator(void)
 {
+	struct test_case {
+		char* fen;
+		enum COLOR moving;
+		int move_cnt;
+	};
+
 	// define test cases
 	struct test_case tests[17] = {
 		{ "RNBKQB1R/PPPPPPPP/8/3N4/8/5n2/pppppp1p/rnbkqbrr", WHITE, 12 },
@@ -43,7 +49,7 @@ test_generator(void)
 	};
 
 	// run test cases
-	int tests_length = sizeof(tests) / sizeof(tests[0]);
+	int tests_length = sizeof(tests) / sizeof(*tests);
 	for (int i = 0; i < tests_length; i++) {
 		printf("\n\nTEST : %s", tests[i].fen);
 
