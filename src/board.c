@@ -124,15 +124,15 @@ print_board(struct PIECE board[], struct list* moves)
 {
 	printf("\n   ");
 	for (char label = 'A'; label <= 'H'; ++label) {
-		printf (" %c ", label);
+		printf(" %c ", label);
 	}
 
 	size_t row = 9;
 	for (int pos = 0; pos < 64; ++pos) {
 		if (pos % 8 == 0) {
 			if (pos != 0)
-				printf(" %i", row);
-			printf("\n %i ", --row);
+				printf(" %li", row);
+			printf("\n %li ", --row);
 		}
 
 		printf("[");
@@ -157,10 +157,10 @@ print_board(struct PIECE board[], struct list* moves)
 
 		printf("]");
 	}
-	printf(" %i\n   ", row);
+	printf(" %li\n   ", row);
 
 	for (char label = 'A'; label <= 'H'; ++label) {
-		printf (" %c ", label);
+		printf(" %c ", label);
 	}
 	printf("\n");
 }

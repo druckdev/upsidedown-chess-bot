@@ -417,7 +417,7 @@ generate_moves_bishop(struct PIECE board[], enum POS pos, bool check_checkless)
 struct list*
 generate_moves(struct chess* game)
 {
-	struct list* moves = calloc(1, sizeof(*moves));
+	struct list* moves  = calloc(1, sizeof(*moves));
 	struct PIECE* board = game->board;
 	for (enum POS pos = 0; pos < 64; ++pos) {
 		// if the `pos` is not occupied there are no moves to generate
