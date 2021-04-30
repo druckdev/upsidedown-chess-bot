@@ -45,11 +45,11 @@ is_checkless_move(struct PIECE board[], enum POS start, enum POS target)
 
 	// clang-format off
 	switch (new_board[target].type) {
-	case QUEEN: new_moves = generate_moves_queen(new_board, target, false); break;
-	case KING: new_moves = generate_moves_king(new_board, target, false); break;
-	case ROOK: new_moves = generate_moves_rook(new_board, target, false); break;
+	case QUEEN:  new_moves = generate_moves_queen (new_board, target, false); break;
+	case KING:   new_moves = generate_moves_king  (new_board, target, false); break;
+	case ROOK:   new_moves = generate_moves_rook  (new_board, target, false); break;
 	case KNIGHT: new_moves = generate_moves_knight(new_board, target, false); break;
-	case PAWN: new_moves = generate_moves_pawn(new_board, target, false); break;
+	case PAWN:   new_moves = generate_moves_pawn  (new_board, target, false); break;
 	case BISHOP: new_moves = generate_moves_bishop(new_board, target, false); break;
 	default: assert(("Invalid code path.", 0 != 0)); break;
 	}
