@@ -172,7 +172,7 @@ print_board(struct PIECE board[])
 {
 	printf("\n   ");
 	for (char label = 'A'; label <= 'H'; ++label) {
-		printf (" %c ", label);
+		printf(" %c ", label);
 	}
 
 	size_t row = 9;
@@ -202,7 +202,7 @@ print_board(struct PIECE board[])
 	printf(" %i\n   ", row);
 
 	for (char label = 'A'; label <= 'H'; ++label) {
-		printf (" %c ", label);
+		printf(" %c ", label);
 	}
 	printf("\n");
 }
