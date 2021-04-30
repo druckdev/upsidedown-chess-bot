@@ -336,7 +336,7 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos,
 	 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 	 * be the last check!
 	 */
-	if (check_checkless && is_checkless_move(board, pos, target))
+	if (check_checkless && !is_checkless_move(board, pos, target))
 		return NULL;
 
 	struct move* move = malloc(sizeof(*move));
