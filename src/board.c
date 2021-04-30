@@ -35,7 +35,7 @@ void
 board_from_fen(char* fen, struct PIECE board[])
 {
 	int cnt = 0;
-	for (int i = 0; fen[i] != '\0'; i++) {
+	for (int i = 0; fen[i] != '\0' || cnt < 64; i++) {
 		switch (fen[i]) {
 		case 'r':
 			board[cnt].type  = ROOK;
