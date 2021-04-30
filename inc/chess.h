@@ -4,6 +4,8 @@
 #include <stdint.h>
 
 enum PIECE { PAWN = 1, BISHOP = 2, KNIGHT = 3, ROOK = 4, QUEEN = 5, KING = 6 };
+int PIECE_VALUES[] = { 0, 1, 4, 4, 5, 9, 1000000 };
+
 
 /*
  * TODO: These are just stubs to get a general idea of what we need.

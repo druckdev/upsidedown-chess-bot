@@ -5,12 +5,10 @@
 #include "chess.h"
 #include "generator.h"
 
-uint32_t value[] = { 0, 1, 4, 4, 5, 9, 1000000 };
-
 int
 get_piece_value(enum PIECE piece)
 {
-	return value[piece];
+	return PIECE_VALUES[piece];
 }
 
 void
