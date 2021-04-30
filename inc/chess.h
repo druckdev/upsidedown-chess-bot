@@ -48,15 +48,22 @@ struct chess {
 	int rating;
 };
 
+static struct PIECE DEFAULT_BOARD[64] = {
+	       { ROOK, WHITE }, { KNIGHT, WHITE }, { BISHOP, WHITE }, { QUEEN, WHITE }, { KING, WHITE }, { BISHOP, WHITE }, { KNIGHT, WHITE }, { ROOK, WHITE },
+	       { PAWN, WHITE }, { PAWN,   WHITE }, { PAWN,   WHITE }, { PAWN,  WHITE }, { PAWN, WHITE }, { PAWN,   WHITE }, { PAWN,   WHITE }, { PAWN, WHITE },
+
+	[48] = { PAWN, BLACK }, { PAWN,   BLACK }, { PAWN,   BLACK }, { PAWN,  BLACK }, { PAWN, BLACK }, { PAWN,   BLACK }, { PAWN,   BLACK }, { PAWN, BLACK },
+	       { ROOK, BLACK }, { KNIGHT, BLACK }, { BISHOP, BLACK }, { QUEEN, BLACK }, { KING, BLACK }, { BISHOP, BLACK }, { KNIGHT, BLACK }, { ROOK, BLACK }
+};
+
 struct move {
 	enum POS start, target;
 	bool hit;
 	enum PIECE_E promotes_to;
 };
-struct chess init_chess();
-
-void run_chess();
 
 int get_piece_value(enum PIECE_E piece);
+struct chess init_chess();
+void run_chess(struct chess* game);
 
 #endif /* CHESS_H */

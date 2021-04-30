@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <string.h>
 
 #include "board.h"
 #include "bot.h"
@@ -9,6 +10,15 @@ int
 get_piece_value(enum PIECE_E piece)
 {
 	return PIECE_VALUES[piece];
+}
+
+struct chess
+init_chess()
+{
+	struct chess chess = { 0 };
+	memcpy(chess.board, DEFAULT_BOARD, sizeof(chess.board));
+	chess.moving = WHITE;
+	return chess;
 }
 
 void
