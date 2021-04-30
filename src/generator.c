@@ -251,10 +251,12 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range,
  * (factor = 1) values.
  */
 struct list*
-generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor,
+generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
                            bool check_checkless)
 {
 	struct list* moves;
+
+	int factor = board[pos].color == WHITE ? 1 : -1;
 
 	for (int i = -1; i <= 1; i++) {
 		// value the start position needs to be modified by
@@ -297,9 +299,11 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos, int factor,
 
 		// add move if it passed all tests
 		struct move* move = malloc(sizeof(*move));
-		move->start       = pos;
-		move->target      = target;
-		move->hit         = occupied_by_enemy;
+		if (!move)
+			return NULL;
+		move->start  = pos;
+		move->target = target;
+		move->hit    = occupied_by_enemy;
 
 		moves = list_push(moves, move);
 	}
@@ -393,10 +397,7 @@ generate_moves_knight(struct PIECE board[], enum POS pos, bool check_checkless)
 struct list*
 generate_moves_pawn(struct PIECE board[], enum POS pos, bool check_checkless)
 {
-	if (board[pos].type == BLACK)
-		return generate_moves_pawn_helper(board, pos, 1, check_checkless);
-
-	return generate_moves_pawn_helper(board, pos, -1, check_checkless);
+	return generate_moves_pawn_helper(board, pos, check_checkless);
 }
 
 struct list*
