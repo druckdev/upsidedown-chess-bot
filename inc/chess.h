@@ -16,7 +16,7 @@ enum PIECE_E {
 	QUEEN  = 5,
 	KING   = 6
 };
-// TODO(Aurel): Check if theses values are correct.
+static int PIECE_VALUES[] = { 0, 1, 4, 4, 5, 9, 1000000 };
 
 /*
  * TODO: These are just stubs to get a general idea of what we need.
@@ -45,16 +45,28 @@ struct chess {
 	struct PIECE board[64];
 	enum COLOR moving;
 	uint32_t checkmate;
+	int rating;
 };
+
+// clang-format off
+static struct PIECE DEFAULT_BOARD[64] = {
+	       { ROOK, WHITE }, { KNIGHT, WHITE }, { BISHOP, WHITE }, { QUEEN, WHITE }, { KING, WHITE }, { BISHOP, WHITE }, { KNIGHT, WHITE }, { ROOK, WHITE },
+	       { PAWN, WHITE }, { PAWN,   WHITE }, { PAWN,   WHITE }, { PAWN,  WHITE }, { PAWN, WHITE }, { PAWN,   WHITE }, { PAWN,   WHITE }, { PAWN, WHITE },
+
+	[48] = { PAWN, BLACK }, { PAWN,   BLACK }, { PAWN,   BLACK }, { PAWN,  BLACK }, { PAWN, BLACK }, { PAWN,   BLACK }, { PAWN,   BLACK }, { PAWN, BLACK },
+	       { ROOK, BLACK }, { KNIGHT, BLACK }, { BISHOP, BLACK }, { QUEEN, BLACK }, { KING, BLACK }, { BISHOP, BLACK }, { KNIGHT, BLACK }, { ROOK, BLACK }
+};
+// clang-format on
 
 struct move {
 	enum POS start, target;
 	bool hit;
+	enum PIECE_E promotes_to;
 };
-struct chess init_chess();
-
-void run_chess();
 
 int get_piece_value(enum PIECE_E piece);
+struct move opponent_move();
+struct chess init_chess();
+void run_chess(struct chess* game);
 
 #endif /* CHESS_H */
