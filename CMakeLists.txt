@@ -21,8 +21,18 @@ set(HEADERS ${INC_DIR}/main.h ${INC_DIR}/board.h ${INC_DIR}/chess.h
     ${INC_DIR}/bot.h ${INC_DIR}/generator.h ${INC_DIR}/timemanagement.h
     ${INC_DIR}/types.h)
 
+set(TEST_SOURCES ${SRC_DIR}/unity.c ${SRC_DIR}/unit_test.c 
+    ${SRC_DIR}/board.c ${SRC_DIR}/chess.c ${SRC_DIR}/bot.c 
+    ${SRC_DIR}/generator.c ${SRC_DIR}/timemanagement.c ${SRC_DIR}/types.c)
+set(TEST_HEADERS ${INC_DIR}/unity.h ${INC_DIR}/unity_internals.h 
+    ${INC_DIR}/board.h ${INC_DIR}/chess.h ${INC_DIR}/bot.h 
+    ${INC_DIR}/generator.h ${INC_DIR}/timemanagement.h
+    ${INC_DIR}/types.h)
+
 # executables
 add_executable(bot ${SOURCES} ${HEADERS})
+add_executable(test ${TEST_SOURCES} ${TEST_HEADERS})
 
 # includes
 target_include_directories(bot PRIVATE inc)
+target_include_directories(test PRIVATE inc)
