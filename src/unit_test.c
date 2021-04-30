@@ -32,8 +32,8 @@ test_generator(void)
 		{ "8/8/8/8/8/3k4/8/8", BLACK, 8}, // test king
 		{ "8/8/8/8/3r4/8/8/8", BLACK, 14}, // test rook
 		{ "8/8/8/8/3b4/8/8/8", BLACK, 13}, // test bishop
-		{ "8/8/8/8/3p4/8/8/8", BLACK, 1}, // test pawn (black)
-		{ "8/8/8/8/3P4/8/8/8", WHITE, 1}, // test pawn (white)
+		{ "8/8/8/8/8/8/6p1/8", BLACK, 4}, // test pawn (black)
+		{ "8/6P1/8/8/8/8/8/8", WHITE, 4}, // test pawn (white)
 		{ "8/8/8/8/3q4/8/8/8", BLACK, 27}, // test queen
 		{ "8/8/8/8/3n4/8/8/8", BLACK, 8}, // test knight
 
