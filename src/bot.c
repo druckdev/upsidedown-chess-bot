@@ -27,14 +27,9 @@ rate_board(struct chess* chess, struct move move)
 	return rating;
 }
 
-struct move
+struct move*
 choose_move(struct chess* game, struct list moves_sorted)
 {
 	struct move* move = (struct move*)moves_sorted.first->object;
-	// TODO: return invalid move
-	// if (move) {
-	return *move;
-	// } else {
-
-	// }
+	return move;
 }

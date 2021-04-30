@@ -5,6 +5,6 @@
 #include "types.h"
 
 int rate_board(struct chess* chess, struct move move);
-struct move choose_move(struct chess* game, struct list moves_sorted);
+struct move* choose_move(struct chess* game, struct list moves_sorted);
 
 #endif /* BOT_H */
