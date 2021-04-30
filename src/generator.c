@@ -482,7 +482,7 @@ test_generate_moves()
 	chess.board[F4]       = queen;
 	chess.board[C6]       = b_bishop;
 	chess.board[F5]       = w_bishop;
-	print_board(chess.board);
+	print_board(chess.board, NULL);
 
 	struct list* moves = generate_moves(&chess);
 	if (!moves)
@@ -510,7 +510,7 @@ test_moves_queen()
 	board[pos]             = queen;
 	board[C6]              = b_bishop;
 	board[F5]              = w_bishop;
-	print_board(board);
+	print_board(board, NULL);
 
 	struct list* moves = generate_moves_queen(board, pos, true);
 	if (!moves)
@@ -538,7 +538,7 @@ test_moves_bishop()
 	board[pos]             = bishop;
 	board[C2]              = b_bishop;
 	board[H7]              = w_bishop;
-	print_board(board);
+	print_board(board, NULL);
 
 	struct list* moves = generate_moves_bishop(board, pos, true);
 	//struct list* moves = generate_vertical_moves(board, pos, -1);
@@ -567,7 +567,7 @@ test_moves_rook()
 	board[pos]             = rook;
 	board[E8]              = b_bishop;
 	board[H4]              = w_bishop;
-	print_board(board);
+	print_board(board, NULL);
 
 	struct list* moves = generate_moves_rook(board, pos, true);
 	if (!moves)
@@ -593,7 +593,7 @@ test_moves_king()
 	struct PIECE b_queen   = { QUEEN, BLACK };
 	board[pos]             = w_king;
 	board[D6]              = b_queen;
-	print_board(board);
+	print_board(board, NULL);
 
 	struct list* moves = generate_moves_king(board, pos, true);
 
@@ -620,7 +620,7 @@ test_moves_knight()
 	struct PIECE b_queen   = { QUEEN, BLACK };
 	board[pos]             = w_knight;
 	board[F7]              = b_queen;
-	print_board(board);
+	print_board(board, NULL);
 
 	struct list* moves = generate_moves_knight(board, pos, true);
 
@@ -647,7 +647,7 @@ test_moves_pawn()
 	struct PIECE w_knight  = { KNIGHT, WHITE };
 	board[pos]             = b_pawn;
 	board[H1]              = w_knight;
-	print_board(board);
+	print_board(board, NULL);
 
 	struct list* moves = generate_moves_pawn(board, pos, true);
 

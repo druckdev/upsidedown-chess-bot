@@ -79,6 +79,6 @@ run_chess(struct chess* game)
 		// struct move* move  = choose_move(game, *moves);
 		// assert(execute_move(game, *move));
 		assert(execute_move(game, opponent_move()));
-		print_board(game->board);
+		print_board(game->board, NULL);
 	}
 }

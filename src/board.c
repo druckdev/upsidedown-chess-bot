@@ -99,8 +99,28 @@ board_from_fen(char* fen, struct PIECE board[])
 	}
 }
 
+// returns true if the position is attacked by one of the given moves
+bool
+is_attacked(struct list* moves, enum POS pos)
+{
+	if (!moves)
+		return false;
+
+	struct list_elem* cur = moves->first;
+	while (cur) {
+		struct move* move = (struct move*)cur->object;
+		if (move->target == pos)
+			return true;
+		cur = cur->next;
+	}
+	return false;
+}
+
+/**
+ * @arg moves: optional for marking attacked fields, set to NULL if not wanted
+ */
 void
-print_board(struct PIECE board[])
+print_board(struct PIECE board[], struct list* moves)
 {
 	printf("\n   ");
 	for (char label = 'A'; label <= 'H'; ++label) {
@@ -117,18 +137,24 @@ print_board(struct PIECE board[])
 
 		printf("[");
 
-		struct PIECE piece = board[pos];
-		// clang-format off
-		switch (piece.type) {
-		case PAWN:   piece.color == WHITE ? printf("P") : printf("p"); break;
-		case BISHOP: piece.color == WHITE ? printf("B") : printf("b"); break;
-		case KNIGHT: piece.color == WHITE ? printf("N") : printf("n"); break;
-		case ROOK:   piece.color == WHITE ? printf("R") : printf("r"); break;
-		case QUEEN:  piece.color == WHITE ? printf("Q") : printf("q"); break;
-		case KING:   piece.color == WHITE ? printf("K") : printf("k"); break;
-        default: printf(" "); break;
+		if (moves && is_attacked(moves, pos)) {
+			printf("X");
+		}
+		else {
+			struct PIECE piece = board[pos];
+			// clang-format off
+			switch (piece.type) {
+			case PAWN:   piece.color == WHITE ? printf("P") : printf("p"); break;
+			case BISHOP: piece.color == WHITE ? printf("B") : printf("b"); break;
+			case KNIGHT: piece.color == WHITE ? printf("N") : printf("n"); break;
+			case ROOK:   piece.color == WHITE ? printf("R") : printf("r"); break;
+			case QUEEN:  piece.color == WHITE ? printf("Q") : printf("q"); break;
+			case KING:   piece.color == WHITE ? printf("K") : printf("k"); break;
+        	default: printf(" "); break;
+			}
 		}
 			// clang-format on
+
 		printf("]");
 	}
 	printf(" %i\n   ", row);

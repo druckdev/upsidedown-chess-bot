@@ -57,7 +57,6 @@ test_generator(void)
 		struct chess chess = { 0 };
 		chess.moving       = tests[i].moving;
 		board_from_fen(tests[i].fen, chess.board);
-		print_board(chess.board);
 
 		// verify generator
 		struct list* list = generate_moves(&chess);
