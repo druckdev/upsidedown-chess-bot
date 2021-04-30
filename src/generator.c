@@ -493,7 +493,8 @@ test_generate_moves()
 	char pos_str[3];
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
-		printf("%s -> %s\n", pos_to_str(move->start, pos_str), pos_to_str(move->target, pos_str));
+		printf("%s -> %s\n", pos_to_str(move->start, pos_str),
+		       pos_to_str(move->target, pos_str));
 		cur = cur->next;
 	}
 }
@@ -521,7 +522,8 @@ test_moves_queen()
 	char pos_str[3];
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
-		printf("%s -> %s\n", pos_to_str(move->start, pos_str), pos_to_str(move->target, pos_str));
+		printf("%s -> %s\n", pos_to_str(move->start, pos_str),
+		       pos_to_str(move->target, pos_str));
 		cur = cur->next;
 	}
 }
@@ -550,7 +552,8 @@ test_moves_bishop()
 	char pos_str[3];
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
-		printf("%s -> %s\n", pos_to_str(move->start, pos_str), pos_to_str(move->target, pos_str));
+		printf("%s -> %s\n", pos_to_str(move->start, pos_str),
+		       pos_to_str(move->target, pos_str));
 		cur = cur->next;
 	}
 }
@@ -578,7 +581,8 @@ test_moves_rook()
 	char pos_str[3];
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
-		printf("%s -> %s\n", pos_to_str(move->start, pos_str), pos_to_str(move->target, pos_str));
+		printf("%s -> %s\n", pos_to_str(move->start, pos_str),
+		       pos_to_str(move->target, pos_str));
 		cur = cur->next;
 	}
 }
@@ -605,7 +609,8 @@ test_moves_king()
 	char pos_str[3];
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
-		printf("%s -> %s\n", pos_to_str(move->start, pos_str), pos_to_str(move->target, pos_str));
+		printf("%s -> %s\n", pos_to_str(move->start, pos_str),
+		       pos_to_str(move->target, pos_str));
 		cur = cur->next;
 	}
 }
@@ -632,7 +637,8 @@ test_moves_knight()
 	char pos_str[3];
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
-		printf("%s -> %s\n", pos_to_str(move->start, pos_str), pos_to_str(move->target, pos_str));
+		printf("%s -> %s\n", pos_to_str(move->start, pos_str),
+		       pos_to_str(move->target, pos_str));
 		cur = cur->next;
 	}
 }
@@ -659,7 +665,8 @@ test_moves_pawn()
 	char pos_str[3];
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
-		printf("%s -> %s\n", pos_to_str(move->start, pos_str), pos_to_str(move->target, pos_str));
+		printf("%s -> %s\n", pos_to_str(move->start, pos_str),
+		       pos_to_str(move->target, pos_str));
 		cur = cur->next;
 	}
 }

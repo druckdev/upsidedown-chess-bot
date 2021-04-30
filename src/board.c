@@ -128,7 +128,7 @@ print_board(struct PIECE board[])
 		case KING:   piece.color == WHITE ? printf("K") : printf("k"); break;
         default: printf(" "); break;
 		}
-			// clang-format on
+		// clang-format on
 		printf("]");
 	}
 	printf(" %li\n   ", row);
