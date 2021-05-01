@@ -202,20 +202,21 @@ generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range,
 			 * be the last check!
 			 */
 			struct move test_move = { pos, target, hit, EMPTY };
-			if (check_checkless && !is_checkless_move(board, &test_move))
-				continue;
+			if (!check_checkless || is_checkless_move(board, &test_move)) {
+				// Move passed all tests
 
-			struct move* move = malloc(sizeof(*move));
-			// TODO(Aurel): Should we cleanup the list moves?
-			if (!move)
-				return NULL;
-			move->start  = pos;
-			move->target = target;
-			move->hit    = hit;
+				struct move* move = malloc(sizeof(*move));
+				// TODO(Aurel): Should we cleanup the list moves?
+				if (!move)
+					return NULL;
+				move->start  = pos;
+				move->target = target;
+				move->hit    = hit;
 
-			moves = list_push(moves, move);
-			if (!moves)
-				return NULL;
+				moves = list_push(moves, move);
+				if (!moves)
+					return NULL;
+			}
 
 			prev_target     = target;
 			prev_target_col = target_col;
@@ -275,20 +276,21 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range,
 			 * be the last check!
 			 */
 			struct move test_move = { pos, target, hit, EMPTY };
-			if (check_checkless && !is_checkless_move(board, &test_move))
-				continue;
+			if (!check_checkless || is_checkless_move(board, &test_move)) {
+				// Move passed all tests
 
-			struct move* move = malloc(sizeof(*move));
-			// TODO(Aurel): Should we cleanup the list moves?
-			if (!move)
-				return NULL;
-			move->start  = pos;
-			move->target = target;
-			move->hit    = hit;
+				struct move* move = malloc(sizeof(*move));
+				// TODO(Aurel): Should we cleanup the list moves?
+				if (!move)
+					return NULL;
+				move->start  = pos;
+				move->target = target;
+				move->hit    = hit;
 
-			moves = list_push(moves, move);
-			if (!moves)
-				return NULL;
+				moves = list_push(moves, move);
+				if (!moves)
+					return NULL;
+			}
 
 			prev_target     = target;
 			prev_target_col = target_col;
