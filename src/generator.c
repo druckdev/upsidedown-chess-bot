@@ -421,6 +421,12 @@ generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless)
 	if (!all_moves)
 		return NULL;
 
+	if (!all_moves->first)
+		return all_moves;
+
+	if (!check_checkless)
+		return all_moves;
+
 	// This array indicates if a position can be hit to keep the complexity at
 	// O(2N) instead of O(N^2).
 	// TODO: use bitboard and & with king moves bitboard
