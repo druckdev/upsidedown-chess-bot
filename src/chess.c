@@ -113,7 +113,7 @@ run_chess(struct chess* game)
 	}
 
 	while (!game->checkmate) {
-		struct list* moves = generate_moves(game);
+		struct list* moves = generate_moves(game, true);
 		struct move* move  = choose_move(game, *moves);
 		print_move(move);
 		assert(execute_move(game->board, move));

@@ -49,4 +49,10 @@ struct list* list_append_list(struct list* first, struct list* second);
  */
 int list_count(struct list* list);
 
+/**
+ * Frees all elements, their objects and the list itself.
+ *
+ * Runtime: O(n)
+ */
+void free_list(struct list* list);
 #endif /* TYPES_H */

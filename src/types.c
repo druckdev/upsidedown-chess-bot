@@ -96,3 +96,19 @@ list_count(struct list* list)
 	}
 	return count;
 }
+
+void
+free_list(struct list* list)
+{
+	if (!list)
+		return;
+
+	struct list_elem* cur = list->first;
+	while (cur) {
+		struct list_elem* tmp = cur->next;
+		free(cur->object);
+		free(cur);
+		cur = tmp;
+	}
+	free(list);
+}

@@ -22,6 +22,60 @@ struct list* generate_moves_pawn(struct PIECE board[], enum POS pos, bool check_
 struct list* generate_moves_bishop(struct PIECE board[], enum POS pos, bool check_checkless);
 // clang-format on
 
+bool
+is_checkmate(struct PIECE board[], struct move* mate_move)
+{
+	if (board[mate_move->target].type != KING &&
+	    board[mate_move->start].color != board[mate_move->target].color) {
+		return false;
+	}
+
+	struct chess game = { .moving = !board[mate_move->start].color };
+	memcpy(game.board, board, 64 * sizeof(*board));
+
+	struct list* counter_moves = generate_moves(&game, false);
+	while (counter_moves->last) {
+		struct move* cur_counter_move = (struct move*)list_pop(counter_moves);
+
+		// the king can move away
+		if (cur_counter_move->start == mate_move->target) {
+			free(cur_counter_move);
+			free_list(counter_moves);
+			return false;
+		}
+
+		// Backup piece for undo
+		struct PIECE old = board[cur_counter_move->target];
+		execute_move(board, cur_counter_move);
+
+		// Check if mate_move is still doable or was declined
+		struct list* moves =
+				generate_moves_piece(board, mate_move->start, false);
+		while (moves->last) {
+			struct move* cur_move = (struct move*)list_pop(moves);
+			if (cur_move->target != mate_move->target) {
+				// mate_move was declined
+				free(cur_move);
+				free_list(moves);
+				free_list(counter_moves);
+				return false;
+			}
+
+			free(cur_move);
+		}
+		free_list(moves);
+
+		// Undo move
+		board[cur_counter_move->start]  = board[cur_counter_move->target];
+		board[cur_counter_move->target] = old;
+
+		free(cur_counter_move);
+	}
+
+	free_list(counter_moves);
+	return true;
+}
+
 // TODO(Aurel): Test this!!!
 bool
 is_checkless_move(struct PIECE board[], struct move* move)
@@ -33,17 +87,8 @@ is_checkless_move(struct PIECE board[], struct move* move)
 
 	struct list* new_moves;
 
-	// clang-format off
-	switch (new_board[move->target].type) {
-	case QUEEN:  new_moves = generate_moves_queen (new_board, move->target, false); break;
-	case KING:   new_moves = generate_moves_king  (new_board, move->target, false); break;
-	case ROOK:   new_moves = generate_moves_rook  (new_board, move->target, false); break;
-	case KNIGHT: new_moves = generate_moves_knight(new_board, move->target, false); break;
-	case PAWN:   new_moves = generate_moves_pawn  (new_board, move->target, false); break;
-	case BISHOP: new_moves = generate_moves_bishop(new_board, move->target, false); break;
-	default: assert(("Invalid code path.", 0 != 0)); break;
-	}
-	// clang-format on
+	new_moves = generate_moves_piece(new_board, move->target, false);
+	assert(new_moves);
 
 	while (new_moves->last) {
 		struct move* cur_move = (struct move*)list_pop(new_moves);
@@ -52,16 +97,17 @@ is_checkless_move(struct PIECE board[], struct move* move)
 			continue;
 		}
 
-		if (new_board[cur_move->target].type == KING) {
+		if (new_board[cur_move->target].type == KING &&
+		    !is_checkmate(new_board, cur_move)) {
+		    // Found checkless move
 			free(cur_move);
-			while (new_moves->last) {
-				struct move* cur_move = (struct move*)list_pop(new_moves);
-				free(cur_move);
-			}
+			free_list(new_moves);
 			return false;
 		}
 		free(cur_move);
 	}
+	free_list(new_moves);
+
 	return true;
 }
 
@@ -370,7 +416,53 @@ generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless)
 			generate_orthogonal_moves(board, pos, 1, check_checkless);
 	struct list* diagonal_moves =
 			generate_diagonal_moves(board, pos, 1, check_checkless);
-	return list_append_list(vertical_moves, diagonal_moves);
+
+	struct list* all_moves = list_append_list(vertical_moves, diagonal_moves);
+	if (!all_moves)
+		return NULL;
+
+	// This array indicates if a position can be hit to keep the complexity at
+	// O(2N) instead of O(N^2).
+	// TODO: use bitboard and & with king moves bitboard
+	bool targets[64] = { 0 };
+
+	struct chess game = { .moving = !board[pos].color };
+	memcpy(game.board, board, 64 * sizeof(*board));
+
+	// Populate targets array
+	struct list* possible_hit_moves = generate_moves(&game, false);
+	while (possible_hit_moves->last) {
+		struct move* cur_move = list_pop(possible_hit_moves);
+		targets[cur_move->target] = true;
+		free(cur_move);
+	}
+	free_list(possible_hit_moves);
+
+	// Remove all hittable fields.
+	struct list_elem* cur = all_moves->first;
+	while (cur) {
+		struct move* cur_move = (struct move*)cur->object;
+		if (targets[cur_move->target]) {
+			// Remove this move from list
+			if (cur->prev)
+				cur->prev->next = cur->next;
+			if (cur->next)
+				cur->next->prev = cur->prev;
+			if (all_moves->first == cur)
+				all_moves->first = cur->next;
+			if (all_moves->last == cur)
+				all_moves->last = cur->prev;
+
+			struct list_elem* tmp = cur->next;
+			free(cur);
+			cur = tmp;
+			continue;
+		}
+
+		cur = cur->next;
+	}
+
+	return all_moves;
 }
 
 struct list*
@@ -415,7 +507,23 @@ generate_moves_bishop(struct PIECE board[], enum POS pos, bool check_checkless)
  * ------------------*/
 
 struct list*
-generate_moves(struct chess* game)
+generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless)
+{
+	// clang-format off
+	switch (board[pos].type) {
+	case QUEEN:  return generate_moves_queen (board, pos, check_checkless);
+	case KING:   return generate_moves_king  (board, pos, check_checkless);
+	case ROOK:   return generate_moves_rook  (board, pos, check_checkless);
+	case KNIGHT: return generate_moves_knight(board, pos, check_checkless);
+	case PAWN:   return generate_moves_pawn  (board, pos, check_checkless);
+	case BISHOP: return generate_moves_bishop(board, pos, check_checkless);
+	default: assert(("Invalid code path.", false)); return NULL;
+	}
+	// clang-format on
+}
+
+struct list*
+generate_moves(struct chess* game, bool check_checkless)
 {
 	struct list* moves  = calloc(1, sizeof(*moves));
 	struct PIECE* board = game->board;
@@ -428,38 +536,7 @@ generate_moves(struct chess* game)
 		if (board[pos].color != game->moving)
 			continue;
 
-		// TODO(Aurel): Change the signatures of the generator functions. We
-		// don't want to have to pass &board as that is just incorrect and won't
-		// work. The calls should all look like that of the bishop.
-		switch (board[pos].type) {
-		case PAWN:
-			moves = list_append_list(moves,
-			                         generate_moves_pawn(board, pos, true));
-			break;
-		case BISHOP:
-			moves = list_append_list(moves,
-			                         generate_moves_bishop(board, pos, true));
-			break;
-		case KNIGHT:
-			moves = list_append_list(moves,
-			                         generate_moves_knight(board, pos, true));
-			break;
-		case ROOK:
-			moves = list_append_list(moves,
-			                         generate_moves_rook(board, pos, true));
-			break;
-		case QUEEN:
-			moves = list_append_list(moves,
-			                         generate_moves_queen(board, pos, true));
-			break;
-		case KING:
-			moves = list_append_list(moves,
-			                         generate_moves_king(board, pos, true));
-			break;
-		default:
-			fprintf(stderr, "Unexpected piece type %i (This should not be 0!)",
-			        board[pos].type);
-		}
+		moves = list_append_list(moves, generate_moves_piece(board, pos, check_checkless));
 	}
 	return moves;
 }
@@ -484,7 +561,7 @@ test_generate_moves()
 	chess.board[F5]       = w_bishop;
 	print_board(chess.board, NULL);
 
-	struct list* moves = generate_moves(&chess);
+	struct list* moves = generate_moves(&chess, true);
 	if (!moves)
 		return;
 

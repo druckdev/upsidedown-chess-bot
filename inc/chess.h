@@ -42,6 +42,8 @@ struct PIECE {
 };
 
 struct chess {
+	// TODO: We memcpy a lot (when creating new game objects)
+	// This should probably become a real pointer.
 	struct PIECE board[64];
 	enum COLOR moving;
 	uint32_t checkmate;

@@ -28,7 +28,8 @@ test_generator(void)
 	};
 
 	// define test cases
-	struct test_case tests[18] = {
+	struct test_case tests[] = {
+#if 0
 		{ "8/8/8/8/8/3k4/8/8", BLACK, 8}, // test king
 		{ "8/8/8/8/3r4/8/8/8", BLACK, 14}, // test rook
 		{ "8/8/8/8/3b4/8/8/8", BLACK, 13}, // test bishop
@@ -36,6 +37,7 @@ test_generator(void)
 		{ "8/6P1/8/8/8/8/8/8", WHITE, 4}, // test pawn (white)
 		{ "8/8/8/8/3q4/8/8/8", BLACK, 27}, // test queen
 		{ "8/8/8/8/3n4/8/8/8", BLACK, 8}, // test knight
+#endif
 
 		{ "RNBKQB1R/PPPPPPPP/8/8/4N3/2n5/pppppppp/r1bkqbnr", BLACK, 12 },
 		{ "RqBQKB1R/P1PPPPQP/2N2N2/8/8/4n3/p1pppppp/r1bqkbnr", WHITE, 29 },
@@ -68,7 +70,7 @@ test_generator(void)
 		board_from_fen(tests[i].fen, chess.board);
 
 		// verify generator
-		struct list* list = generate_moves(&chess);
+		struct list* list = generate_moves(&chess, true);
 		int list_length   = list_count(list);
 		
 		// pretty print board
