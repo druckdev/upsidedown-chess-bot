@@ -37,33 +37,49 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 	while (counter_moves->last) {
 		struct move* cur_counter_move = (struct move*)list_pop(counter_moves);
 
-		// the king can move away
 		if (cur_counter_move->start == mate_move->target) {
+			// the king can move away
+			free(cur_counter_move);
+			free_list(counter_moves);
+			return false;
+		}
+
+		if (cur_counter_move->target == mate_move->start) {
+			// The counter_move hits the attacking piece
 			free(cur_counter_move);
 			free_list(counter_moves);
 			return false;
 		}
 
 		// Backup piece for undo
-		struct PIECE old = board[cur_counter_move->target];
-		execute_move(board, cur_counter_move);
+		struct PIECE old = game.board[cur_counter_move->target];
+		execute_move(game.board, cur_counter_move);
 
 		// Check if mate_move is still doable or was declined
 		struct list* moves =
-				generate_moves_piece(board, mate_move->start, false);
+				generate_moves_piece(game.board, mate_move->start, false);
+		bool still_doable = false;
 		while (moves->last) {
 			struct move* cur_move = (struct move*)list_pop(moves);
-			if (cur_move->target != mate_move->target) {
+			if (cur_move->target == mate_move->target) {
+				// mate_move still doable, get next counter_move
 				// mate_move was declined
 				free(cur_move);
-				free_list(moves);
-				free_list(counter_moves);
-				return false;
+				still_doable = true;
+				break;
 			}
 
 			free(cur_move);
 		}
 		free_list(moves);
+
+		if (!still_doable) {
+			// counter_move successful
+			free(cur_counter_move);
+			free_list(counter_moves);
+			return false;
+
+		}
 
 		// Undo move
 		board[cur_counter_move->start]  = board[cur_counter_move->target];
