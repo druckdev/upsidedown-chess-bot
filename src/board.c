@@ -33,7 +33,7 @@ char*
 pos_to_str(enum POS pos, char* str)
 {
 	str[0] = 'A' + pos % 8;
-	str[1] = '1' + pos / 8;
+	str[1] = '8' - pos / 8;
 	str[2] = '\0';
 
 	return str;
