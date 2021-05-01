@@ -58,6 +58,9 @@ list_pop(struct list* list)
 	if (list->last)
 		list->last->next = NULL;
 
+	if (list->first == list_elem)
+		list->first = NULL;
+
 	free(list_elem);
 	return object;
 }
