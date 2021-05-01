@@ -43,7 +43,7 @@ test_generator(void)
 		{ "RNBQKBQR/PPPPPP1P/5N2/8/8/5n2/pppppp1p/rnbqkbqr", WHITE, 15 },
 		{ "RQBQKB1R/P1PPPPPP/2N2N2/8/5n2/n7/pppppppp/r1bqkb1r", WHITE, 22 },
 		{ "RNBQK2R/PPPPPPBP/7N/3N4/8/n1nn1n2/pbqppppp/r3kb1r", BLACK, 38 },
-		
+
 		{ "RNBKQB1R/PPPPPPPP/8/3N4/8/5n2/pppppp1p/rnbkqbrr", WHITE, 12 },
 		{ "qRQQK1QR/3PPP1P/5N1B/4Q3/1b6/1Bn5/3ppp1p/1rqqkbqr", WHITE, 61 },
 		{ "4K2R/4P2P/8/q1N5/8/6B1/p1k3q1/r1bR4", WHITE, 32 },
@@ -70,7 +70,7 @@ test_generator(void)
 		// verify generator
 		struct list* list = generate_moves(&chess, true);
 		int list_length   = list_count(list);
-		
+
 		// pretty print board
 		print_board(chess.board, list);
 

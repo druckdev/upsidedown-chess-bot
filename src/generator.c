@@ -526,6 +526,17 @@ generate_moves_bishop(struct PIECE board[], enum POS pos, bool check_checkless)
 	return generate_diagonal_moves(board, pos, -1, check_checkless);
 }
 
+enum POS
+get_king_pos(struct PIECE board[], enum COLOR c)
+{
+	for (enum POS i = 0; i < 64; i++) {
+		if (board[i].type == KING && board[i].color == c)
+			return i;
+	}
+
+	return 64;
+}
+
 /*-------------------
  * Inteface
  * ------------------*/
@@ -533,17 +544,86 @@ generate_moves_bishop(struct PIECE board[], enum POS pos, bool check_checkless)
 struct list*
 generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless)
 {
+	struct list* moves;
 	// clang-format off
 	switch (board[pos].type) {
-	case QUEEN:  return generate_moves_queen (board, pos, check_checkless);
-	case KING:   return generate_moves_king  (board, pos, check_checkless);
-	case ROOK:   return generate_moves_rook  (board, pos, check_checkless);
-	case KNIGHT: return generate_moves_knight(board, pos, check_checkless);
-	case PAWN:   return generate_moves_pawn  (board, pos, check_checkless);
-	case BISHOP: return generate_moves_bishop(board, pos, check_checkless);
+	case QUEEN:  moves = generate_moves_queen (board, pos, check_checkless); break;
+	case KING:   moves = generate_moves_king  (board, pos, check_checkless); break;
+	case ROOK:   moves = generate_moves_rook  (board, pos, check_checkless); break;
+	case KNIGHT: moves = generate_moves_knight(board, pos, check_checkless); break;
+	case PAWN:   moves = generate_moves_pawn  (board, pos, check_checkless); break;
+	case BISHOP: moves = generate_moves_bishop(board, pos, check_checkless); break;
 	default: assert(("Invalid code path.", false)); return NULL;
 	}
 	// clang-format on
+
+	if (!moves)
+		return NULL;
+
+	if (!check_checkless)
+		return moves;
+
+	enum POS king_pos = get_king_pos(board, board[pos].color);
+	if (king_pos == 64)
+		return moves;
+
+	struct chess game = { .moving = !board[pos].color };
+	memcpy(game.board, board, 64 * sizeof(*board));
+
+	// Remove all moves that leave the king hittable.
+	struct list_elem* cur = moves->first;
+	while (cur) {
+		struct move* cur_move = (struct move*)cur->object;
+		bool opens_king = false;
+
+		// Backup piece for undo
+		struct PIECE old = board[cur_move->target];
+		execute_move(game.board, cur_move);
+
+		// TODO: use bitboard
+		bool targets[64] = { 0 };
+
+		// Populate targets array
+		struct list* possible_hit_moves = generate_moves(&game, false);
+		// Undo move
+		game.board[cur_move->start]  = game.board[cur_move->target];
+		game.board[cur_move->target] = old;
+
+		// Check if hitting moves target the king's field
+		while (possible_hit_moves->last) {
+			struct move* hit_move = list_pop(possible_hit_moves);
+			if (hit_move->target == king_pos)
+			{
+				// Remove this move from list
+				if (cur->prev)
+					cur->prev->next = cur->next;
+				if (cur->next)
+					cur->next->prev = cur->prev;
+				if (moves->first == cur)
+					moves->first = cur->next;
+				if (moves->last == cur)
+					moves->last = cur->prev;
+
+				free(hit_move);
+				opens_king = true;
+
+				struct list_elem* tmp = cur->next;
+				free(cur);
+				cur = tmp;
+				break;
+			}
+
+			free(hit_move);
+		}
+		free_list(possible_hit_moves);
+
+		if (opens_king)
+			continue;
+
+		cur = cur->next;
+	}
+
+	return moves;
 }
 
 struct list*
@@ -614,7 +694,7 @@ test_moves_queen()
 	board[F5]              = w_bishop;
 	print_board(board, NULL);
 
-	struct list* moves = generate_moves_queen(board, pos, true);
+	struct list* moves = generate_moves_piece(board, pos, true);
 	if (!moves)
 		return;
 
@@ -643,8 +723,7 @@ test_moves_bishop()
 	board[H7]              = w_bishop;
 	print_board(board, NULL);
 
-	struct list* moves = generate_moves_bishop(board, pos, true);
-	//struct list* moves = generate_vertical_moves(board, pos, -1);
+	struct list* moves = generate_moves_piece(board, pos, true);
 	if (!moves)
 		return;
 
@@ -673,7 +752,7 @@ test_moves_rook()
 	board[H4]              = w_bishop;
 	print_board(board, NULL);
 
-	struct list* moves = generate_moves_rook(board, pos, true);
+	struct list* moves = generate_moves_piece(board, pos, true);
 	if (!moves)
 		return;
 
@@ -700,7 +779,7 @@ test_moves_king()
 	board[D6]              = b_queen;
 	print_board(board, NULL);
 
-	struct list* moves = generate_moves_king(board, pos, true);
+	struct list* moves = generate_moves_piece(board, pos, true);
 
 	if (!moves)
 		return;
@@ -728,7 +807,7 @@ test_moves_knight()
 	board[F7]              = b_queen;
 	print_board(board, NULL);
 
-	struct list* moves = generate_moves_knight(board, pos, true);
+	struct list* moves = generate_moves_piece(board, pos, true);
 
 	if (!moves)
 		return;
@@ -756,7 +835,7 @@ test_moves_pawn()
 	board[H1]              = w_knight;
 	print_board(board, NULL);
 
-	struct list* moves = generate_moves_pawn(board, pos, true);
+	struct list* moves = generate_moves_piece(board, pos, true);
 
 	if (!moves)
 		return;
