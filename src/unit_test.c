@@ -29,13 +29,13 @@ test_generator(void)
 
 	// define test cases
 	struct test_case tests[] = {
-		{ "8/8/8/8/8/3k4/8/8", BLACK, 8}, // test king
-		{ "8/8/8/8/3r4/8/8/8", BLACK, 14}, // test rook
-		{ "8/8/8/8/3b4/8/8/8", BLACK, 13}, // test bishop
-		{ "8/8/8/8/8/8/6p1/8", BLACK, 4}, // test pawn (black)
-		{ "8/6P1/8/8/8/8/8/8", WHITE, 4}, // test pawn (white)
-		{ "8/8/8/8/3q4/8/8/8", BLACK, 27}, // test queen
-		{ "8/8/8/8/3n4/8/8/8", BLACK, 8}, // test knight
+		{ "8/8/8/8/8/3k4/8/8", BLACK, 8 },  // test king
+		{ "8/8/8/8/3r4/8/8/8", BLACK, 14 }, // test rook
+		{ "8/8/8/8/3b4/8/8/8", BLACK, 13 }, // test bishop
+		{ "8/8/8/8/8/8/6p1/8", BLACK, 4 },  // test pawn (black)
+		{ "8/6P1/8/8/8/8/8/8", WHITE, 4 },  // test pawn (white)
+		{ "8/8/8/8/3q4/8/8/8", BLACK, 27 }, // test queen
+		{ "8/8/8/8/3n4/8/8/8", BLACK, 8 },  // test knight
 
 		{ "RNBKQB1R/PPPPPPPP/8/8/4N3/2n5/pppppppp/r1bkqbnr", BLACK, 12 },
 		{ "RqBQKB1R/P1PPPPQP/2N2N2/8/8/4n3/p1pppppp/r1bqkbnr", WHITE, 29 },
@@ -64,7 +64,7 @@ test_generator(void)
 
 		// init game
 		struct chess chess;
-		chess.moving       = tests[i].moving;
+		chess.moving = tests[i].moving;
 		board_from_fen(tests[i].fen, chess.board);
 
 		// verify generator

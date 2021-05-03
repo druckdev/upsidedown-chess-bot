@@ -22,6 +22,9 @@ struct list* generate_moves_pawn(struct PIECE board[], enum POS pos, bool check_
 struct list* generate_moves_bishop(struct PIECE board[], enum POS pos, bool check_checkless);
 // clang-format on
 
+/**
+ * @arg mate_move - the move that might hit the king.
+ */
 bool
 is_checkmate(struct PIECE board[], struct move* mate_move)
 {
@@ -33,6 +36,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 	struct chess game = { .moving = !board[mate_move->start].color };
 	memcpy(game.board, board, 64 * sizeof(*board));
 
+	// check all possible moves if they can prevent the checkmate
 	struct list* counter_moves = generate_moves(&game, false);
 	while (counter_moves->last) {
 		struct move* cur_counter_move = (struct move*)list_pop(counter_moves);
@@ -62,8 +66,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		while (moves->last) {
 			struct move* cur_move = (struct move*)list_pop(moves);
 			if (cur_move->target == mate_move->target) {
-				// mate_move still doable, get next counter_move
-				// mate_move was declined
+				// mate_move was not declined, try the next counter_move
 				free(cur_move);
 				still_doable = true;
 				break;
@@ -92,7 +95,10 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 	return true;
 }
 
-// TODO(Aurel): Test this!!!
+/**
+ * Execute move and check if the same piece from the new positions can hit the
+ * opponent's king.
+ */
 bool
 is_checkless_move(struct PIECE board[], struct move* move)
 {
@@ -456,7 +462,7 @@ generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless)
 	// Populate targets array
 	struct list* possible_hit_moves = generate_moves(&game, false);
 	while (possible_hit_moves->last) {
-		struct move* cur_move = list_pop(possible_hit_moves);
+		struct move* cur_move     = list_pop(possible_hit_moves);
 		targets[cur_move->target] = true;
 		free(cur_move);
 	}
@@ -574,7 +580,7 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless)
 	struct list_elem* cur = moves->first;
 	while (cur) {
 		struct move* cur_move = (struct move*)cur->object;
-		bool opens_king = false;
+		bool opens_king       = false;
 
 		// Backup piece for undo
 		struct PIECE old = board[cur_move->target];
@@ -592,8 +598,7 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless)
 		// Check if hitting moves target the king's field
 		while (possible_hit_moves->last) {
 			struct move* hit_move = list_pop(possible_hit_moves);
-			if (hit_move->target == king_pos)
-			{
+			if (hit_move->target == king_pos) {
 				// Remove this move from list
 				if (cur->prev)
 					cur->prev->next = cur->next;
@@ -640,7 +645,8 @@ generate_moves(struct chess* game, bool check_checkless)
 		if (board[pos].color != game->moving)
 			continue;
 
-		moves = list_append_list(moves, generate_moves_piece(board, pos, check_checkless));
+		moves = list_append_list(moves, generate_moves_piece(board, pos,
+		                                                     check_checkless));
 	}
 	return moves;
 }

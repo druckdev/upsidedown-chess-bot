@@ -152,8 +152,7 @@ print_board(struct PIECE board[], struct list* moves)
 
 		if (moves && is_attacked(moves, pos)) {
 			printf("X");
-		}
-		else {
+		} else {
 			struct PIECE piece = board[pos];
 			// clang-format off
 			switch (piece.type) {
