@@ -62,13 +62,13 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		// Check if mate_move is still doable or was declined
 		struct list* moves =
 				generate_moves_piece(game.board, mate_move->start, false);
-		bool still_doable = false;
+		bool mate_declined = true;
 		while (moves->last) {
 			struct move* cur_move = (struct move*)list_pop(moves);
 			if (cur_move->target == mate_move->target) {
 				// mate_move was not declined, try the next counter_move
 				free(cur_move);
-				still_doable = true;
+				mate_declined = false;
 				break;
 			}
 
@@ -76,12 +76,11 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		}
 		free_list(moves);
 
-		if (!still_doable) {
+		if (mate_declined) {
 			// counter_move successful
 			free(cur_counter_move);
 			free_list(counter_moves);
 			return false;
-
 		}
 
 		// Undo move
