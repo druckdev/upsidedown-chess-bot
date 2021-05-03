@@ -55,6 +55,7 @@ test_generator(void)
 		{ "r1bqkqnr/ppppp2p/2n4b/3N4/8/5N2/P1PPPP1P/RQBQKB1R", WHITE, 27 },
 		{ "3R4/3R4/8/7K/7B/8/3r2n1/3k4", BLACK, 10 },
 		{ "6KR/8/1N6/8/8/3q4/4b3/6kr", WHITE, 15 },
+		{ "K7/2r5/1q6/8/8/8/8/8", BLACK, 31 }, // check checkmate
 	};
 
 	// run test cases
