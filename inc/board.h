@@ -7,11 +7,11 @@
 #include "chess.h"
 #include "types.h"
 
-bool execute_move(struct chess* game, struct move move);
+bool execute_move(struct PIECE* board, struct move* move);
 
 char* pos_to_str(enum POS pos, char* str);
 
-void print_board(struct PIECE board[]);
+void print_board(struct PIECE board[], struct list* moves);
 
 void board_from_fen(char* fen, struct PIECE board[]);
 

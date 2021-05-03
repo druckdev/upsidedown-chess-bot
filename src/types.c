@@ -16,14 +16,12 @@ list_push(struct list* list, void* object)
 		list->first = NULL;
 		list->last  = NULL;
 	}
-	if (!object)
-		return list;
 
 	struct list_elem* list_elem = malloc(sizeof(struct list_elem));
 	if (!list_elem) {
-		// TODO(Aurel): Replace the free with a function that destroys the
-		// entire list.
-		free(list);
+		if (!list->last)
+			// list is empty so we free it as we probably have created it
+			free(list);
 		return NULL;
 	}
 
@@ -60,6 +58,9 @@ list_pop(struct list* list)
 	if (list->last)
 		list->last->next = NULL;
 
+	if (list->first == list_elem)
+		list->first = NULL;
+
 	free(list_elem);
 	return object;
 }
@@ -89,9 +90,25 @@ list_count(struct list* list)
 {
 	struct list_elem* next = list->first;
 	int count              = 0;
-	while (next != NULL) {
+	while (next) {
 		next = next->next;
 		count++;
 	}
-	return 7;
+	return count;
+}
+
+void
+free_list(struct list* list)
+{
+	if (!list)
+		return;
+
+	struct list_elem* cur = list->first;
+	while (cur) {
+		struct list_elem* tmp = cur->next;
+		free(cur->object);
+		free(cur);
+		cur = tmp;
+	}
+	free(list);
 }
