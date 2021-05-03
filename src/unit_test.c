@@ -5,8 +5,10 @@
 #include "unity.h"
 
 // Necessary for Unity
-void setUp(void) {}
+// clang-format off
+void setUp(void)    {}
 void tearDown(void) {}
+// clang-format on
 
 static size_t test_idx = 0;
 
@@ -30,7 +32,8 @@ test_generator(void)
 	print_board(chess.board, list);
 
 	// pretty print moves
-	printf("Expected : %d , Got : %d \n\n", test_boards[test_idx].move_cnt, list_length);
+	printf("Expected : %d , Got : %d \n\n", test_boards[test_idx].move_cnt,
+	       list_length);
 
 	TEST_ASSERT(list_length == test_boards[test_idx].move_cnt);
 
