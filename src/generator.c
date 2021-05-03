@@ -34,7 +34,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 	struct chess game = { .moving = !board[mate_move->start].color };
 	memcpy(game.board, board, 64 * sizeof(*board));
 
-	// check all possible moves if they can prevent the checkmate
+	// check for all possible moves if they can prevent the checkmate
 	struct list* counter_moves = generate_moves(&game, false);
 	while (counter_moves->last) {
 		struct move* cur_counter_move = (struct move*)list_pop(counter_moves);
@@ -53,16 +53,17 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 			return false;
 		}
 
-		// Backup piece for undo
+		// execute the move and see if king is still in check
+
 		struct PIECE old = game.board[cur_counter_move->target];
 		execute_move(game.board, cur_counter_move);
 
 		// Check if mate_move is still doable or was declined
-		struct list* moves =
+		struct list* next_moves =
 				generate_moves_piece(game.board, mate_move->start, false);
 		bool mate_declined = true;
-		while (moves->last) {
-			struct move* cur_move = (struct move*)list_pop(moves);
+		while (next_moves->last) {
+			struct move* cur_move = (struct move*)list_pop(next_moves);
 			if (cur_move->target == mate_move->target) {
 				// mate_move was not declined, try the next counter_move
 				free(cur_move);
@@ -72,7 +73,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 
 			free(cur_move);
 		}
-		free_list(moves);
+		free_list(next_moves);
 
 		if (mate_declined) {
 			// counter_move successful
@@ -565,6 +566,8 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless)
 
 	if (!check_checkless)
 		return moves;
+
+	// check that the king of the moving party is not in check after the move
 
 	enum POS king_pos = get_king_pos(board, board[pos].color);
 	if (king_pos == 64)
