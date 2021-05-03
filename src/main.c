@@ -32,5 +32,4 @@ main(int argc, char* argv[])
 	run_chess(&chess);
 	//list_example(); // An example on how to use the list.
 	//test_move_generator();
-	//benchmark_move_generator();
 }
