@@ -649,3 +649,4 @@ generate_moves(struct chess* game, bool check_checkless)
 	}
 	return moves;
 }
+

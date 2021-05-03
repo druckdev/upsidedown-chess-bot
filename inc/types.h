@@ -1,6 +1,8 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <stddef.h>
+
 /**
  * A doubly linked list.
  */
@@ -11,6 +13,7 @@ struct list_elem {
 
 struct list {
 	struct list_elem *first, *last;
+	size_t count;
 };
 
 /**
