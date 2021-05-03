@@ -28,10 +28,8 @@ struct list* generate_moves_bishop(struct PIECE board[], enum POS pos, bool chec
 bool
 is_checkmate(struct PIECE board[], struct move* mate_move)
 {
-	if (board[mate_move->target].type != KING &&
-	    board[mate_move->start].color != board[mate_move->target].color) {
+	if (board[mate_move->target].type != KING)
 		return false;
-	}
 
 	struct chess game = { .moving = !board[mate_move->start].color };
 	memcpy(game.board, board, 64 * sizeof(*board));
