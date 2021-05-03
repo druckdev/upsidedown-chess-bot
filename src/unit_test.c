@@ -10,7 +10,7 @@ void tearDown(void) {}
 
 static struct test_case tests[] = {
 	// Test single figures
-	{ "8/8/8/8/8/3k4/8/8", BLACK, 9 },  // test king
+	{ "8/8/8/8/8/3k4/8/8", BLACK, 8 },  // test king
 	{ "8/8/8/8/3r4/8/8/8", BLACK, 14 }, // test rook
 	{ "8/8/8/8/3b4/8/8/8", BLACK, 13 }, // test bishop
 	{ "8/8/8/8/8/8/6p1/8", BLACK, 4 },  // test pawn (black)
