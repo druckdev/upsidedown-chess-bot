@@ -29,14 +29,15 @@ test_generator(void)
 	};
 
 	// define test cases
+	// clang-format off
 	struct test_case tests[] = {
-		{ "8/8/8/8/8/3k4/8/8", BLACK, 8, "" },  // test king
-		{ "8/8/8/8/3r4/8/8/8", BLACK, 14, "" }, // test rook
-		{ "8/8/8/8/3b4/8/8/8", BLACK, 13, "" }, // test bishop
-		{ "8/8/8/8/8/8/6p1/8", BLACK, 4, "" },  // test pawn (black)
-		{ "8/6P1/8/8/8/8/8/8", WHITE, 4, "" },  // test pawn (white)
-		{ "8/8/8/8/3q4/8/8/8", BLACK, 27, "" }, // test queen
-		{ "8/8/8/8/3n4/8/8/8", BLACK, 8, "" },  // test knight
+		{ "8/8/8/8/8/3k4/8/8", BLACK, 8, "Simple king test failed." },  // test king
+		{ "8/8/8/8/3r4/8/8/8", BLACK, 14, "Simple rook test failed." }, // test rook
+		{ "8/8/8/8/3b4/8/8/8", BLACK, 13, "Simple bishop test failed." }, // test bishop
+		{ "8/8/8/8/8/8/6p1/8", BLACK, 4, "Simple pawn (black) test failed." },  // test pawn (black)
+		{ "8/6P1/8/8/8/8/8/8", WHITE, 4, "Simple pawn (white) test failed." },  // test pawn (white)
+		{ "8/8/8/8/3q4/8/8/8", BLACK, 27, "Simple queen test failed." }, // test queen
+		{ "8/8/8/8/3n4/8/8/8", BLACK, 8, "Simple knight test failed." },  // test knight
 
 		{ "RNBKQB1R/PPPPPPPP/8/8/4N3/2n5/pppppppp/r1bkqbnr", BLACK, 12, "" },
 		{ "RqBQKB1R/P1PPPPQP/2N2N2/8/8/4n3/p1pppppp/r1bqkbnr", WHITE, 29, "" },
@@ -58,6 +59,7 @@ test_generator(void)
 		{ "6KR/8/1N6/8/8/3q4/4b3/6kr", WHITE, 15, "" },
 		{ "K7/2r5/1q6/8/8/8/8/8", BLACK, 31, "Failed checking checkmate." }, // check checkmate
 	};
+	// clang-format on
 
 	// run test cases
 	int tests_length = sizeof(tests) / sizeof(*tests);
@@ -79,7 +81,8 @@ test_generator(void)
 		// pretty print moves
 		printf("Expected : %d , Got : %d \n\n", tests[i].move_cnt, list_length);
 
-		TEST_ASSERT_MESSAGE(list_length == tests[i].move_cnt, tests[i].fail_msg);
+		TEST_ASSERT_MESSAGE(list_length == tests[i].move_cnt,
+		                    tests[i].fail_msg);
 
 		printf("\n-------------------------------------------\n");
 	}

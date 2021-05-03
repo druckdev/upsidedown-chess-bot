@@ -118,7 +118,7 @@ is_checkless_move(struct PIECE board[], struct move* move)
 
 		if (new_board[cur_move->target].type == KING &&
 		    !is_checkmate(new_board, cur_move)) {
-		    // Found checkless move
+			// Found checkless move
 			free(cur_move);
 			free_list(new_moves);
 			return false;
@@ -624,7 +624,6 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless)
 
 		cur = cur->next;
 	}
-
 	return moves;
 }
 
