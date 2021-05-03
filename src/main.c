@@ -36,5 +36,4 @@ main(int argc, char* argv[])
 	struct chess chess = init_chess(c);
 	run_chess(&chess);
 	//list_example(); // An example on how to use the list.
-	//test_move_generator();
 }

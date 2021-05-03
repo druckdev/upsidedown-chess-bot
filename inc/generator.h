@@ -13,6 +13,4 @@ struct list* generate_moves_piece(struct PIECE board[], enum POS pos,
  */
 struct list* generate_moves(struct chess* game, bool check_checkless);
 
-void test_move_generator();
-
 #endif /* GENERATOR_H */
