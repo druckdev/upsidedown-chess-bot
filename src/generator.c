@@ -572,7 +572,8 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless)
 		return moves;
 
 	enum POS king_pos = get_king_pos(board, board[pos].color);
-	if (king_pos == 64)
+	if (king_pos == 64 || king_pos == pos)
+		// No king, or not needed as we moved the king itself.
 		return moves;
 
 	struct chess game = { .moving = !board[pos].color };
