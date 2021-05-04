@@ -14,8 +14,10 @@
  * Helpers for position validation
  * --------------------------------*/
 // clang-format off
+struct list* generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless, bool king_moved);
+
 struct list* generate_moves_queen(struct PIECE board[], enum POS pos, bool check_checkless);
-struct list* generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless);
+struct list* generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless, bool king_moved);
 struct list* generate_moves_rook(struct PIECE board[], enum POS pos, bool check_checkless);
 struct list* generate_moves_knight(struct PIECE board[], enum POS pos, bool check_checkless);
 struct list* generate_moves_pawn(struct PIECE board[], enum POS pos, bool check_checkless);
@@ -35,7 +37,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 	memcpy(game.board, board, 64 * sizeof(*board));
 
 	// check for all possible moves if they can prevent the checkmate
-	struct list* counter_moves = generate_moves(&game, false);
+	struct list* counter_moves = generate_moves(&game, false, false);
 	while (counter_moves->last) {
 		struct move* cur_counter_move = (struct move*)list_pop(counter_moves);
 
@@ -59,8 +61,8 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		execute_move(game.board, cur_counter_move);
 
 		// Check if mate_move is still doable or was declined
-		struct list* next_moves =
-				generate_moves_piece(game.board, mate_move->start, false);
+		struct list* next_moves = generate_moves_piece(
+				game.board, mate_move->start, false, false);
 		bool mate_declined = true;
 		while (next_moves->last) {
 			struct move* cur_move = (struct move*)list_pop(next_moves);
@@ -107,7 +109,7 @@ is_checkless_move(struct PIECE board[], struct move* move)
 
 	struct list* new_moves;
 
-	new_moves = generate_moves_piece(new_board, move->target, false);
+	new_moves = generate_moves_piece(new_board, move->target, false, false);
 	assert(new_moves);
 
 	while (new_moves->last) {
@@ -432,7 +434,8 @@ generate_moves_queen(struct PIECE board[], enum POS pos, bool check_checkless)
 }
 
 struct list*
-generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless)
+generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless,
+                    bool king_moved)
 {
 	struct list* vertical_moves =
 			generate_orthogonal_moves(board, pos, 1, check_checkless);
@@ -446,8 +449,15 @@ generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless)
 	if (!moves->first)
 		return moves;
 
-	if (!check_checkless)
-		return all_moves;
+	if (king_moved)
+		/*
+		 * NOTE(Aurel): If the king moved, we don't we only want to see if we
+		 * could in theory hit him, as that would be instant checkmate no matter
+		 * if its guarded by another piece. It does not matter that our king hit
+		 * him as the game ends before the guarding piece gets the chance to hit
+		 * our king and checkmate us.
+		 */
+		return moves;
 
 	// Iterate over all king moves, execute them, generate possible moves and
 	// see if any of these moves attacks the king.
@@ -461,7 +471,7 @@ generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless)
 
 		// generate all possible moves of opposite color but only one level deep
 		struct list* possible_counter_moves =
-				generate_moves(&game, false);
+				generate_moves(&game, false, true);
 
 		// iterate over all the moves and see if the king is being hit
 
@@ -544,14 +554,20 @@ get_king_pos(struct PIECE board[], enum COLOR c)
  * Inteface
  * ------------------*/
 
+/**
+ * @arg king_moved - if the opposite king moved we really only want to get the
+ * possible moves and not invoke the endless loop of kings moving back and
+ * forth.
+ */
 struct list*
-generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless)
+generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless,
+                     bool king_moved)
 {
 	struct list* moves;
 	// clang-format off
 	switch (board[pos].type) {
 	case QUEEN:  moves = generate_moves_queen (board, pos, check_checkless); break;
-	case KING:   moves = generate_moves_king  (board, pos, check_checkless); break;
+	case KING:   moves = generate_moves_king  (board, pos, check_checkless, king_moved); break;
 	case ROOK:   moves = generate_moves_rook  (board, pos, check_checkless); break;
 	case KNIGHT: moves = generate_moves_knight(board, pos, check_checkless); break;
 	case PAWN:   moves = generate_moves_pawn  (board, pos, check_checkless); break;
@@ -589,7 +605,7 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless)
 		bool targets[64] = { 0 };
 
 		// Populate targets array
-		struct list* possible_hit_moves = generate_moves(&game, false);
+		struct list* possible_hit_moves = generate_moves(&game, false, false);
 		// Undo move
 		game.board[cur_move->start]  = game.board[cur_move->target];
 		game.board[cur_move->target] = old;
@@ -630,7 +646,7 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless)
 }
 
 struct list*
-generate_moves(struct chess* game, bool check_checkless)
+generate_moves(struct chess* game, bool check_checkless, bool king_moved)
 {
 	struct list* moves  = calloc(1, sizeof(*moves));
 	struct PIECE* board = game->board;
@@ -644,7 +660,8 @@ generate_moves(struct chess* game, bool check_checkless)
 			continue;
 
 		moves = list_append_list(moves, generate_moves_piece(board, pos,
-		                                                     check_checkless));
+		                                                     check_checkless,
+		                                                     king_moved));
 	}
 	return moves;
 }
