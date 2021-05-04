@@ -78,7 +78,7 @@ print_move(struct move* move)
 		promotes_to_char = 'B';
 		break;
 	default:
-		promotes_to_char = '\0';
+		promotes_to_char = 0;
 		break;
 	}
 	if (promotes_to_char)
