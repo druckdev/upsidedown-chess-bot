@@ -136,7 +136,7 @@ print_board(struct PIECE board[], struct list* moves)
 	}
 
 	size_t row = 9;
-	for (int pos = 0; pos < 64; ++pos) {
+	for (enum POS pos = 0; pos < MAX; ++pos) {
 		if (pos % 8 == 0) {
 			if (pos != 0)
 				printf(" %li", row);
