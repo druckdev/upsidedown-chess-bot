@@ -95,7 +95,7 @@ struct chess
 init_chess(enum COLOR c)
 {
 	struct chess chess = { 0 };
-	memcpy(chess.board, DEFAULT_BOARD, sizeof(chess.board));
+	board_from_fen(DEFAULT_BOARD, chess.board);
 	chess.moving = c;
 	return chess;
 }

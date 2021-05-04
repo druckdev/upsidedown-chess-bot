@@ -7,6 +7,8 @@
 #define WIDTH 8
 #define HEIGHT 8
 
+#define DEFAULT_BOARD "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
+
 enum PIECE_E {
 	EMPTY  = 0,
 	PAWN   = 1,
@@ -49,16 +51,6 @@ struct chess {
 	uint32_t checkmate;
 	int rating;
 };
-
-// clang-format off
-static struct PIECE DEFAULT_BOARD[64] = {
-	       { ROOK, WHITE }, { KNIGHT, WHITE }, { BISHOP, WHITE }, { QUEEN, WHITE }, { KING, WHITE }, { BISHOP, WHITE }, { KNIGHT, WHITE }, { ROOK, WHITE },
-	       { PAWN, WHITE }, { PAWN,   WHITE }, { PAWN,   WHITE }, { PAWN,  WHITE }, { PAWN, WHITE }, { PAWN,   WHITE }, { PAWN,   WHITE }, { PAWN, WHITE },
-
-	[48] = { PAWN, BLACK }, { PAWN,   BLACK }, { PAWN,   BLACK }, { PAWN,  BLACK }, { PAWN, BLACK }, { PAWN,   BLACK }, { PAWN,   BLACK }, { PAWN, BLACK },
-	       { ROOK, BLACK }, { KNIGHT, BLACK }, { BISHOP, BLACK }, { QUEEN, BLACK }, { KING, BLACK }, { BISHOP, BLACK }, { KNIGHT, BLACK }, { ROOK, BLACK }
-};
-// clang-format on
 
 struct move {
 	enum POS start, target;
