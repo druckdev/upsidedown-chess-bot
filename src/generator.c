@@ -439,58 +439,57 @@ generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless)
 	struct list* diagonal_moves =
 			generate_diagonal_moves(board, pos, 1, check_checkless);
 
-	struct list* all_moves = list_append_list(vertical_moves, diagonal_moves);
-	if (!all_moves)
+	struct list* moves = list_append_list(vertical_moves, diagonal_moves);
+	if (!moves)
 		return NULL;
 
-	if (!all_moves->first)
-		return all_moves;
+	if (!moves->first)
+		return moves;
 
 	if (!check_checkless)
 		return all_moves;
 
-	// This array indicates if a position can be hit to keep the complexity at
-	// O(2N) instead of O(N^2).
-	// TODO: use bitboard and & with king moves bitboard
-	bool targets[64] = { 0 };
+	// Iterate over all king moves, execute them, generate possible moves and
+	// see if any of these moves attacks the king.
+	struct chess game               = { .moving = !board[pos].color };
+	struct list_elem* cur_move_elem = moves->last;
+	while (cur_move_elem) {
+		struct move* cur_move = cur_move_elem->object;
 
-	struct chess game = { .moving = !board[pos].color };
-	memcpy(game.board, board, 64 * sizeof(*board));
+		memcpy(game.board, board, 64 * sizeof(*board));
+		execute_move(game.board, cur_move);
 
-	// Populate targets array
-	struct list* possible_hit_moves = generate_moves(&game, false);
-	while (possible_hit_moves->last) {
-		struct move* cur_move     = list_pop(possible_hit_moves);
-		targets[cur_move->target] = true;
-		free(cur_move);
-	}
-	free_list(possible_hit_moves);
+		// generate all possible moves of opposite color but only one level deep
+		struct list* possible_counter_moves =
+				generate_moves(&game, false);
 
-	// Remove all hittable fields.
-	struct list_elem* cur = all_moves->first;
-	while (cur) {
-		struct move* cur_move = (struct move*)cur->object;
-		if (targets[cur_move->target]) {
-			// Remove this move from list
-			if (cur->prev)
-				cur->prev->next = cur->next;
-			if (cur->next)
-				cur->next->prev = cur->prev;
-			if (all_moves->first == cur)
-				all_moves->first = cur->next;
-			if (all_moves->last == cur)
-				all_moves->last = cur->prev;
+		// iterate over all the moves and see if the king is being hit
 
-			struct list_elem* tmp = cur->next;
-			free(cur);
-			cur = tmp;
-			continue;
+		bool move_invalid = false;
+		while (possible_counter_moves->last) {
+			struct move* cur_counter_move = list_pop(possible_counter_moves);
+
+			if (cur_move->target == cur_counter_move->target) {
+				// cur_move is not valid - remove it from the list
+
+				struct list_elem* new_list_elem = cur_move_elem->prev;
+				list_remove_list_elem(moves, cur_move_elem);
+
+				free(cur_move);
+				free(cur_counter_move);
+				free_list(possible_counter_moves);
+
+				cur_move_elem = new_list_elem;
+				move_invalid  = true;
+				break;
+			}
+			free(cur_counter_move);
 		}
-
-		cur = cur->next;
+		if (move_invalid)
+			continue;
+		cur_move_elem = cur_move_elem->prev;
 	}
-
-	return all_moves;
+	return moves;
 }
 
 struct list*
