@@ -25,6 +25,8 @@ struct list* generate_moves_bishop(struct PIECE board[], enum POS pos, bool chec
 // clang-format on
 
 /**
+ * This functions assumes its only called, when a king is being attacked.
+ *
  * @arg mate_move - the move that might hit the king.
  */
 bool
@@ -45,6 +47,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 			// the king can move away
 			free(cur_counter_move);
 			free_list(counter_moves);
+
 			return false;
 		}
 
@@ -121,7 +124,7 @@ is_checkless_move(struct PIECE board[], struct move* move)
 
 		if (new_board[cur_move->target].type == KING &&
 		    !is_checkmate(new_board, cur_move)) {
-			// Found checkless move
+			// found check, that's not a checkmate
 			free(cur_move);
 			free_list(new_moves);
 			return false;
@@ -180,8 +183,8 @@ generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range,
 	for (int i = 0; i < 4; ++i) {
 		enum POS prev_target = pos;
 		int prev_target_col  = pos % 8;
-		hit                  = false;
 
+		hit         = false;
 		int counter = 0;
 		while (range == -1 || counter < range) {
 			enum POS target = prev_target + offsets[i];
@@ -309,8 +312,8 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range,
 }
 
 /**
- * @arg factor: Use this parameter to decide whther to subtract (factor = -1) or add
- * (factor = 1) values.
+ * @arg factor: Use this parameter to decide wether to subtract (factor = -1) or
+ * add (factor = 1) values.
  */
 struct list*
 generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
@@ -330,7 +333,8 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 		if (!is_valid_pos(target))
 			continue;
 
-		// valid x, rows should not vary by more than one, on wrap around this is more
+		// valid x, rows should not vary by more than one, on wrap around this
+		// is more
 		int start_col  = pos % 8;
 		int target_col = target % 8;
 		bool valid_x = start_col == target_col || start_col - 1 == target_col ||
