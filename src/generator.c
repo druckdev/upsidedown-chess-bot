@@ -217,6 +217,7 @@ generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range,
 				move->start  = pos;
 				move->target = target;
 				move->hit    = hit;
+				move->promotes_to = EMPTY;
 
 				moves = list_push(moves, move);
 				if (!moves)
@@ -291,6 +292,7 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range,
 				move->start  = pos;
 				move->target = target;
 				move->hit    = hit;
+				move->promotes_to = EMPTY;
 
 				moves = list_push(moves, move);
 				if (!moves)
@@ -414,6 +416,7 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos,
 	move->start  = pos;
 	move->target = target;
 	move->hit    = occupied_by_enemy;
+	move->promotes_to = EMPTY;
 
 	return move;
 }
