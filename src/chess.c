@@ -117,9 +117,7 @@ run_chess(struct chess* game)
 		struct move* move  = choose_move(game, *moves);
 		print_move(move);
 		assert(execute_move(game->board, move));
-		// TODO!
-		// list_free(moves);
-		//print_board(game->board);
+		list_free(moves);
 
 		struct move oppo_move;
 		assert(execute_move(game->board, opponent_move(&oppo_move)));

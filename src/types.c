@@ -103,7 +103,7 @@ list_count(struct list* list)
 }
 
 void
-free_list(struct list* list)
+list_free(struct list* list)
 {
 	if (!list)
 		return;

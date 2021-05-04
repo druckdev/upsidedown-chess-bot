@@ -44,14 +44,14 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		if (cur_counter_move->start == mate_move->target) {
 			// the king can move away
 			free(cur_counter_move);
-			free_list(counter_moves);
+			list_free(counter_moves);
 			return false;
 		}
 
 		if (cur_counter_move->target == mate_move->start) {
 			// The counter_move hits the attacking piece
 			free(cur_counter_move);
-			free_list(counter_moves);
+			list_free(counter_moves);
 			return false;
 		}
 
@@ -74,12 +74,12 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 
 			free(cur_move);
 		}
-		free_list(moves);
+		list_free(moves);
 
 		if (mate_declined) {
 			// counter_move successful
 			free(cur_counter_move);
-			free_list(counter_moves);
+			list_free(counter_moves);
 			return false;
 		}
 
@@ -90,7 +90,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		free(cur_counter_move);
 	}
 
-	free_list(counter_moves);
+	list_free(counter_moves);
 	return true;
 }
 
@@ -122,12 +122,12 @@ is_checkless_move(struct PIECE board[], struct move* move)
 		    !is_checkmate(new_board, cur_move)) {
 			// Found checkless move
 			free(cur_move);
-			free_list(new_moves);
+			list_free(new_moves);
 			return false;
 		}
 		free(cur_move);
 	}
-	free_list(new_moves);
+	list_free(new_moves);
 
 	return true;
 }
@@ -465,7 +465,7 @@ generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless)
 		targets[cur_move->target] = true;
 		free(cur_move);
 	}
-	free_list(possible_hit_moves);
+	list_free(possible_hit_moves);
 
 	// Remove all hittable fields.
 	struct list_elem* cur = all_moves->first;
@@ -619,7 +619,7 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless)
 
 			free(hit_move);
 		}
-		free_list(possible_hit_moves);
+		list_free(possible_hit_moves);
 
 		if (opens_king)
 			continue;
