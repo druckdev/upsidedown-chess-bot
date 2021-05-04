@@ -109,18 +109,20 @@ run_chess(struct chess* game)
 		// Let opponent make the first move
 		struct move move;
 		assert(execute_move(game->board, opponent_move(&move)));
-		//print_board(game->board);
+		// print_board(game->board, NULL);
 	}
 
 	while (!game->checkmate) {
-		struct list* moves = generate_moves(game, true);
-		struct move* move  = choose_move(game, *moves);
+		// sleep(1);
+		struct list* moves = generate_moves(game, true, false);
+		struct move* move  = choose_move(game, moves);
 		print_move(move);
+
 		assert(execute_move(game->board, move));
 		list_free(moves);
 
 		struct move oppo_move;
 		assert(execute_move(game->board, opponent_move(&oppo_move)));
-		//print_board(game->board, NULL);
+		// print_board(game->board, NULL);
 	}
 }
