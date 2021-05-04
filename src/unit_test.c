@@ -58,6 +58,8 @@ test_generator(void)
 		{ "3R4/3R4/8/7K/7B/8/3r2n1/3k4", BLACK, 10, "" },
 		{ "6KR/8/1N6/8/8/3q4/4b3/6kr", WHITE, 15, "" },
 		{ "K7/2r5/1q6/8/8/8/8/8", BLACK, 31, "Failed checking checkmate." }, // check checkmate
+		{ "8/8/8/8/8/8/8/3K1k2", WHITE, 3, "Failed checking king-match." }, // check weird king interaction 1
+		{ "8/8/8/8/8/4R3/8/3K1k2", WHITE, 17, "Failed checking king-match." }, // check weird king interaction 2
 	};
 	// clang-format on
 
