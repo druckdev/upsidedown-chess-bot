@@ -66,7 +66,8 @@ test_generator(void)
 	// run test cases
 	int tests_length = sizeof(tests) / sizeof(*tests);
 	for (int i = 0; i < tests_length; i++) {
-		printf("TEST : %s \n", tests[i].fen);
+		printf("TEST : %s - %s\n", tests[i].fen,
+		       tests[i].moving == WHITE ? "WHITE" : "BLACK");
 
 		// init game
 		struct chess chess;
