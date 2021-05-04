@@ -85,6 +85,29 @@ list_append_list(struct list* first, struct list* second)
 	return first;
 }
 
+struct list*
+list_remove_list_elem(struct list* list, struct list_elem* elem)
+{
+	if (!list)
+		return NULL;
+	if (!elem)
+		return list;
+
+	if (list->first == elem)
+		list->first = elem->next;
+	if (list->last == elem)
+		list->last = elem->prev;
+
+	if (elem->prev)
+		elem->prev->next = elem->next;
+	if (elem->next)
+		elem->next->prev = elem->prev;
+
+	free(elem);
+
+	return list;
+}
+
 int
 list_count(struct list* list)
 {

@@ -43,6 +43,15 @@ void* list_pop(struct list* list);
 struct list* list_append_list(struct list* first, struct list* second);
 
 /**
+ * Remove an element from the list.
+ * *NOTE:* This also frees the list_elem given so you cannot access it after the
+ * call to this function!
+ *
+ * Runtime: O(1)
+ */
+struct list* list_remove_list_elem(struct list* list, struct list_elem* elem);
+
+/**
  * counts elements in `list`.
  *
  * Runtime: O(n)
