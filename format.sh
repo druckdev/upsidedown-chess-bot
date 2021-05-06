@@ -2,6 +2,8 @@
 
 FORMAT_CMD="clang-format-11 --style=file -i"
 
+cd "$(realpath "$(dirname "$0")")"
+
 if [[ $1 == --all || $1 == -a ]]; then
 	find . \
 		-name '.git' -prune -o \
