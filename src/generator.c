@@ -482,19 +482,7 @@ generate_moves_king(struct PIECE board[], enum POS pos, int check_checkless,
 	while (cur) {
 		struct move* cur_move = (struct move*)cur->object;
 		if (targets[cur_move->target]) {
-			// Remove this move from list
-			if (cur->prev)
-				cur->prev->next = cur->next;
-			if (cur->next)
-				cur->next->prev = cur->prev;
-			if (all_moves->first == cur)
-				all_moves->first = cur->next;
-			if (all_moves->last == cur)
-				all_moves->last = cur->prev;
-
-			struct list_elem* tmp = cur->next;
-			free(cur);
-			cur = tmp;
+			cur = list_remove(all_moves, cur);
 			continue;
 		}
 
@@ -617,22 +605,8 @@ generate_moves_piece(struct PIECE board[], enum POS pos, int check_checkless,
 		while (possible_hit_moves->last) {
 			struct move* hit_move = list_pop(possible_hit_moves);
 			if (hit_move->target == king_pos) {
-				// Remove this move from list
-				if (cur->prev)
-					cur->prev->next = cur->next;
-				if (cur->next)
-					cur->next->prev = cur->prev;
-				if (moves->first == cur)
-					moves->first = cur->next;
-				if (moves->last == cur)
-					moves->last = cur->prev;
-
-				free(hit_move);
+				cur        = list_remove(moves, cur);
 				opens_king = true;
-
-				struct list_elem* tmp = cur->next;
-				free(cur);
-				cur = tmp;
 				break;
 			}
 

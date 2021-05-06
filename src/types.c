@@ -69,6 +69,28 @@ list_pop(struct list* list)
 	return object;
 }
 
+struct list_elem*
+list_remove(struct list* list, struct list_elem* elem)
+{
+	if (elem->prev)
+		elem->prev->next = elem->next;
+	if (elem->next)
+		elem->next->prev = elem->prev;
+
+	if (list->first == elem)
+		list->first = elem->next;
+	if (list->last == elem)
+		list->last = elem->prev;
+
+	list->count--;
+
+	struct list_elem* next = elem->next;
+	free(elem->object);
+	free(elem);
+
+	return next;
+}
+
 struct list*
 list_append_list(struct list* first, struct list* second)
 {

@@ -38,6 +38,14 @@ struct list* list_push(struct list* list, void* object);
  */
 void* list_pop(struct list* list);
 
+/*
+ * Removes `elem` from `list` and returns its successor.
+ * Frees the element and it's object.
+ *
+ * Runtime: O(1)
+ */
+struct list_elem* list_remove(struct list* list, struct list_elem* elem);
+
 /**
  * Appends `second` to `first`.
  *
