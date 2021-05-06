@@ -100,7 +100,7 @@ init_chess(enum COLOR c)
 void
 run_chess(struct chess* game)
 {
-	//print_board(game->board);
+	// print_board(game->board, NULL);
 
 	if (game->moving == BLACK) {
 		// Let opponent make the first move

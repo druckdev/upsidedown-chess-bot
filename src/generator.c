@@ -10,20 +10,13 @@
 #include "generator.h"
 #include "types.h"
 
-/*---------------------------------
- * Helpers for position validation
- * --------------------------------*/
-// clang-format off
-struct list* generate_moves_queen(struct PIECE board[], enum POS pos, int check_checkless, bool hit_allies);
-struct list* generate_moves_king(struct PIECE board[], enum POS pos, int check_checkless, bool hit_allies);
-struct list* generate_moves_rook(struct PIECE board[], enum POS pos, int check_checkless, bool hit_allies);
-struct list* generate_moves_knight(struct PIECE board[], enum POS pos, int check_checkless, bool hit_allies);
-struct list* generate_moves_pawn(struct PIECE board[], enum POS pos, int check_checkless, bool hit_allies);
-struct list* generate_moves_bishop(struct PIECE board[], enum POS pos, int check_checkless, bool hit_allies);
-// clang-format on
+#define DEBUG_PRINTS true
 
 /**
- * @arg mate_move - the move that might hit the king.
+ * @arg board - the current board state
+ * @arg mate_move - the move on `board` that has the king as target.
+ * Returns: If board is a checkmate position or if the color of the attacked
+ *          king can still get out of check.
  */
 bool
 is_checkmate(struct PIECE board[], struct move* mate_move)
@@ -36,6 +29,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 	struct chess game = { .moving = !board[mate_move->start].color };
 	memcpy(game.board, board, 64 * sizeof(*board));
 
+	// Generate moves for the king
 	struct list* counter_moves =
 			generate_moves_piece(game.board, mate_move->target, 1, false);
 	if (counter_moves->first) {
@@ -69,8 +63,8 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		execute_move(game.board, cur_counter_move);
 
 		// Check if mate_move is still doable or was declined
-		struct list* moves = generate_moves_piece(game.board, mate_move->start,
-		                                          0, false);
+		struct list* moves =
+				generate_moves_piece(game.board, mate_move->start, 0, false);
 		bool mate_declined = true;
 		while (moves->last) {
 			struct move* cur_move = (struct move*)list_pop(moves);
@@ -657,7 +651,8 @@ generate_moves_piece(struct PIECE board[], enum POS pos, int check_checkless,
 struct list*
 generate_moves(struct chess* game, int check_checkless, bool hit_allies)
 {
-	struct list* moves  = calloc(1, sizeof(*moves));
+	struct list* moves = calloc(1, sizeof(*moves));
+
 	struct PIECE* board = game->board;
 	for (enum POS pos = 0; pos < 64; ++pos) {
 		// if the `pos` is not occupied there are no moves to generate
