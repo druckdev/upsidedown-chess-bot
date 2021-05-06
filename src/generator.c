@@ -444,12 +444,13 @@ struct list*
 generate_moves_king(struct PIECE board[], enum POS pos, int check_checkless,
                     bool hit_allies)
 {
-	struct list* vertical_moves = generate_orthogonal_moves(
-			board, pos, 1, check_checkless, hit_allies);
+	struct list* vertical_moves =
+			generate_orthogonal_moves(board, pos, 1, 0, hit_allies);
 	struct list* diagonal_moves =
-			generate_diagonal_moves(board, pos, 1, check_checkless, hit_allies);
+			generate_diagonal_moves(board, pos, 1, 0, hit_allies);
 
 	struct list* all_moves = list_append_list(vertical_moves, diagonal_moves);
+
 	if (!all_moves)
 		return NULL;
 
