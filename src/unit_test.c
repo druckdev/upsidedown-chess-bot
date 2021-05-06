@@ -25,7 +25,7 @@ test_generator(void)
 	board_from_fen(test_boards[test_idx].fen, chess.board);
 
 	// verify generator
-	struct list* list = generate_moves(&chess, true, false);
+	struct list* list = generate_moves(&chess, 1, false);
 	int list_length   = list_count(list);
 
 	// pretty print board
