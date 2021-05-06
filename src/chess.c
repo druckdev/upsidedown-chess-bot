@@ -26,8 +26,6 @@ opponent_move(struct move* move)
 		exit(1);
 	}
 
-	//printf("Read: %s\n", move_str);
-
 	// TODO: Format check and error handling
 	move->start = atoi(move_str);
 	// Convert second value after the comma which changes its position depending
@@ -35,25 +33,7 @@ opponent_move(struct move* move)
 	move->target = atoi(move_str + 2 + (move->start > 9));
 
 	size_t last_komma_index = 3 + (move->start > 9) + (move->target > 9);
-	enum PIECE_E promotes_to;
-	switch (move_str[last_komma_index + 1]) {
-	case 'Q':
-		promotes_to = QUEEN;
-		break;
-	case 'R':
-		promotes_to = ROOK;
-		break;
-	case 'N':
-		promotes_to = KNIGHT;
-		break;
-	case 'B':
-		promotes_to = BISHOP;
-		break;
-	default:
-		promotes_to = 0;
-		break;
-	}
-	move->promotes_to = promotes_to;
+	move->promotes_to       = chr_to_piece(move_str[last_komma_index + 1]).type;
 
 	return move;
 }
@@ -63,25 +43,8 @@ print_move(struct move* move)
 {
 	printf("%i,%i,", move->start, move->target);
 
-	char promotes_to_char;
-	switch (move->promotes_to) {
-	case QUEEN:
-		promotes_to_char = 'Q';
-		break;
-	case ROOK:
-		promotes_to_char = 'R';
-		break;
-	case KNIGHT:
-		promotes_to_char = 'N';
-		break;
-	case BISHOP:
-		promotes_to_char = 'B';
-		break;
-	default:
-		promotes_to_char = 0;
-		break;
-	}
-	if (promotes_to_char)
+	char promotes_to_char = piece_e_to_chr(move->promotes_to);
+	if (promotes_to_char != ' ')
 		printf("%c", promotes_to_char);
 
 	printf("\n");

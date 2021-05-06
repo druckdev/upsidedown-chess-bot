@@ -460,22 +460,13 @@ generate_moves_king(struct PIECE board[], enum POS pos, int check_checkless,
 	if (!check_checkless)
 		return all_moves;
 
-	// This array indicates if a position can be hit to keep the complexity at
-	// O(2N) instead of O(N^2).
-	// TODO: use bitboard and & with king moves bitboard
-	bool targets[64] = { 0 };
-
 	struct chess game = { .moving = !board[pos].color };
 	memcpy(game.board, board, 64 * sizeof(*board));
 
-	// Populate targets array
 	struct list* possible_hit_moves = generate_moves(&game, 0, true);
-	while (possible_hit_moves->last) {
-		struct move* cur_move     = list_pop(possible_hit_moves);
-		targets[cur_move->target] = true;
-		free(cur_move);
-	}
-	list_free(possible_hit_moves);
+	// TODO: use bitboard and & with king moves bitboard
+	bool targets[64] = { 0 };
+	are_attacked(possible_hit_moves, targets);
 
 	// Remove all hittable fields.
 	struct list_elem* cur = all_moves->first;
