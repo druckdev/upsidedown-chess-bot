@@ -42,9 +42,9 @@ static struct game_samples test_boards[] = {
 
 	{ "R1QQKBNR/PP1PPPPP/2N5/3b1B2/4q3/2n1n3/pppppppp/r1b1k2r", WHITE, 22 },
 
-	{ "K7/2r5/1q6/8/8/8/8/8", BLACK, 31 }, // check checkmate
-	{ "8/8/8/8/8/8/8/3K1k2", WHITE, 3 }, // check weird king interaction 1
-	{ "8/8/8/8/8/4R3/8/3K1k2", WHITE, 17 }, // check weird king interaction 2
+	{ "K7/2r5/1q6/8/8/8/8/8", BLACK, 31 },  // check checkmate
+	{ "8/8/8/8/8/8/8/3K1k2", WHITE, 3 },    // check weird king interaction 1
+	{ "8/8/8/8/8/4R3/8/3K1k2", WHITE, 15 }, // check weird king interaction 2
 
 	/* Invalid boards
 	{ "r1bqkb1r/pppppppp/2n2n2/8/8/2N2N2/PPPPPPPP/R1BQKB1R", WHITE, 36 },
