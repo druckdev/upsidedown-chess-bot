@@ -3,13 +3,13 @@
 
 #include "chess.h" // for enum COLOR
 
-struct test_case {
+struct game_samples {
 	char* fen;
 	enum COLOR moving;
 	int move_cnt;
 };
 
-static struct test_case test_boards[] = {
+static struct game_samples test_boards[] = {
 	// Test single figures
 	{ "8/8/8/8/8/3k4/8/8", BLACK, 8 },  // test king
 	{ "8/8/8/8/3r4/8/8/8", BLACK, 14 }, // test rook
