@@ -347,13 +347,21 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 		bool occupied          = is_occupied(board, target);
 		bool occupied_by_enemy = is_occupied_by_enemy(board, pos, target);
 
-		// diagonal
-		if (i != 0)
-			if (!occupied || !occupied_by_enemy) // not occupied by enemy
-				continue;
+		// NOTE: We cannot use `i != occupied` to combine the two statements, as
+		// you could do in normal boolean algebra, as we have -1 as possible
+		// value that acts as true as well as 1
+		if (i && !occupied || !i && occupied)
+			// diagonally not occupied or vertically blocked
+			continue;
 
-		// straight
-		if (occupied && !occupied_by_enemy && !hit_allies) // occupied by ally
+		// Skip if there is an ally blocking and we are not building `targets`
+		if (occupied && !occupied_by_enemy && !hit_allies)
+			continue;
+
+		// We do not want to add the step forward, if we are building a
+		// `targets` map, as we are not able to hit in that direction and thus
+		// it is safe to move there.
+		if (!i && hit_allies)
 			continue;
 
 		/*
