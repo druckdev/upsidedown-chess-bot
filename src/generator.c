@@ -214,9 +214,9 @@ generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range,
 				// TODO(Aurel): Should we cleanup the list moves?
 				if (!move)
 					return NULL;
-				move->start  = pos;
-				move->target = target;
-				move->hit    = hit;
+				move->start       = pos;
+				move->target      = target;
+				move->hit         = hit;
 				move->promotes_to = EMPTY;
 
 				moves = list_push(moves, move);
@@ -289,9 +289,9 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range,
 				// TODO(Aurel): Should we cleanup the list moves?
 				if (!move)
 					return NULL;
-				move->start  = pos;
-				move->target = target;
-				move->hit    = hit;
+				move->start       = pos;
+				move->target      = target;
+				move->hit         = hit;
 				move->promotes_to = EMPTY;
 
 				moves = list_push(moves, move);
@@ -413,9 +413,9 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos,
 	struct move* move = malloc(sizeof(*move));
 	if (!move)
 		return NULL;
-	move->start  = pos;
-	move->target = target;
-	move->hit    = occupied_by_enemy;
+	move->start       = pos;
+	move->target      = target;
+	move->hit         = occupied_by_enemy;
 	move->promotes_to = EMPTY;
 
 	return move;

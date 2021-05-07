@@ -1,6 +1,6 @@
 #include <assert.h>
-#include <sys/types.h>
 #include <stdlib.h>
+#include <sys/types.h>
 
 #include "board.h"
 #include "bot.h"
