@@ -387,6 +387,12 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 			memcpy(move, &test, sizeof(test));
 
 			moves = list_push(moves, move);
+
+			// When hit_allies is set, we are building the `targets` map. In that
+			// case it is completely irrelevant to which piece we could promote
+			// and can break here to only 'record' the target.
+			if (hit_allies)
+				break;
 		}
 	}
 
