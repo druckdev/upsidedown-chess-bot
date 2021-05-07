@@ -9,11 +9,7 @@
 
 #define N_FOR_AVG 3
 #define ITERATIONS 10000
-
-static double** cpu_secs;
-static size_t** cpu_nsecs;
-static double** wall_secs;
-static size_t** wall_nsecs;
+#define CSV_STREAM stderr
 
 int
 main(int argc, char* argv[])
@@ -22,10 +18,10 @@ main(int argc, char* argv[])
 
 	size_t len = sizeof(test_boards) / sizeof(*test_boards);
 
-	cpu_secs   = malloc(len * sizeof(*cpu_secs));
-	cpu_nsecs  = malloc(len * sizeof(*cpu_nsecs));
-	wall_secs  = malloc(len * sizeof(*wall_secs));
-	wall_nsecs = malloc(len * sizeof(*wall_nsecs));
+	double* cpu_secs[len];
+	size_t* cpu_nsecs[len];
+	double* wall_secs[len];
+	size_t* wall_nsecs[len];
 
 	for (size_t i = 0; i < len; ++i) {
 		printf("BENCHMARK: %s \n", test_boards[i].fen);
@@ -97,5 +93,16 @@ main(int argc, char* argv[])
 		       wall_secs[i][N_FOR_AVG], wall_nsecs[i][N_FOR_AVG]);
 
 		printf("\n-------------------------------------------\n\n");
+	}
+
+	printf("Summary:\n");
+	fprintf(CSV_STREAM, "FEN;cpu secs;cpu nsecs;wall secs; wall nsecs\n");
+	for (size_t i = 0; i < len; ++i) {
+		fprintf(CSV_STREAM, "%s;%lf;%li;%lf;%li\n", test_boards[i].fen, cpu_secs[i][N_FOR_AVG], cpu_nsecs[i][N_FOR_AVG], wall_secs[i][N_FOR_AVG], wall_nsecs[i][N_FOR_AVG]);
+
+		free(cpu_secs[i]);
+		free(cpu_nsecs[i]);
+		free(wall_secs[i]);
+		free(wall_nsecs[i]);
 	}
 }
