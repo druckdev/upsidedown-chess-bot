@@ -43,6 +43,7 @@ struct PIECE {
 	enum PIECE_E type;
 	enum COLOR color;
 };
+static struct PIECE empty_piece = { EMPTY, WHITE };
 
 struct chess {
 	// TODO: We memcpy a lot (when creating new game objects)
@@ -56,7 +57,7 @@ struct chess {
 struct move {
 	enum POS start, target;
 	bool hit;
-	enum PIECE_E promotes_to;
+	struct PIECE promotes_to;
 };
 
 int get_piece_value(enum PIECE_E piece);

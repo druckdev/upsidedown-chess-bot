@@ -13,15 +13,12 @@
 bool
 execute_move(struct PIECE* board, struct move* move)
 {
-	// printf("exec: %i, %i, %i\n", move->start, move->target, move->promotes_to);
 	if (!board || !move)
 		return false;
 
-	board[move->target]     = board[move->start];
+	board[move->target] =
+			move->promotes_to.type ? move->promotes_to : board[move->start];
 	board[move->start].type = EMPTY;
-
-	if (move->promotes_to != EMPTY)
-		board[move->target].type = move->promotes_to;
 
 	return true;
 }

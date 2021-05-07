@@ -33,7 +33,7 @@ opponent_move(struct move* move)
 	move->target = atoi(move_str + 2 + (move->start > 9));
 
 	size_t last_komma_index = 3 + (move->start > 9) + (move->target > 9);
-	move->promotes_to       = chr_to_piece(move_str[last_komma_index + 1]).type;
+	move->promotes_to       = chr_to_piece(move_str[last_komma_index + 1]);
 
 	return move;
 }
@@ -43,7 +43,7 @@ print_move(struct move* move)
 {
 	printf("%i,%i,", move->start, move->target);
 
-	char promotes_to_char = piece_e_to_chr(move->promotes_to);
+	char promotes_to_char = piece_to_chr(move->promotes_to);
 	if (promotes_to_char != ' ')
 		printf("%c", promotes_to_char);
 

@@ -220,7 +220,7 @@ generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range,
 				move->start       = pos;
 				move->target      = target;
 				move->hit         = hit;
-				move->promotes_to = EMPTY;
+				move->promotes_to = empty_piece;
 
 				moves = list_push(moves, move);
 				if (!moves)
@@ -295,7 +295,7 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range,
 				move->start       = pos;
 				move->target      = target;
 				move->hit         = hit;
-				move->promotes_to = EMPTY;
+				move->promotes_to = empty_piece;
 
 				moves = list_push(moves, move);
 				if (!moves)
@@ -360,22 +360,23 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 		 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 		 * be the last check!
 		 */
-		enum PIECE_E promotes_to = (target < 8 || target > 55) ? QUEEN : EMPTY;
-		for (; promotes_to <= QUEEN && promotes_to != PAWN; promotes_to--) {
-			struct move test_move = { pos, target, occupied_by_enemy,
-				                      promotes_to };
+		struct PIECE promotes_to = { EMPTY, board[pos].color };
+		if (target < 8 || target > 55)
+			promotes_to.type = QUEEN;
+		while (promotes_to.type <= QUEEN && promotes_to.type != PAWN) {
+			struct move test = { pos, target, occupied_by_enemy && i,
+				                 promotes_to };
+			promotes_to.type--;
 
-			if (check_checkless && !is_checkless_move(board, &test_move))
+			if (check_checkless && !is_checkless_move(board, &test)) {
 				continue;
+			}
 
 			// add move if it passed all tests
 			struct move* move = malloc(sizeof(*move));
 			if (!move)
 				return NULL;
-			move->start       = pos;
-			move->target      = target;
-			move->hit         = occupied_by_enemy;
-			move->promotes_to = promotes_to;
+			memcpy(move, &test, sizeof(test));
 
 			moves = list_push(moves, move);
 		}
@@ -420,7 +421,7 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos,
 	move->start       = pos;
 	move->target      = target;
 	move->hit         = occupied_by_enemy;
-	move->promotes_to = EMPTY;
+	move->promotes_to = empty_piece;
 
 	return move;
 }

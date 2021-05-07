@@ -46,6 +46,8 @@ static struct game_samples test_boards[] = {
 	{ "8/8/8/8/8/8/8/3K1k2", WHITE, 3 },    // check weird king interaction 1
 	{ "8/8/8/8/8/4R3/8/3K1k2", WHITE, 15 }, // check weird king interaction 2
 
+	{ "8/8/8/8/8/8/2p3p1/3k4", BLACK, 12}, // Check correct pawn promotion
+
 	/* Invalid boards
 	{ "r1bqkb1r/pppppppp/2n2n2/8/8/2N2N2/PPPPPPPP/R1BQKB1R", WHITE, 36 },
 	{ "r1bqkbqr/pppppp1p/2n2n2/8/8/2N2N2/P1PPPPPP/RQBQKB1R", WHITE, 38 },
