@@ -98,7 +98,9 @@ main(int argc, char* argv[])
 	printf("Summary:\n");
 	fprintf(CSV_STREAM, "FEN;cpu secs;cpu nsecs;wall secs; wall nsecs\n");
 	for (size_t i = 0; i < len; ++i) {
-		fprintf(CSV_STREAM, "%s;%lf;%li;%lf;%li\n", test_boards[i].fen, cpu_secs[i][N_FOR_AVG], cpu_nsecs[i][N_FOR_AVG], wall_secs[i][N_FOR_AVG], wall_nsecs[i][N_FOR_AVG]);
+		fprintf(CSV_STREAM, "%s;%lf;%li;%lf;%li\n", test_boards[i].fen,
+		        cpu_secs[i][N_FOR_AVG], cpu_nsecs[i][N_FOR_AVG],
+		        wall_secs[i][N_FOR_AVG], wall_nsecs[i][N_FOR_AVG]);
 
 		free(cpu_secs[i]);
 		free(cpu_nsecs[i]);
