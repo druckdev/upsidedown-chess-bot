@@ -1,23 +1,24 @@
+#include "types.h"
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "board.h"
 
+#define ANSI_RED "\033[91m"
+#define ANSI_RESET "\033[0m"
 bool
 execute_move(struct PIECE* board, struct move* move)
 {
-	// printf("exec: %i, %i, %i\n", move->start, move->target, move->promotes_to);
 	if (!board || !move)
 		return false;
 
-	board[move->target]     = board[move->start];
+	board[move->target] =
+			move->promotes_to.type ? move->promotes_to : board[move->start];
 	board[move->start].type = EMPTY;
-
-	if (move->promotes_to != EMPTY)
-		board[move->target].type = move->promotes_to;
 
 	return true;
 }
@@ -39,71 +40,91 @@ pos_to_str(enum POS pos, char* str)
 	return str;
 }
 
+// Return a character representing the piece.
+// Returns ' ' on unknown or empty piece.
+char
+piece_e_to_chr(enum PIECE_E piece)
+{
+	switch (piece) {
+	case PAWN:
+		return 'P';
+	case BISHOP:
+		return 'B';
+	case KNIGHT:
+		return 'N';
+	case ROOK:
+		return 'R';
+	case QUEEN:
+		return 'Q';
+	case KING:
+		return 'K';
+	default:
+		return ' ';
+	}
+}
+
+// Return a character representing the piece and its color.
+// Returns ' ' on unknown or empty piece.
+char
+piece_to_chr(struct PIECE piece)
+{
+	return piece_e_to_chr(piece.type) + (piece.color ? WHITE_TO_BLACK_OFF : 0);
+}
+
+struct PIECE
+chr_to_piece(char fen_piece)
+{
+	struct PIECE piece = { EMPTY, WHITE };
+
+	switch (fen_piece) {
+	case 'p':
+	case 'P':
+		piece.type = PAWN;
+		break;
+	case 'b':
+	case 'B':
+		piece.type = BISHOP;
+		break;
+	case 'n':
+	case 'N':
+		piece.type = KNIGHT;
+		break;
+	case 'r':
+	case 'R':
+		piece.type = ROOK;
+		break;
+	case 'q':
+	case 'Q':
+		piece.type = QUEEN;
+		break;
+	case 'k':
+	case 'K':
+		piece.type = KING;
+		break;
+	default:
+		break;
+	}
+
+	// Set to black if lowercase letter.
+	if (fen_piece >= 'a' && fen_piece <= 'z')
+		piece.color = BLACK;
+
+	return piece;
+}
+
 void
 board_from_fen(char* fen, struct PIECE board[])
 {
-	int cnt = 0;
-	for (int i = 0; fen[i] != '\0' || cnt < 64; i++) {
-		switch (fen[i]) {
-		case 'r':
-			board[cnt].type  = ROOK;
-			board[cnt].color = BLACK;
-			break;
-		case 'q':
-			board[cnt].type  = QUEEN;
-			board[cnt].color = BLACK;
-			break;
-		case 'p':
-			board[cnt].type  = PAWN;
-			board[cnt].color = BLACK;
-			break;
-		case 'k':
-			board[cnt].type  = KING;
-			board[cnt].color = BLACK;
-			break;
-		case 'b':
-			board[cnt].type  = BISHOP;
-			board[cnt].color = BLACK;
-			break;
-		case 'n':
-			board[cnt].type  = KNIGHT;
-			board[cnt].color = BLACK;
-			break;
-		case 'R':
-			board[cnt].type  = ROOK;
-			board[cnt].color = WHITE;
-			break;
-		case 'Q':
-			board[cnt].type  = QUEEN;
-			board[cnt].color = WHITE;
-			break;
-		case 'P':
-			board[cnt].type  = PAWN;
-			board[cnt].color = WHITE;
-			break;
-		case 'K':
-			board[cnt].type  = KING;
-			board[cnt].color = WHITE;
-			break;
-		case 'B':
-			board[cnt].type  = BISHOP;
-			board[cnt].color = WHITE;
-			break;
-		case 'N':
-			board[cnt].type  = KNIGHT;
-			board[cnt].color = WHITE;
-			break;
-		case '/':
-			cnt--;
-			break;
+	memset(board, 0, sizeof(struct PIECE) * 64);
 
-		default:
-			for (int j = 0; j < atoi(&fen[i]); j++) {
-				board[cnt + j].type = EMPTY;
-			}
-			cnt += atoi(&fen[i]) - 1;
+	size_t c = -1, i = 0;
+	while (fen[++c]) {
+		if (fen[c] >= '0' && fen[c] <= '9') {
+			// Skip number of fields indicated by number in fen[c].
+			i += atoi(fen + c);
+		} else if (fen[c] != '/') {
+			board[i++] = chr_to_piece(fen[c]);
 		}
-		cnt++;
 	}
 }
 
@@ -124,54 +145,65 @@ is_attacked(struct list* moves, enum POS pos)
 	return false;
 }
 
+// Returns an array that indicates if a position is attackable by a move in
+// `moves`.
+// `moves` is consumed and freed.
+// Allocates memory if the passed pointer equals to NULL.
+bool*
+are_attacked(struct list* moves, bool* targets)
+{
+	if (!targets) {
+		targets = calloc(sizeof(bool), 64);
+		if (!targets)
+			return NULL;
+	}
+
+	if (!moves)
+		return targets;
+
+	while (moves->last) {
+		struct move* move     = list_pop(moves);
+		targets[move->target] = true;
+		free(move);
+	}
+	list_free(moves);
+
+	return targets;
+}
+
 /**
  * @arg moves: optional for marking attacked fields, set to NULL if not wanted
+ *             Because of efficiency reasons, moves is 'consumed' and freed.
  */
 void
 print_board(struct PIECE board[], struct list* moves)
 {
-	printf("\n      ");
-	for (char label = 'A'; label <= 'H'; ++label) {
+	bool* targets = are_attacked(moves, NULL);
+	char* padding = "     ";
+
+	printf("%s", padding);
+	for (char label = 'A'; label <= 'H'; ++label)
 		printf(" %c ", label);
-	}
-
-	size_t row = 9;
-	for (int pos = 0; pos < 64; ++pos) {
-		if (pos % 8 == 0) {
-			if (pos != 0)
-				printf(" %li", row);
-			size_t first_index_of_row = 8 * (9 - row);
-			printf("\n");
-			if (first_index_of_row < 10)
-				printf(" ");
-			printf(" %li ", first_index_of_row);
-			printf("%li ", --row);
-		}
-
-		printf("[");
-
-		if (moves && is_attacked(moves, pos)) {
-			printf("X");
-		} else {
-			struct PIECE piece = board[pos];
-			// clang-format off
-			switch (piece.type) {
-			case PAWN:   piece.color == WHITE ? printf("P") : printf("p"); break;
-			case BISHOP: piece.color == WHITE ? printf("B") : printf("b"); break;
-			case KNIGHT: piece.color == WHITE ? printf("N") : printf("n"); break;
-			case ROOK:   piece.color == WHITE ? printf("R") : printf("r"); break;
-			case QUEEN:  piece.color == WHITE ? printf("Q") : printf("q"); break;
-			case KING:   piece.color == WHITE ? printf("K") : printf("k"); break;
-        	default: printf(" "); break;
-			}
-		}
-		// clang-format on
-		printf("]");
-	}
-	printf(" %li\n      ", row);
-
-	for (char label = 'A'; label <= 'H'; ++label) {
-		printf(" %c ", label);
-	}
 	printf("\n");
+
+	size_t row = 8;
+	for (enum POS pos = 0; pos < MAX; ++pos) {
+		if (pos % 8 == 0)
+			printf("%02i %li ", pos, row);
+
+		if (targets[pos])
+			printf(ANSI_RED);
+		printf("[%c]", piece_to_chr(board[pos]));
+		printf(ANSI_RESET);
+
+		if (pos % 8 == 7)
+			printf(" %li\n", row--);
+	}
+
+	printf("%s", padding);
+	for (char label = 'A'; label <= 'H'; ++label)
+		printf(" %c ", label);
+	printf("\n");
+
+	free(targets);
 }

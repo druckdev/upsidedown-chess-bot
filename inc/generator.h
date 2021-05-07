@@ -6,11 +6,12 @@
 
 // Generate all legal moves for the piece at `pos`.
 struct list* generate_moves_piece(struct PIECE board[], enum POS pos,
-                                  bool check_checkless);
+                                  int check_checkless, bool hit_allies);
 
 /**
  * Generates all moves possible in the current chess-game state.
  */
-struct list* generate_moves(struct chess* game, bool check_checkless);
+struct list* generate_moves(struct chess* game, int check_checkless,
+                            bool hit_allies);
 
 #endif /* GENERATOR_H */

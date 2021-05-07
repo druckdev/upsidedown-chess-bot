@@ -1,6 +1,8 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <stddef.h>
+
 /**
  * A doubly linked list.
  */
@@ -11,6 +13,7 @@ struct list_elem {
 
 struct list {
 	struct list_elem *first, *last;
+	size_t count;
 };
 
 /**
@@ -35,6 +38,14 @@ struct list* list_push(struct list* list, void* object);
  */
 void* list_pop(struct list* list);
 
+/*
+ * Removes `elem` from `list` and returns its successor.
+ * Frees the element and it's object.
+ *
+ * Runtime: O(1)
+ */
+struct list_elem* list_remove(struct list* list, struct list_elem* elem);
+
 /**
  * Appends `second` to `first`.
  *
@@ -54,5 +65,5 @@ int list_count(struct list* list);
  *
  * Runtime: O(n)
  */
-void free_list(struct list* list);
+void list_free(struct list* list);
 #endif /* TYPES_H */

@@ -7,6 +7,8 @@
 #define WIDTH 8
 #define HEIGHT 8
 
+#define DEFAULT_BOARD "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
+
 enum PIECE_E {
 	EMPTY  = 0,
 	PAWN   = 1,
@@ -33,6 +35,7 @@ enum POS {
     A3, B3, C3, D3, E3, F3, G3, H3,
     A2, B2, C2, D2, E2, F2, G2, H2,
     A1, B1, C1, D1, E1, F1, G1, H1,
+    MAX
 };
 // clang-format on
 
@@ -40,6 +43,7 @@ struct PIECE {
 	enum PIECE_E type;
 	enum COLOR color;
 };
+static struct PIECE empty_piece = { EMPTY, WHITE };
 
 struct chess {
 	// TODO: We memcpy a lot (when creating new game objects)
@@ -50,20 +54,10 @@ struct chess {
 	int rating;
 };
 
-// clang-format off
-static struct PIECE DEFAULT_BOARD[64] = {
-	       { ROOK, WHITE }, { KNIGHT, WHITE }, { BISHOP, WHITE }, { QUEEN, WHITE }, { KING, WHITE }, { BISHOP, WHITE }, { KNIGHT, WHITE }, { ROOK, WHITE },
-	       { PAWN, WHITE }, { PAWN,   WHITE }, { PAWN,   WHITE }, { PAWN,  WHITE }, { PAWN, WHITE }, { PAWN,   WHITE }, { PAWN,   WHITE }, { PAWN, WHITE },
-
-	[48] = { PAWN, BLACK }, { PAWN,   BLACK }, { PAWN,   BLACK }, { PAWN,  BLACK }, { PAWN, BLACK }, { PAWN,   BLACK }, { PAWN,   BLACK }, { PAWN, BLACK },
-	       { ROOK, BLACK }, { KNIGHT, BLACK }, { BISHOP, BLACK }, { QUEEN, BLACK }, { KING, BLACK }, { BISHOP, BLACK }, { KNIGHT, BLACK }, { ROOK, BLACK }
-};
-// clang-format on
-
 struct move {
 	enum POS start, target;
 	bool hit;
-	enum PIECE_E promotes_to;
+	struct PIECE promotes_to;
 };
 
 int get_piece_value(enum PIECE_E piece);

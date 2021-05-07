@@ -15,6 +15,7 @@ list_push(struct list* list, void* object)
 			return NULL;
 		list->first = NULL;
 		list->last  = NULL;
+		list->count = 0;
 	}
 
 	struct list_elem* list_elem = malloc(sizeof(struct list_elem));
@@ -24,6 +25,8 @@ list_push(struct list* list, void* object)
 			free(list);
 		return NULL;
 	}
+
+	list->count++;
 
 	list_elem->prev   = NULL;
 	list_elem->next   = NULL;
@@ -61,8 +64,31 @@ list_pop(struct list* list)
 	if (list->first == list_elem)
 		list->first = NULL;
 
+	list->count--;
 	free(list_elem);
 	return object;
+}
+
+struct list_elem*
+list_remove(struct list* list, struct list_elem* elem)
+{
+	if (elem->prev)
+		elem->prev->next = elem->next;
+	if (elem->next)
+		elem->next->prev = elem->prev;
+
+	if (list->first == elem)
+		list->first = elem->next;
+	if (list->last == elem)
+		list->last = elem->prev;
+
+	list->count--;
+
+	struct list_elem* next = elem->next;
+	free(elem->object);
+	free(elem);
+
+	return next;
 }
 
 struct list*
@@ -80,6 +106,7 @@ list_append_list(struct list* first, struct list* second)
 
 	// update first and free second instance
 	first->last = second->last;
+	first->count += second->count;
 	free(second);
 
 	return first;
@@ -98,7 +125,7 @@ list_count(struct list* list)
 }
 
 void
-free_list(struct list* list)
+list_free(struct list* list)
 {
 	if (!list)
 		return;

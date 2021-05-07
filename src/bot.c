@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdlib.h>
 #include <sys/types.h>
 
 #include "board.h"
@@ -28,8 +29,21 @@ rate_board(struct chess* chess, struct move move)
 }
 
 struct move*
-choose_move(struct chess* game, struct list moves_sorted)
+choose_move(struct chess* game, struct list* moves)
 {
-	struct move* move = (struct move*)moves_sorted.first->object;
-	return move;
+	if (!moves)
+		return NULL;
+
+	struct list_elem* cur = moves->first;
+	if (!cur)
+		return NULL;
+
+	// Choose random move
+	for (size_t i = 0; i < rand() % list_count(moves); ++i) {
+		if (cur->next)
+			cur = cur->next;
+		else
+			return (struct move*)cur->object;
+	}
+	return (struct move*)cur->object;
 }
