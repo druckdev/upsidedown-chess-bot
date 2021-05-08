@@ -66,4 +66,9 @@ int list_count(struct list* list);
  * Runtime: O(n)
  */
 void list_free(struct list* list);
+
+#ifdef BUILD_TEST
+int test_types();
+#endif /* BUILD_TEST */
+
 #endif /* TYPES_H */

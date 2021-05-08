@@ -47,3 +47,7 @@ add_executable(benchmark ${BENCHMARK_SOURCES} ${BENCHMARK_HEADERS})
 target_include_directories(bot PRIVATE inc)
 target_include_directories(test PRIVATE inc)
 target_include_directories(benchmark PRIVATE inc)
+
+# preprocessor variables
+target_compile_definitions(test PRIVATE BUILD_TEST)
+target_compile_definitions(benchmark PRIVATE BUILD_BENCHMARK)

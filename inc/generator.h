@@ -14,4 +14,12 @@ struct list* generate_moves_piece(struct PIECE board[], enum POS pos,
 struct list* generate_moves(struct chess* game, int check_checkless,
                             bool hit_allies);
 
+#ifdef BUILD_TEST
+void test_generator();
+#endif /* BUILD_TEST */
+
+#ifdef BUILD_BENCHMARK
+void benchmark_generator();
+#endif /* BUILD_BENCHMARK */
+
 #endif /* GENERATOR_H */

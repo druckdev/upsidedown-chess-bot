@@ -650,3 +650,290 @@ generate_moves(struct chess* game, int check_checkless, bool hit_allies)
 	}
 	return moves;
 }
+
+#ifdef BUILD_TEST
+#include "unity.h"
+
+#define test_generated_moves_count(fen, cur_moving_player, expected_move_cnt)  \
+	{                                                                          \
+		printf("\nTEST : %s \n", fen);                                         \
+		struct chess chess;                                                    \
+		chess.moving = cur_moving_player;                                      \
+		board_from_fen(fen, chess.board);                                      \
+                                                                               \
+		struct list* list = generate_moves(&chess, 1, false);                  \
+		int list_length   = list_count(list);                                  \
+                                                                               \
+		print_board(chess.board, list);                                        \
+		printf("Expected:\t%d\nGot:\t\t%d\n", expected_move_cnt, list_length); \
+		TEST_ASSERT(list_length == expected_move_cnt);                         \
+                                                                               \
+		printf("-------------------------------------------\n");               \
+	}
+
+void
+test_basic_king_move_generation()
+{
+	test_generated_moves_count("8/8/8/8/8/3k4/8/8", BLACK, 8);
+	test_generated_moves_count("k7/8/8/8/8/8/8/8", BLACK, 3);
+}
+
+void
+test_basic_rook_move_generation()
+{
+	test_generated_moves_count("8/8/8/8/3r4/8/8/8", BLACK, 14);
+}
+
+void
+test_basic_bishop_move_generation()
+{
+	test_generated_moves_count("8/8/8/8/3b4/8/8/8", BLACK, 13);
+}
+
+void
+test_basic_black_pawn_move_generation()
+{
+	test_generated_moves_count("8/8/8/8/8/8/6p1/8", BLACK, 4);
+	test_generated_moves_count("8/8/8/8/8/6p1/8/8", BLACK, 1);
+}
+
+void
+test_basic_white_pawn_move_generation()
+{
+	test_generated_moves_count("8/6P1/8/8/8/8/8/8", WHITE, 4);
+	test_generated_moves_count("8/8/6P1/8/8/8/8/8", WHITE, 1);
+}
+
+void
+test_basic_queen_move_generation()
+{
+	test_generated_moves_count("8/8/8/8/3q4/8/8/8", BLACK, 27);
+}
+
+void
+test_basic_knight_move_generation()
+{
+	test_generated_moves_count("8/8/8/8/3n4/8/8/8", BLACK, 8);
+}
+
+void
+test_start_board_move_generation()
+{
+	// clang-format off
+	test_generated_moves_count("RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr", WHITE, 4);
+	test_generated_moves_count("RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr", BLACK, 4);
+	// clang-format on
+}
+
+void
+test_community_boards_move_generation()
+{
+	// clang-format off
+	test_generated_moves_count("RNBKQB1R/PPPPPPPP/8/8/4N3/2n5/pppppppp/r1bkqbnr", BLACK, 12);
+	test_generated_moves_count("RqBQKB1R/P1PPPPQP/2N2N2/8/8/4n3/p1pppppp/r1bqkbnr", WHITE, 29);
+	test_generated_moves_count("RNBQKB1R/PPPPPPPP/5N2/8/8/5n2/pppppppp/rnbqkb1r", WHITE, 12);
+	test_generated_moves_count("RNBQKBQR/PPPPPP1P/5N2/8/8/5n2/pppppp1p/rnbqkbqr", WHITE, 15);
+	test_generated_moves_count("RQBQKB1R/P1PPPPPP/2N2N2/8/5n2/n7/pppppppp/r1bqkb1r", WHITE, 22);
+	test_generated_moves_count("RNBQK2R/PPPPPPBP/7N/3N4/8/n1nn1n2/pbqppppp/r3kb1r", BLACK, 38);
+	test_generated_moves_count("RNBKQB1R/PPPPPPPP/8/3N4/8/5n2/pppppp1p/rnbkqbrr", WHITE, 12);
+	test_generated_moves_count("qRQQK1QR/3PPP1P/5N1B/4Q3/1b6/1Bn5/3ppp1p/1rqqkbqr", WHITE, 61);
+	test_generated_moves_count("4K2R/4P2P/8/q1N5/8/6B1/p1k3q1/r1bR4", WHITE, 32);
+	test_generated_moves_count("RNQQKB1r/PP1PPPP1/8/8/8/8/pp1ppp2/r1qkb1q1", WHITE, 18);
+	test_generated_moves_count("3QK3/4Q1P1/8/8/8/1rq1n3/2n5/2k5", WHITE, 33);
+	test_generated_moves_count("3R4/3R4/8/7K/7B/8/3r2n1/3k4", BLACK, 10);
+	test_generated_moves_count("6KR/8/1N6/8/8/3q4/4b3/6kr", WHITE, 15);
+
+	test_generated_moves_count("R1QQKBNR/PP1PPPPP/2N5/3b1B2/4q3/2n1n3/pppppppp/r1b1k2r", WHITE, 22);
+	// clang-format on
+}
+
+void
+test_checkmate_move_generation()
+{
+	test_generated_moves_count("K7/2r5/1q6/8/8/8/8/8", BLACK, 31);
+	test_generated_moves_count("8/8/8/8/8/8/8/3K1k2", WHITE, 3);
+	test_generated_moves_count("8/8/8/8/8/4R3/8/3K1k2", WHITE, 15);
+}
+
+void
+test_pawn_promotion_move_generation()
+{
+	test_generated_moves_count("8/8/8/8/8/8/2p3p1/3k4", BLACK, 12);
+	test_generated_moves_count("3k4/4P3/8/2Q5/3R4/8/8/8", BLACK, 1);
+	test_generated_moves_count("8/8/8/8/8/8/3p4/2RRR3", BLACK, 8);
+}
+
+void
+test_generator()
+{
+	// basic movement
+	RUN_TEST(test_basic_king_move_generation);
+	RUN_TEST(test_basic_rook_move_generation);
+	RUN_TEST(test_basic_bishop_move_generation);
+	RUN_TEST(test_basic_black_pawn_move_generation);
+	RUN_TEST(test_basic_white_pawn_move_generation);
+	RUN_TEST(test_basic_queen_move_generation);
+	RUN_TEST(test_basic_knight_move_generation);
+
+	RUN_TEST(test_start_board_move_generation);
+
+	RUN_TEST(test_community_boards_move_generation);
+
+	// features
+	RUN_TEST(test_checkmate_move_generation);
+	RUN_TEST(test_pawn_promotion_move_generation);
+}
+#endif /* BUILD_TEST */
+
+#ifdef BUILD_BENCHMARK
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#include "benchmark.h"
+
+void
+benchmark_generator()
+{
+	struct game_samples {
+		char* fen;
+		enum COLOR moving;
+		int move_cnt;
+	};
+	// clang-format off
+	struct game_samples test_boards[] = {
+		// Test single figures
+		{ "8/8/8/8/3n4/8/8/8", BLACK, 8 }, // test knight
+
+		// Test start board
+		{ "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr", WHITE, 4 },
+		{ "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr", BLACK, 4 },
+
+		// Test different boards
+		{ "RNBKQB1R/PPPPPPPP/8/8/4N3/2n5/pppppppp/r1bkqbnr", BLACK, 12 },
+		{ "RqBQKB1R/P1PPPPQP/2N2N2/8/8/4n3/p1pppppp/r1bqkbnr", WHITE, 29 },
+		{ "RNBQKB1R/PPPPPPPP/5N2/8/8/5n2/pppppppp/rnbqkb1r", WHITE, 12 },
+		{ "RNBQKBQR/PPPPPP1P/5N2/8/8/5n2/pppppp1p/rnbqkbqr", WHITE, 15 },
+		{ "RQBQKB1R/P1PPPPPP/2N2N2/8/5n2/n7/pppppppp/r1bqkb1r", WHITE, 22 },
+		{ "RNBQK2R/PPPPPPBP/7N/3N4/8/n1nn1n2/pbqppppp/r3kb1r", BLACK, 38 },
+		{ "RNBKQB1R/PPPPPPPP/8/3N4/8/5n2/pppppp1p/rnbkqbrr", WHITE, 12 },
+		{ "qRQQK1QR/3PPP1P/5N1B/4Q3/1b6/1Bn5/3ppp1p/1rqqkbqr", WHITE, 61 },
+		{ "4K2R/4P2P/8/q1N5/8/6B1/p1k3q1/r1bR4", WHITE, 32 },
+		{ "RNQQKB1r/PP1PPPP1/8/8/8/8/pp1ppp2/r1qkb1q1", WHITE, 18 },
+		{ "3QK3/4Q1P1/8/8/8/1rq1n3/2n5/2k5", WHITE, 33 },
+		{ "3R4/3R4/8/7K/7B/8/3r2n1/3k4", BLACK, 10 },
+		{ "6KR/8/1N6/8/8/3q4/4b3/6kr", WHITE, 15 },
+
+		{ "R1QQKBNR/PP1PPPPP/2N5/3b1B2/4q3/2n1n3/pppppppp/r1b1k2r", WHITE, 22 },
+
+		{ "K7/2r5/1q6/8/8/8/8/8", BLACK, 31 }, // check checkmate
+		{ "8/8/8/8/8/8/8/3K1k2", WHITE, 3 },   // check weird king interaction 1
+		{ "8/8/8/8/8/4R3/8/3K1k2", WHITE, 15 }, // check weird king interaction 2
+
+		{ "8/8/8/8/8/8/2p3p1/3k4", BLACK, 12 }, // Check correct pawn promotion
+		{ "3k4/4P3/8/2Q5/3R4/8/8/8", BLACK, 1 }, // Check correct `targets` buildup
+		{ "8/8/8/8/8/8/3p4/2RRR3", BLACK, 8 }, // Check that pawn hits all fields
+
+		/* Invalid boards
+		{ "r1bqkb1r/pppppppp/2n2n2/8/8/2N2N2/PPPPPPPP/R1BQKB1R", WHITE, 36 },
+		{ "r1bqkbqr/pppppp1p/2n2n2/8/8/2N2N2/P1PPPPPP/RQBQKB1R", WHITE, 38 },
+		{ "r1bqk1nr/pppppp1p/2k4b/8/8/2N2N2/P1PPPP1P/RQBQKB1R", WHITE, 36 },
+		{ "r1bqkqnr/ppppp2p/2n4b/3N4/8/5N2/P1PPPP1P/RQBQKB1R", WHITE, 42 },
+		*/
+	};
+	// clang-format on
+	printf("Benchmarking function generate_moves()...\n");
+
+	size_t len = sizeof(test_boards) / sizeof(*test_boards);
+
+	double* cpu_secs[len];
+	size_t* cpu_nsecs[len];
+	double* wall_secs[len];
+	size_t* wall_nsecs[len];
+
+	for (size_t i = 0; i < len; ++i) {
+		printf("BENCHMARK: %s \n", test_boards[i].fen);
+		// Reserve for average too
+		cpu_secs[i]   = calloc((N_FOR_AVG + 1), sizeof(**cpu_secs));
+		cpu_nsecs[i]  = calloc((N_FOR_AVG + 1), sizeof(**cpu_nsecs));
+		wall_secs[i]  = calloc((N_FOR_AVG + 1), sizeof(**wall_secs));
+		wall_nsecs[i] = calloc((N_FOR_AVG + 1), sizeof(**wall_nsecs));
+
+		// Init game
+		struct chess chess;
+		chess.moving = test_boards[i].moving;
+		board_from_fen(test_boards[i].fen, chess.board);
+
+		print_board(chess.board, NULL);
+
+		struct list* moves;
+		struct timespec t_start_cpu, t_end_cpu, t_start_wall, t_end_wall;
+
+		for (size_t j = 0; j < N_FOR_AVG; ++j) {
+			clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_cpu); // CPU time
+			clock_gettime(CLOCK_MONOTONIC, &t_start_wall); // "actual" time
+
+			for (size_t k = 0; k < ITERATIONS; ++k) {
+				/* functions to benchmark */
+
+				moves = generate_moves(&chess, 1, false);
+
+				/* \functions to benchmark */
+			}
+
+			clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_cpu);
+			clock_gettime(CLOCK_MONOTONIC, &t_end_wall);
+
+			double cpu_sec = (t_end_cpu.tv_sec - t_start_cpu.tv_sec) +
+							 (t_end_cpu.tv_nsec - t_start_cpu.tv_nsec) * 1e-9;
+			size_t cpu_nsec = (t_end_cpu.tv_sec - t_start_cpu.tv_sec) * 1e9 +
+							  (t_end_cpu.tv_nsec - t_start_cpu.tv_nsec);
+			cpu_secs[i][j]  = cpu_sec;
+			cpu_nsecs[i][j] = cpu_nsec;
+			cpu_secs[i][N_FOR_AVG] += cpu_sec;
+			cpu_nsecs[i][N_FOR_AVG] += cpu_nsec;
+
+			double wall_sec =
+					(t_end_wall.tv_sec - t_start_wall.tv_sec) +
+					(t_end_wall.tv_nsec - t_start_wall.tv_nsec) * 1e-9;
+			size_t wall_nsec = (t_end_wall.tv_sec - t_start_wall.tv_sec) * 1e9 +
+							   (t_end_wall.tv_nsec - t_start_wall.tv_nsec);
+			wall_secs[i][j]  = wall_sec;
+			wall_nsecs[i][j] = wall_nsec;
+			wall_secs[i][N_FOR_AVG] += wall_sec;
+			wall_nsecs[i][N_FOR_AVG] += wall_nsec;
+
+			printf("Generated moves: %li\n", moves->count);
+			printf("Elapsed CPU-time over %i iterations:  %lf sec, %li nsec\n",
+			       ITERATIONS, cpu_sec, cpu_nsec);
+			printf("Elapsed wall-time over %i iterations: %lf sec, %li nsec\n",
+			       ITERATIONS, wall_sec, wall_nsec);
+		}
+
+		cpu_secs[i][N_FOR_AVG] /= N_FOR_AVG;
+		cpu_nsecs[i][N_FOR_AVG] /= N_FOR_AVG;
+		wall_secs[i][N_FOR_AVG] /= N_FOR_AVG;
+		wall_nsecs[i][N_FOR_AVG] /= N_FOR_AVG;
+
+		printf("Average CPU-time (%ix):  %lf sec, %li nsec\n", N_FOR_AVG,
+		       cpu_secs[i][N_FOR_AVG], cpu_nsecs[i][N_FOR_AVG]);
+		printf("Average wall-time (%ix): %lf sec, %li nsec\n", N_FOR_AVG,
+		       wall_secs[i][N_FOR_AVG], wall_nsecs[i][N_FOR_AVG]);
+
+		printf("\n-------------------------------------------\n\n");
+	}
+
+	printf("Summary:\n");
+	fprintf(CSV_STREAM, "FEN;cpu secs;cpu nsecs;wall secs; wall nsecs\n");
+	for (size_t i = 0; i < len; ++i) {
+		fprintf(CSV_STREAM, "%s;%lf;%li;%lf;%li\n", test_boards[i].fen,
+		        cpu_secs[i][N_FOR_AVG], cpu_nsecs[i][N_FOR_AVG],
+		        wall_secs[i][N_FOR_AVG], wall_nsecs[i][N_FOR_AVG]);
+
+		free(cpu_secs[i]);
+		free(cpu_nsecs[i]);
+		free(wall_secs[i]);
+		free(wall_nsecs[i]);
+	}
+}
+#endif /* BUILD_BENCHMARK */
