@@ -31,7 +31,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 
 	// Generate moves for the king
 	struct list* counter_moves =
-			generate_moves_piece(game.board, mate_move->target, 1, false);
+			generate_moves_piece(game.board, mate_move->target, true, false);
 	if (counter_moves->first) {
 		// The king can still move out of check.
 		list_free(counter_moves);
@@ -41,7 +41,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 
 	// check all possible moves if they can prevent the checkmate
 	// TODO: Add bitmask to check everything but the kings moves
-	counter_moves = generate_moves(&game, 0, false);
+	counter_moves = generate_moves(&game, false, false);
 	while (counter_moves->last) {
 		struct move* cur_counter_move = (struct move*)list_pop(counter_moves);
 
@@ -63,8 +63,8 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		execute_move(game.board, cur_counter_move);
 
 		// Check if mate_move is still doable or was declined
-		struct list* moves =
-				generate_moves_piece(game.board, mate_move->start, 0, false);
+		struct list* moves = generate_moves_piece(game.board, mate_move->start,
+		                                          false, false);
 		bool mate_declined = true;
 		while (moves->last) {
 			struct move* cur_move = (struct move*)list_pop(moves);
@@ -111,7 +111,7 @@ is_checkless_move(struct PIECE board[], struct move* move)
 
 	struct list* new_moves;
 
-	new_moves = generate_moves_piece(new_board, move->target, 0, false);
+	new_moves = generate_moves_piece(new_board, move->target, false, false);
 	assert(new_moves);
 
 	while (new_moves->last) {
@@ -173,7 +173,7 @@ is_occupied_by_enemy(struct PIECE board[], enum POS pos, enum POS target)
  */
 struct list*
 generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range,
-                          int check_checkless, bool hit_allies)
+                          bool check_checkless, bool hit_allies)
 {
 	struct list* moves = calloc(1, sizeof(*moves));
 	int offsets[]      = { +1, -1, +8, -8 };
@@ -244,7 +244,7 @@ generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range,
  */
 struct list*
 generate_diagonal_moves(struct PIECE board[], enum POS pos, int range,
-                        int check_checkless, bool hit_allies)
+                        bool check_checkless, bool hit_allies)
 {
 	if (range < -1) {
 		fprintf(stderr, "Parameter `range` can't be lower than -1.\n");
@@ -318,7 +318,7 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range,
  */
 struct list*
 generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
-                           int check_checkless, bool hit_allies)
+                           bool check_checkless, bool hit_allies)
 {
 	struct list* moves = calloc(1, sizeof(*moves));
 
@@ -401,7 +401,7 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 
 struct move*
 generate_moves_knight_helper(struct PIECE board[], enum POS pos,
-                             enum POS target, int check_checkless,
+                             enum POS target, bool check_checkless,
                              bool hit_allies)
 {
 	if (!is_valid_pos(target))
@@ -445,7 +445,7 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos,
  * ----------------------------*/
 
 struct list*
-generate_moves_queen(struct PIECE board[], enum POS pos, int check_checkless,
+generate_moves_queen(struct PIECE board[], enum POS pos, bool check_checkless,
                      bool hit_allies)
 {
 	struct list* vertical_moves = generate_orthogonal_moves(
@@ -456,7 +456,7 @@ generate_moves_queen(struct PIECE board[], enum POS pos, int check_checkless,
 }
 
 struct list*
-generate_moves_king(struct PIECE board[], enum POS pos, int check_checkless,
+generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless,
                     bool hit_allies)
 {
 	struct list* vertical_moves =
@@ -478,7 +478,7 @@ generate_moves_king(struct PIECE board[], enum POS pos, int check_checkless,
 	struct chess game = { .moving = !board[pos].color };
 	memcpy(game.board, board, 64 * sizeof(*board));
 
-	struct list* possible_hit_moves = generate_moves(&game, 0, true);
+	struct list* possible_hit_moves = generate_moves(&game, false, true);
 	// TODO: use bitboard and & with king moves bitboard
 	bool targets[64] = { 0 };
 	are_attacked(possible_hit_moves, targets);
@@ -499,7 +499,7 @@ generate_moves_king(struct PIECE board[], enum POS pos, int check_checkless,
 }
 
 struct list*
-generate_moves_rook(struct PIECE board[], enum POS pos, int check_checkless,
+generate_moves_rook(struct PIECE board[], enum POS pos, bool check_checkless,
                     bool hit_allies)
 {
 	return generate_orthogonal_moves(board, pos, -1, check_checkless,
@@ -507,7 +507,7 @@ generate_moves_rook(struct PIECE board[], enum POS pos, int check_checkless,
 }
 
 struct list*
-generate_moves_knight(struct PIECE board[], enum POS pos, int check_checkless,
+generate_moves_knight(struct PIECE board[], enum POS pos, bool check_checkless,
                       bool hit_allies)
 {
 	struct list* moves = calloc(1, sizeof(*moves));
@@ -527,14 +527,14 @@ generate_moves_knight(struct PIECE board[], enum POS pos, int check_checkless,
 }
 
 struct list*
-generate_moves_pawn(struct PIECE board[], enum POS pos, int check_checkless,
+generate_moves_pawn(struct PIECE board[], enum POS pos, bool check_checkless,
                     bool hit_allies)
 {
 	return generate_moves_pawn_helper(board, pos, check_checkless, hit_allies);
 }
 
 struct list*
-generate_moves_bishop(struct PIECE board[], enum POS pos, int check_checkless,
+generate_moves_bishop(struct PIECE board[], enum POS pos, bool check_checkless,
                       bool hit_allies)
 {
 	return generate_diagonal_moves(board, pos, -1, check_checkless, hit_allies);
@@ -556,7 +556,7 @@ get_king_pos(struct PIECE board[], enum COLOR c)
  * ------------------*/
 
 struct list*
-generate_moves_piece(struct PIECE board[], enum POS pos, int check_checkless,
+generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless,
                      bool hit_allies)
 {
 	struct list* moves;
@@ -602,7 +602,7 @@ generate_moves_piece(struct PIECE board[], enum POS pos, int check_checkless,
 		bool targets[64] = { 0 };
 
 		// Populate targets array
-		struct list* possible_hit_moves = generate_moves(&game, 0, false);
+		struct list* possible_hit_moves = generate_moves(&game, false, false);
 		// Undo move
 		game.board[cur_move->start]  = game.board[cur_move->target];
 		game.board[cur_move->target] = old;
@@ -630,7 +630,7 @@ generate_moves_piece(struct PIECE board[], enum POS pos, int check_checkless,
 }
 
 struct list*
-generate_moves(struct chess* game, int check_checkless, bool hit_allies)
+generate_moves(struct chess* game, bool check_checkless, bool hit_allies)
 {
 	struct list* moves = calloc(1, sizeof(*moves));
 

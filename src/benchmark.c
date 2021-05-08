@@ -48,7 +48,7 @@ main(int argc, char* argv[])
 			for (size_t k = 0; k < ITERATIONS; ++k) {
 				/* functions to benchmark */
 
-				moves = generate_moves(&chess, 1, false);
+				moves = generate_moves(&chess, true, false);
 
 				/* \functions to benchmark */
 			}

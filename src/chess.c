@@ -74,7 +74,7 @@ run_chess(struct chess* game)
 
 	while (!game->checkmate) {
 		// sleep(1);
-		struct list* moves = generate_moves(game, 1, false);
+		struct list* moves = generate_moves(game, true, false);
 		struct move* move  = choose_move(game, moves);
 		print_move(move);
 
