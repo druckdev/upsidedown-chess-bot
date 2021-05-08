@@ -15,38 +15,34 @@ set(CMAKE_BUILD_TYPE Debug)
 set(SRC_DIR src)
 set(INC_DIR inc)
 
-# sources
-set(SOURCES ${SRC_DIR}/main.c ${SRC_DIR}/board.c ${SRC_DIR}/chess.c
+# non-specific sources - add new sources for game-logik here - no main-functions
+# in here
+set(SOURCES ${SRC_DIR}/board.c ${SRC_DIR}/chess.c
     ${SRC_DIR}/bot.c ${SRC_DIR}/generator.c ${SRC_DIR}/timemanagement.c
     ${SRC_DIR}/types.c)
-set(HEADERS ${INC_DIR}/main.h ${INC_DIR}/board.h ${INC_DIR}/chess.h
+set(HEADERS ${INC_DIR}/board.h ${INC_DIR}/chess.h
     ${INC_DIR}/bot.h ${INC_DIR}/generator.h ${INC_DIR}/timemanagement.h
     ${INC_DIR}/types.h)
 
-set(TEST_SOURCES ${SRC_DIR}/unity.c ${SRC_DIR}/unit_test.c
-    ${SRC_DIR}/board.c ${SRC_DIR}/chess.c ${SRC_DIR}/bot.c
-    ${SRC_DIR}/generator.c ${SRC_DIR}/timemanagement.c ${SRC_DIR}/types.c)
-set(TEST_HEADERS ${INC_DIR}/unity.h ${INC_DIR}/unity_internals.h
-    ${INC_DIR}/board.h ${INC_DIR}/chess.h ${INC_DIR}/bot.h
-    ${INC_DIR}/generator.h ${INC_DIR}/helper.h ${INC_DIR}/timemanagement.h
-    ${INC_DIR}/types.h)
+# sources specific to the bot itself - cotaining bot main
+set(BOT_SOURCES ${SRC_DIR}/main.c ${SOURCES})
+set(BOT_HEADERS ${INC_DIR}/main.h ${HEADERS})
 
-set(BENCHMARK_SOURCES ${SRC_DIR}/benchmark.c ${SRC_DIR}/board.c
-	${SRC_DIR}/chess.c ${SRC_DIR}/bot.c ${SRC_DIR}/generator.c
-	${SRC_DIR}/timemanagement.c ${SRC_DIR}/types.c)
-set(BENCHMARK_HEADERS ${INC_DIR}/board.h ${INC_DIR}/chess.h
-    ${INC_DIR}/generator.h ${INC_DIR}/helper.h ${INC_DIR}/timemanagement.h
-    ${INC_DIR}/types.h)
+# sources specific only to testing - containing test main
+set(TEST_SOURCES ${SRC_DIR}/unity.c ${SRC_DIR}/unit_test.c ${SOURCES})
+set(TEST_HEADERS ${INC_DIR}/unity.h ${INC_DIR}/unity_internals.h ${HEADERS})
+
+# sources specific only to benchmarking - containing benchmark main
+set(BENCHMARK_SOURCES ${SRC_DIR}/benchmark.c ${SOURCES})
+set(BENCHMARK_HEADERS ${INC_DIR}/benchmark.h ${HEADERS})
 
 # executables
-add_executable(bot ${SOURCES} ${HEADERS})
+add_executable(bot ${BOT_SOURCES} ${BOT_HEADERS})
 add_executable(test ${TEST_SOURCES} ${TEST_HEADERS})
 add_executable(benchmark ${BENCHMARK_SOURCES} ${BENCHMARK_HEADERS})
 
 # includes
-target_include_directories(bot PRIVATE inc)
-target_include_directories(test PRIVATE inc)
-target_include_directories(benchmark PRIVATE inc)
+include_directories(PRIVATE inc)
 
 # preprocessor variables
 target_compile_definitions(test PRIVATE BUILD_TEST)
