@@ -46,8 +46,11 @@ static struct game_samples test_boards[] = {
 	{ "8/8/8/8/8/8/8/3K1k2", WHITE, 3 },    // check weird king interaction 1
 	{ "8/8/8/8/8/4R3/8/3K1k2", WHITE, 15 }, // check weird king interaction 2
 
-	{ "8/8/8/8/8/8/2p3p1/3k4", BLACK, 12 },  // Check correct pawn promotion
-	{ "8/8/8/8/8/8/3p4/2RRR3", BLACK, 8 },   // Check that pawn hits right fields
+	{ "8/8/8/8/8/8/2p3p1/3k4", BLACK, 12 }, // Check pawn promotion (ally king)
+	{ "8/8/8/8/8/K7/2p5/8", BLACK, 2 },     // Check pawn promotion (q, b)
+	{ "8/8/8/8/8/8/K1p5/8", BLACK, 3 },     // Check pawn promotion (n)
+	{ "8/8/8/8/8/8/2p5/K7", BLACK, 2 },     // Check pawn promotion (q, r)
+	{ "8/8/8/8/8/8/3p4/2RRR3", BLACK, 8 },  // Check that pawn hits right fields
 
 	// Check proper `targets` buildup
 	{ "3k4/4P3/8/2Q5/3R4/8/8/8", BLACK, 1 },
