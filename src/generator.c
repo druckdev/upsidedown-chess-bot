@@ -191,19 +191,19 @@ generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range,
 			if (!is_valid_pos(target))
 				break;
 
-			if (is_occupied(board, target)) {
-				if (is_occupied_by_enemy(board, pos, target))
-					hit = true; // in this move we will hit an enemy position
-				else if (!hit_allies)
-					break; // occupied by ally
-			}
-
 			int target_col = target % 8;
 
 			if (prev_target_col != target_col &&
 			    prev_target_col - 1 != target_col &&
 			    prev_target_col + 1 != target_col)
 				break; // we must have wrapped around a border
+
+			if (is_occupied(board, target)) {
+				if (is_occupied_by_enemy(board, pos, target) || hit_allies)
+					hit = true; // in this move we will hit somebody
+				else
+					break;
+			}
 
 			/*
 			 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
@@ -267,18 +267,18 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range,
 			if (!is_valid_pos(target))
 				break;
 
-			if (board[target].type != EMPTY) {
-				if (is_occupied_by_enemy(board, pos, target))
-					hit = true;
-				else if (!hit_allies)
-					break; // occupied by ally
-			}
-
 			int target_col = target % 8;
 
 			if (prev_target_col - 1 != target_col &&
 			    prev_target_col + 1 != target_col)
 				break; // we must have wrapped around the border
+
+			if (is_occupied(board, target)) {
+				if (is_occupied_by_enemy(board, pos, target) || hit_allies)
+					hit = true; // in this move we will hit somebody
+				else
+					break;
+			}
 
 			/*
 			 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
