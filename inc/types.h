@@ -67,6 +67,7 @@ int list_count(struct list* list);
  */
 void list_free(struct list* list);
 
+/*
 #ifdef BUILD_TEST
 int test_types();
 #endif /* BUILD_TEST */

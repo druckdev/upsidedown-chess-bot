@@ -139,3 +139,23 @@ list_free(struct list* list)
 	}
 	free(list);
 }
+
+/* How to add unit tests to files.
+#ifdef BUILD_TEST
+#include "unity.h"
+#include <stdbool.h>
+
+void
+test_types_test(void)
+{
+	printf("Testing types.c\n");
+	TEST_ASSERT_MESSAGE(true, "This sould not fail because.");
+}
+
+int
+test_types()
+{
+	RUN_TEST(test_types_test);
+}
+#endif
+*/
