@@ -113,18 +113,26 @@ chr_to_piece(char fen_piece)
 }
 
 void
-fen_to_board(char* fen, struct PIECE board[])
+fen_to_chess(char* fen, struct chess* game)
 {
-	memset(board, 0, sizeof(struct PIECE) * 64);
+	memset(game->board, 0, sizeof(struct PIECE) * 64);
 
 	size_t c = -1, i = 0;
-	while (fen[++c]) {
+	while (fen[++c] && i < 64) {
 		if (fen[c] >= '0' && fen[c] <= '9') {
 			// Skip number of fields indicated by number in fen[c].
 			i += atoi(fen + c);
 		} else if (fen[c] != '/') {
-			board[i++] = chr_to_piece(fen[c]);
+			game->board[i++] = chr_to_piece(fen[c]);
 		}
+	}
+	--c;
+
+	while (fen[++c]) {
+		if (fen[c] == 'w')
+			game->moving = WHITE;
+		else if (fen[c] == 'b')
+			game->moving = BLACK;
 	}
 }
 

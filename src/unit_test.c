@@ -23,8 +23,7 @@ test_generator(void)
 
 	// init game
 	struct chess chess;
-	chess.moving = test_boards[test_idx].moving;
-	fen_to_board(test_boards[test_idx].fen, chess.board);
+	fen_to_chess(test_boards[test_idx].fen, &chess);
 
 	// verify generator
 	struct list* list = generate_moves(&chess, true, false);
