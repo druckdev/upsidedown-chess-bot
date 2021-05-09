@@ -499,14 +499,6 @@ generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless,
 }
 
 struct list*
-generate_moves_rook(struct PIECE board[], enum POS pos, bool check_checkless,
-                    bool hit_allies)
-{
-	return generate_orthogonal_moves(board, pos, -1, check_checkless,
-	                                 hit_allies);
-}
-
-struct list*
 generate_moves_knight(struct PIECE board[], enum POS pos, bool check_checkless,
                       bool hit_allies)
 {
@@ -524,20 +516,6 @@ generate_moves_knight(struct PIECE board[], enum POS pos, bool check_checkless,
 	}
 
 	return moves;
-}
-
-struct list*
-generate_moves_pawn(struct PIECE board[], enum POS pos, bool check_checkless,
-                    bool hit_allies)
-{
-	return generate_moves_pawn_helper(board, pos, check_checkless, hit_allies);
-}
-
-struct list*
-generate_moves_bishop(struct PIECE board[], enum POS pos, bool check_checkless,
-                      bool hit_allies)
-{
-	return generate_diagonal_moves(board, pos, -1, check_checkless, hit_allies);
 }
 
 enum POS
@@ -564,10 +542,10 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless,
 	switch (board[pos].type) {
 	case QUEEN:  moves = generate_moves_queen (board, pos, check_checkless, hit_allies); break;
 	case KING:   moves = generate_moves_king  (board, pos, check_checkless, hit_allies); break;
-	case ROOK:   moves = generate_moves_rook  (board, pos, check_checkless, hit_allies); break;
+	case ROOK:   moves = generate_orthogonal_moves(board, pos, -1, check_checkless, hit_allies); break;
 	case KNIGHT: moves = generate_moves_knight(board, pos, check_checkless, hit_allies); break;
-	case PAWN:   moves = generate_moves_pawn  (board, pos, check_checkless, hit_allies); break;
-	case BISHOP: moves = generate_moves_bishop(board, pos, check_checkless, hit_allies); break;
+	case PAWN:   moves = generate_moves_pawn_helper(board, pos, check_checkless, hit_allies); break;
+	case BISHOP: moves = generate_diagonal_moves(board, pos, -1, check_checkless, hit_allies); break;
 	default:
 		printf("Invalid piece at %i: %i\n", pos, board[pos].type);
 		assert(false); return NULL;
