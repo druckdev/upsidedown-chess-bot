@@ -166,85 +166,17 @@ is_occupied_by_enemy(struct PIECE board[], enum POS pos, enum POS target)
  * Helpers for move generation
  * ----------------------------*/
 
+enum MOVES_TYPE { DIAGONAL, ORTHOGONAL, BOTH };
+
 /**
- * @arg range: Use this parameter to only calculate orthogonal moves up to a
- * certain range, i.e. the king who may only walk one tile. Use -1 for
+ * @arg range: Use this parameter to calculate diagonal and orthogonal moves up
+ * to a certain range, i.e. the king who may only walk one tile. Use -1 for
  * "unlimited" range, meaning until the end of the board is reached.
  */
 struct list*
-generate_orthogonal_moves(struct PIECE board[], enum POS pos, int range,
-                          bool check_checkless, bool hit_allies)
-{
-	struct list* moves = calloc(1, sizeof(*moves));
-	int offsets[]      = { +1, -1, +8, -8 };
-
-	bool hit;
-	for (int i = 0; i < 4; ++i) {
-		enum POS prev_target = pos;
-		int prev_target_col  = pos % 8;
-		hit                  = false;
-
-		int counter = 0;
-		while (range == -1 || counter < range) {
-			enum POS target = prev_target + offsets[i];
-
-			if (!is_valid_pos(target))
-				break;
-
-			int target_col = target % 8;
-
-			if (prev_target_col != target_col &&
-			    prev_target_col - 1 != target_col &&
-			    prev_target_col + 1 != target_col)
-				break; // we must have wrapped around a border
-
-			if (is_occupied(board, target)) {
-				if (is_occupied_by_enemy(board, pos, target) || hit_allies)
-					hit = true; // in this move we will hit somebody
-				else
-					break;
-			}
-
-			/*
-			 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
-			 * be the last check!
-			 */
-			struct move test_move = { pos, target, hit, EMPTY };
-			if (!check_checkless || is_checkless_move(board, &test_move)) {
-				// Move passed all tests
-
-				struct move* move = malloc(sizeof(*move));
-				// TODO(Aurel): Should we cleanup the list moves?
-				if (!move)
-					return NULL;
-				move->start       = pos;
-				move->target      = target;
-				move->hit         = hit;
-				move->promotes_to = empty_piece;
-
-				moves = list_push(moves, move);
-				if (!moves)
-					return NULL;
-			}
-
-			prev_target     = target;
-			prev_target_col = target_col;
-			if (hit)
-				break;
-			++counter;
-		}
-	}
-	return moves;
-}
-
-/**
- * @arg range: Use this parameter to only calculate diagonal moves up to a
- * certain range, i.e. the king who may only walk one tile. Use -1 for
- * "unlimited" range, meaning until the end of the board is reached.
- */
-struct list*
-generate_diagonal_moves(struct PIECE board[], enum POS pos, int range,
-                        bool check_checkless, bool hit_allies)
+generate_moves_helper(struct PIECE board[], enum POS pos, int range,
+                      enum MOVES_TYPE type, bool check_checkless,
+                      bool hit_allies)
 {
 	if (range < -1) {
 		fprintf(stderr, "Parameter `range` can't be lower than -1.\n");
@@ -252,25 +184,45 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range,
 	}
 
 	struct list* moves = calloc(1, sizeof(*moves));
-	int offsets[]      = { 7, 9, -7, -9 };
+	int* offsets;
+	size_t len;
+	switch (type) {
+	case DIAGONAL:
+		len     = 4;
+		offsets = (int[4]){ +9, +7, -9, -7 };
+		break;
+	case ORTHOGONAL:
+		len     = 4;
+		offsets = (int[4]){ +1, +8, -1, -8 };
+		break;
+	case BOTH:
+		len     = 8;
+		offsets = (int[8]){ +1, +9, +8, +7, -1, -9, -8, -7 };
+		break;
+	default:
+		fprintf(stderr, "Unknown moves type: %i", type);
+		break;
+	}
 
 	bool hit;
-	for (int i = 0; i < 4; ++i) {
+	for (size_t i = 0; i < len; ++i) {
 		enum POS prev_target = pos;
 		int prev_target_col  = pos % 8;
+		bool diagonal        = !(offsets[i] % 7) || !(offsets[i] % 9);
 		hit                  = false;
 
-		int counter = 0;
-		while (range == -1 || counter < range) {
+		size_t counter = 0;
+		// Continue as long as we are in range and did not hit something
+		for (; !hit && (counter < range || range == -1); ++counter) {
 			enum POS target = prev_target + offsets[i];
 
 			if (!is_valid_pos(target))
 				break;
 
 			int target_col = target % 8;
-
 			if (prev_target_col - 1 != target_col &&
-			    prev_target_col + 1 != target_col)
+			    prev_target_col + 1 != target_col &&
+			    (diagonal || prev_target_col != target_col))
 				break; // we must have wrapped around the border
 
 			if (is_occupied(board, target)) {
@@ -304,9 +256,6 @@ generate_diagonal_moves(struct PIECE board[], enum POS pos, int range,
 
 			prev_target     = target;
 			prev_target_col = target_col;
-			if (hit)
-				break;
-			++counter;
 		}
 	}
 	return moves;
@@ -445,26 +394,11 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos,
  * ----------------------------*/
 
 struct list*
-generate_moves_queen(struct PIECE board[], enum POS pos, bool check_checkless,
-                     bool hit_allies)
-{
-	struct list* vertical_moves = generate_orthogonal_moves(
-			board, pos, -1, check_checkless, hit_allies);
-	struct list* diagonal_moves = generate_diagonal_moves(
-			board, pos, -1, check_checkless, hit_allies);
-	return list_append_list(vertical_moves, diagonal_moves);
-}
-
-struct list*
 generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless,
                     bool hit_allies)
 {
-	struct list* vertical_moves =
-			generate_orthogonal_moves(board, pos, 1, 0, hit_allies);
-	struct list* diagonal_moves =
-			generate_diagonal_moves(board, pos, 1, 0, hit_allies);
-
-	struct list* all_moves = list_append_list(vertical_moves, diagonal_moves);
+	struct list* all_moves =
+			generate_moves_helper(board, pos, 1, BOTH, false, hit_allies);
 
 	if (!all_moves)
 		return NULL;
@@ -540,12 +474,12 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless,
 	struct list* moves;
 	// clang-format off
 	switch (board[pos].type) {
-	case QUEEN:  moves = generate_moves_queen (board, pos, check_checkless, hit_allies); break;
+	case QUEEN:  moves = generate_moves_helper(board, pos, -1, BOTH, check_checkless, hit_allies); break;
 	case KING:   moves = generate_moves_king  (board, pos, check_checkless, hit_allies); break;
-	case ROOK:   moves = generate_orthogonal_moves(board, pos, -1, check_checkless, hit_allies); break;
+	case ROOK:   moves = generate_moves_helper(board, pos, -1, ORTHOGONAL, check_checkless, hit_allies); break;
 	case KNIGHT: moves = generate_moves_knight(board, pos, check_checkless, hit_allies); break;
 	case PAWN:   moves = generate_moves_pawn_helper(board, pos, check_checkless, hit_allies); break;
-	case BISHOP: moves = generate_diagonal_moves(board, pos, -1, check_checkless, hit_allies); break;
+	case BISHOP: moves = generate_moves_helper(board, pos, -1, DIAGONAL, check_checkless, hit_allies); break;
 	default:
 		printf("Invalid piece at %i: %i\n", pos, board[pos].type);
 		assert(false); return NULL;
