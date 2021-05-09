@@ -19,7 +19,7 @@ static size_t test_idx = 0;
 void
 test_generator(void)
 {
-	printf("TEST: %s", test_boards[test_idx].fen);
+	printf("TEST: %s\n", test_boards[test_idx].fen);
 
 	// init game
 	struct chess chess;
@@ -48,7 +48,6 @@ main(void)
 	int tests_length = sizeof(test_boards) / sizeof(*test_boards);
 	for (test_idx = 0; test_idx < tests_length; test_idx++) {
 		RUN_TEST(test_generator);
-		printf("\n");
 	}
 	return UNITY_END();
 }

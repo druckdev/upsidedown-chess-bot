@@ -533,6 +533,7 @@ UnityConcludeTest(void)
 	} else {
 		Unity.TestFailures++;
 		UNITY_PRINT_EOL();
+		UNITY_PRINT_EOL();
 	}
 
 	Unity.CurrentTestFailed  = 0;
