@@ -261,6 +261,10 @@ generate_moves_helper(struct PIECE board[], enum POS pos, int range,
 	return moves;
 }
 
+/*-----------------------------
+ * Piece based move generators
+ * ----------------------------*/
+
 /**
  * @arg factor: Use this parameter to decide whther to subtract (factor = -1) or add
  * (factor = 1) values.
@@ -389,10 +393,6 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos,
 	return move;
 }
 
-/*-----------------------------
- * Piece based move generators
- * ----------------------------*/
-
 struct list*
 generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless,
                     bool hit_allies)
@@ -464,7 +464,7 @@ get_king_pos(struct PIECE board[], enum COLOR c)
 }
 
 /*-------------------
- * Inteface
+ * Interface
  * ------------------*/
 
 struct list*
