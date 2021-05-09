@@ -113,7 +113,7 @@ chr_to_piece(char fen_piece)
 }
 
 void
-board_from_fen(char* fen, struct PIECE board[])
+fen_to_board(char* fen, struct PIECE board[])
 {
 	memset(board, 0, sizeof(struct PIECE) * 64);
 

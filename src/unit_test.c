@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "board.h"
 #include "generator.h"
 #include "helper.h"
@@ -17,27 +19,23 @@ static size_t test_idx = 0;
 void
 test_generator(void)
 {
-	printf("TEST : %s \n", test_boards[test_idx].fen);
+	printf("TEST: %s", test_boards[test_idx].fen);
 
 	// init game
 	struct chess chess;
 	chess.moving = test_boards[test_idx].moving;
-	board_from_fen(test_boards[test_idx].fen, chess.board);
+	fen_to_board(test_boards[test_idx].fen, chess.board);
 
 	// verify generator
 	struct list* list = generate_moves(&chess, true, false);
 	int list_length   = list_count(list);
 
-	// pretty print board
-	print_board(chess.board, list);
+	if (list_length != test_boards[test_idx].move_cnt) {
+		printf("\n");
+		print_board(chess.board, list);
+	}
 
-	// pretty print moves
-	printf("Expected : %d , Got : %d \n\n", test_boards[test_idx].move_cnt,
-	       list_length);
-
-	TEST_ASSERT(list_length == test_boards[test_idx].move_cnt);
-
-	printf("\n-------------------------------------------\n");
+	TEST_ASSERT_EQUAL_INT(list_length, test_boards[test_idx].move_cnt);
 }
 
 // TODO(Luis): use generate_test_runner.rb
@@ -50,6 +48,7 @@ main(void)
 	int tests_length = sizeof(test_boards) / sizeof(*test_boards);
 	for (test_idx = 0; test_idx < tests_length; test_idx++) {
 		RUN_TEST(test_generator);
+		printf("\n");
 	}
 	return UNITY_END();
 }

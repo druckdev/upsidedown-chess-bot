@@ -34,7 +34,7 @@ main(int argc, char* argv[])
 		// Init game
 		struct chess chess;
 		chess.moving = test_boards[i].moving;
-		board_from_fen(test_boards[i].fen, chess.board);
+		fen_to_board(test_boards[i].fen, chess.board);
 
 		print_board(chess.board, NULL);
 

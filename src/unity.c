@@ -528,16 +528,16 @@ UnityConcludeTest(void)
 	if (Unity.CurrentTestIgnored) {
 		Unity.TestIgnores++;
 	} else if (!Unity.CurrentTestFailed) {
-		UnityTestResultsBegin(Unity.TestFile, Unity.CurrentTestLineNumber);
-		UnityPrint(UnityStrPass);
+		// UnityTestResultsBegin(Unity.TestFile, Unity.CurrentTestLineNumber);
+		// UnityPrint(UnityStrPass);
 	} else {
 		Unity.TestFailures++;
+		UNITY_PRINT_EOL();
 	}
 
 	Unity.CurrentTestFailed  = 0;
 	Unity.CurrentTestIgnored = 0;
 	UNITY_PRINT_EXEC_TIME();
-	UNITY_PRINT_EOL();
 	UNITY_FLUSH_CALL();
 }
 

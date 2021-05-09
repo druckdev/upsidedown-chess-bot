@@ -55,7 +55,7 @@ struct chess
 init_chess(enum COLOR c)
 {
 	struct chess chess = { 0 };
-	board_from_fen(DEFAULT_BOARD, chess.board);
+	fen_to_board(DEFAULT_BOARD, chess.board);
 	chess.moving = c;
 	return chess;
 }
