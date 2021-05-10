@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "board.h"
 #include "chess.h"
 #include "unity.h"
@@ -15,7 +18,7 @@ test_generate_moves_piece()
 	struct chess chess;
 	fen_to_chess(test_boards[0].fen, &chess);
 
-	// verify generator
+// verify generator
 	struct list* list = generate_moves_piece(chess.board, D3, true, false);
 	int list_length   = list_count(list);
 
@@ -35,6 +38,7 @@ test_game_samples()
 
 	// init game
 	struct chess chess;
+	chess.board = calloc(64, sizeof(*chess.board));
 	fen_to_chess(test_boards[test_idx].fen, &chess);
 
 	// verify generator
@@ -46,6 +50,7 @@ test_game_samples()
 		print_board(chess.board, list);
 	}
 
+	free(chess.board);
 	TEST_ASSERT_EQUAL_INT(list_length, test_boards[test_idx].move_cnt);
 }
 

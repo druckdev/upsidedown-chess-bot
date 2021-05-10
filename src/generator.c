@@ -29,8 +29,10 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		return false;
 	}
 
-	struct chess game = { .moving = -1 * board[mate_move->start].color };
-	memcpy(game.board, board, 64 * sizeof(*board));
+	struct chess game = {
+		.moving = -1 * board[mate_move->start].color,
+		.board  = board,
+	};
 
 	// Generate moves for the king
 	struct list* counter_moves =
@@ -106,16 +108,15 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 bool
 is_checkless_move(struct PIECE board[], struct move* move)
 {
-	struct PIECE new_board[64];
-	memcpy(new_board, board, 64 * sizeof(*board));
-
-	assert(do_move(new_board, move));
+	struct PIECE old = board[move->target];
+	assert(do_move(board, move));
 
 	struct list* new_moves;
 
-	new_moves = generate_moves_piece(new_board, move->target, false, false);
+	new_moves = generate_moves_piece(board, move->target, false, false);
 	assert(new_moves);
 
+	bool is_checkless_move = true;
 	while (list_count(new_moves)) {
 		struct move* cur_move = (struct move*)list_pop(new_moves);
 		if (!cur_move->hit) {
@@ -123,18 +124,19 @@ is_checkless_move(struct PIECE board[], struct move* move)
 			continue;
 		}
 
-		if (new_board[cur_move->target].type == KING &&
-		    !is_checkmate(new_board, cur_move)) {
+		if (board[cur_move->target].type == KING &&
+		    !is_checkmate(board, cur_move)) {
 			// Found checkless move
 			free(cur_move);
-			list_free(new_moves);
-			return false;
+			is_checkless_move = false;
+			break;
 		}
 		free(cur_move);
 	}
 	list_free(new_moves);
 
-	return true;
+	undo_move(board, move, old);
+	return is_checkless_move;
 }
 
 bool
@@ -402,8 +404,10 @@ generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless,
 	if (!list_count(all_moves) || !check_checkless)
 		return all_moves;
 
-	struct chess game = { .moving = -1 * board[pos].color };
-	memcpy(game.board, board, 64 * sizeof(*board));
+	struct chess game = {
+		.moving = -1 * board[pos].color,
+		.board  = board,
+	};
 
 	struct list* possible_hit_moves = generate_moves(&game, false, true);
 	// TODO: use bitboard and & with king moves bitboard
@@ -490,8 +494,10 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless,
 		// No king, or not needed as we moved the king itself.
 		return moves;
 
-	struct chess game = { .moving = -1 * board[pos].color };
-	memcpy(game.board, board, 64 * sizeof(*board));
+	struct chess game = {
+		.moving = -1 * board[pos].color,
+		.board  = board,
+	};
 
 	// Remove all moves that leave the king hittable.
 	struct list_elem* cur = list_get_first(moves);

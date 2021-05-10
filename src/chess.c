@@ -55,6 +55,7 @@ struct chess
 init_chess(enum COLOR c)
 {
 	struct chess chess = { 0 };
+	chess.board = calloc(64, sizeof(*chess.board));
 	fen_to_chess(DEFAULT_BOARD, &chess);
 	chess.moving = c;
 	return chess;

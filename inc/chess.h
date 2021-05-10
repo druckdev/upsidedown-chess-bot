@@ -46,9 +46,7 @@ struct PIECE {
 static struct PIECE empty_piece = { EMPTY, WHITE };
 
 struct chess {
-	// TODO: We memcpy a lot (when creating new game objects)
-	// This should probably become a real pointer.
-	struct PIECE board[64];
+	struct PIECE* board;
 	enum COLOR moving;
 	uint32_t checkmate;
 	int rating;

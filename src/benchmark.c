@@ -33,6 +33,7 @@ main(int argc, char* argv[])
 
 		// Init game
 		struct chess chess;
+		chess.board = calloc(64, sizeof(*chess.board));
 		fen_to_chess(test_boards[i].fen, &chess);
 
 		print_board(chess.board, NULL);
@@ -92,6 +93,8 @@ main(int argc, char* argv[])
 		       wall_secs[i][N_FOR_AVG], wall_nsecs[i][N_FOR_AVG]);
 
 		printf("\n-------------------------------------------\n\n");
+
+		free(chess.board);
 	}
 
 	printf("Summary:\n");

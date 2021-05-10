@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "types.h"
 
@@ -35,5 +36,7 @@ main(int argc, char* argv[])
 
 	struct chess chess = init_chess(c);
 	run_chess(&chess);
+
+	free(chess.board);
 	//list_example(); // An example on how to use the list.
 }
