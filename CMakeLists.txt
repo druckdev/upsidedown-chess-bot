@@ -29,8 +29,12 @@ set(BOT_SOURCES ${SRC_DIR}/main.c ${SOURCES})
 set(BOT_HEADERS ${INC_DIR}/main.h ${HEADERS})
 
 # sources specific only to testing - containing test main
-set(TEST_SOURCES ${TEST_DIR}/unity.c ${TEST_DIR}/unit_test.c ${SOURCES})
-set(TEST_HEADERS ${TEST_DIR}/unity.h ${TEST_DIR}/unity_internals.h ${HEADERS})
+set(TEST_SOURCES ${TEST_DIR}/unity.c ${TEST_DIR}/unit_test.c
+    ${TEST_DIR}/test_generator.c
+    ${SOURCES})
+set(TEST_HEADERS ${TEST_DIR}/unity.h ${TEST_DIR}/unity_internals.h
+    ${TEST_DIR}/test_generator.h
+    ${HEADERS})
 
 # sources specific only to benchmarking - containing benchmark main
 set(BENCHMARK_SOURCES ${SRC_DIR}/benchmark.c ${SOURCES})
