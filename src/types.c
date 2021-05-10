@@ -10,15 +10,12 @@ list_push(struct list* list, void* object)
 		return list;
 
 	if (!list) {
-		list = malloc(sizeof(struct list));
+		list = calloc(1, sizeof(struct list));
 		if (!list)
 			return NULL;
-		list->first = NULL;
-		list->last  = NULL;
-		list->count = 0;
 	}
 
-	struct list_elem* list_elem = malloc(sizeof(struct list_elem));
+	struct list_elem* list_elem = calloc(1, sizeof(struct list_elem));
 	if (!list_elem) {
 		if (!list->last)
 			// list is empty so we free it as we probably have created it
@@ -28,8 +25,6 @@ list_push(struct list* list, void* object)
 
 	list->count++;
 
-	list_elem->prev   = NULL;
-	list_elem->next   = NULL;
 	list_elem->object = object;
 
 	if (!list->last) {
@@ -47,11 +42,7 @@ list_push(struct list* list, void* object)
 void*
 list_pop(struct list* list)
 {
-	if (!list)
-		return NULL;
-
-	// empty list
-	if (!list->last)
+	if (!list || !list->last)
 		return NULL;
 
 	struct list_elem* list_elem = list->last;
@@ -115,13 +106,7 @@ list_append_list(struct list* first, struct list* second)
 int
 list_count(struct list* list)
 {
-	struct list_elem* next = list->first;
-	int count              = 0;
-	while (next) {
-		next = next->next;
-		count++;
-	}
-	return count;
+	return list ? list->count : 0;
 }
 
 void
@@ -138,4 +123,16 @@ list_free(struct list* list)
 		cur = tmp;
 	}
 	free(list);
+}
+
+struct list_elem*
+list_get_first(struct list* list)
+{
+	return list ? list->first : NULL;
+}
+
+struct list_elem*
+list_get_next(struct list_elem* elem)
+{
+	return elem ? elem->next : NULL;
 }

@@ -66,4 +66,8 @@ int list_count(struct list* list);
  * Runtime: O(n)
  */
 void list_free(struct list* list);
+
+struct list_elem* list_get_first(struct list* list);
+struct list_elem* list_get_next(struct list_elem* elem);
+
 #endif /* TYPES_H */
