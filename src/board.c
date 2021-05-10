@@ -11,7 +11,7 @@
 #define ANSI_RED "\033[91m"
 #define ANSI_RESET "\033[0m"
 bool
-execute_move(struct PIECE* board, struct move* move)
+do_move(struct PIECE* board, struct move* move)
 {
 	if (!board || !move)
 		return false;
@@ -21,6 +21,19 @@ execute_move(struct PIECE* board, struct move* move)
 	board[move->start].type = EMPTY;
 
 	return true;
+}
+
+void
+undo_move(struct PIECE* board, struct move* move, struct PIECE old)
+{
+	if (!board || !move)
+		return;
+
+	board[move->start] = board[move->target];
+	if (move->promotes_to.type)
+		board[move->start].type = PAWN;
+
+	board[move->target] = old;
 }
 
 /*

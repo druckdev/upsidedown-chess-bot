@@ -63,7 +63,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 
 		// Backup piece for undo
 		struct PIECE old = game.board[cur_counter_move->target];
-		execute_move(game.board, cur_counter_move);
+		do_move(game.board, cur_counter_move);
 
 		// Check if mate_move is still doable or was declined
 		struct list* moves = generate_moves_piece(game.board, mate_move->start,
@@ -90,8 +90,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		}
 
 		// Undo move
-		board[cur_counter_move->start]  = board[cur_counter_move->target];
-		board[cur_counter_move->target] = old;
+		undo_move(game.board, cur_counter_move, old);
 
 		free(cur_counter_move);
 	}
@@ -110,7 +109,7 @@ is_checkless_move(struct PIECE board[], struct move* move)
 	struct PIECE new_board[64];
 	memcpy(new_board, board, 64 * sizeof(*board));
 
-	assert(execute_move(new_board, move));
+	assert(do_move(new_board, move));
 
 	struct list* new_moves;
 
@@ -502,16 +501,16 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless,
 
 		// Backup piece for undo
 		struct PIECE old = board[cur_move->target];
-		execute_move(game.board, cur_move);
+		do_move(game.board, cur_move);
 
 		// TODO: use bitboard
 		bool targets[64] = { 0 };
 
 		// Populate targets array
 		struct list* possible_hit_moves = generate_moves(&game, false, false);
+
 		// Undo move
-		game.board[cur_move->start]  = game.board[cur_move->target];
-		game.board[cur_move->target] = old;
+		undo_move(game.board, cur_move, old);
 
 		// Check if hitting moves target the king's field
 		while (list_count(possible_hit_moves)) {

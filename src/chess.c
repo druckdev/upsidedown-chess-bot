@@ -68,7 +68,7 @@ run_chess(struct chess* game)
 	if (game->moving == BLACK) {
 		// Let opponent make the first move
 		struct move move;
-		assert(execute_move(game->board, opponent_move(&move)));
+		assert(do_move(game->board, opponent_move(&move)));
 		// print_board(game->board, NULL);
 	}
 
@@ -78,11 +78,11 @@ run_chess(struct chess* game)
 		struct move* move  = choose_move(game, moves);
 		print_move(move);
 
-		assert(execute_move(game->board, move));
+		assert(do_move(game->board, move));
 		list_free(moves);
 
 		struct move oppo_move;
-		assert(execute_move(game->board, opponent_move(&oppo_move)));
+		assert(do_move(game->board, opponent_move(&oppo_move)));
 		// print_board(game->board, NULL);
 	}
 }
