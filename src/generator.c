@@ -142,9 +142,7 @@ is_checkless_move(struct PIECE board[], struct move* move)
 bool
 is_valid_pos(enum POS pos)
 {
-	if (pos >= 0 && pos < 64)
-		return true;
-	return false;
+	return (pos >= 0 && pos < 64);
 }
 
 bool
@@ -161,9 +159,8 @@ is_occupied(struct PIECE board[], enum POS target)
 bool
 is_occupied_by_enemy(struct PIECE board[], enum POS pos, enum POS target)
 {
-	if (is_occupied(board, target) && board[pos].color != board[target].color)
-		return true;
-	return false;
+	return is_occupied(board, target) &&
+		   board[pos].color != board[target].color;
 }
 
 /*-----------------------------
@@ -246,16 +243,15 @@ generate_moves_helper(struct PIECE board[], enum POS pos, int range,
 
 				struct move* move = malloc(sizeof(*move));
 				// TODO(Aurel): Should we cleanup the list moves?
-				if (!move)
-					return NULL;
+				assert(move);
+
 				move->start       = pos;
 				move->target      = target;
 				move->hit         = hit;
 				move->promotes_to = empty_piece;
 
 				moves = list_push(moves, move);
-				if (!moves)
-					return NULL;
+				assert(moves);
 			}
 
 			prev_target     = target;
@@ -327,9 +323,8 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 				                 promotes_to };
 			promotes_to.type--;
 
-			if (check_checkless && !is_checkless_move(board, &test)) {
+			if (check_checkless && !is_checkless_move(board, &test))
 				continue;
-			}
 
 			// add move if it passed all tests
 			struct move* move = malloc(sizeof(*move));

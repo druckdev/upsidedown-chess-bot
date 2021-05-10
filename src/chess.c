@@ -25,6 +25,10 @@ opponent_move(struct move* move)
 		perror("Error reading");
 		exit(1);
 	}
+	if (bytes_read < 5) {
+		fprintf(stderr, "Could not read move.\n");
+		exit(1);
+	}
 
 	// TODO: Format check and error handling
 	move->start = atoi(move_str);
@@ -55,7 +59,7 @@ struct chess
 init_chess(enum COLOR c)
 {
 	struct chess chess = { 0 };
-	chess.board = calloc(64, sizeof(*chess.board));
+	chess.board        = calloc(64, sizeof(*chess.board));
 	fen_to_chess(DEFAULT_BOARD, &chess);
 	chess.moving = c;
 	return chess;
