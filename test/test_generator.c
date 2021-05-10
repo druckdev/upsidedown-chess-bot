@@ -1,0 +1,54 @@
+#include "unity.h"
+#include "generator.h"
+#include "chess.h"
+#include "board.h"
+
+#define test_generated_moves_count(fen, expected_move_cnt)  \
+	{                                                                          \
+		printf("\nTEST : %s \n", fen);                                         \
+		struct chess chess;                                                    \
+		fen_to_chess(fen, &chess);											   \
+                                                                               \
+		struct list* list = generate_moves(&chess, 1, false);                  \
+		int list_length   = list_count(list);                                  \
+                                                                               \
+		print_board(chess.board, list);                                        \
+		printf("Expected:\t%d\nGot:\t\t%d\n", expected_move_cnt, list_length); \
+		TEST_ASSERT(list_length == expected_move_cnt);                         \
+                                                                               \
+		printf("-------------------------------------------\n");               \
+	}
+
+
+static size_t test_idx = 0;
+#include "helper.h"
+void
+test_game_samples()
+{
+	printf("TEST: %s\n", test_boards[test_idx].fen);
+
+	// init game
+	struct chess chess;
+	fen_to_chess(test_boards[test_idx].fen, &chess);
+
+	// verify generator
+	struct list* list = generate_moves(&chess, true, false);
+	int list_length   = list_count(list);
+
+	if (list_length != test_boards[test_idx].move_cnt) {
+		printf("\n");
+		print_board(chess.board, list);
+	}
+
+	TEST_ASSERT_EQUAL_INT(list_length, test_boards[test_idx].move_cnt);
+}
+
+void
+test_generator()
+{
+	// run test cases
+	int tests_length = sizeof(test_boards) / sizeof(*test_boards);
+	for (test_idx = 0; test_idx < tests_length; test_idx++) {
+		RUN_TEST(test_game_samples);
+	}
+}
