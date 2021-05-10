@@ -14,6 +14,7 @@ set(CMAKE_BUILD_TYPE Debug)
 # directories
 set(SRC_DIR src)
 set(INC_DIR inc)
+set(TEST_DIR test)
 
 # sources
 set(SOURCES ${SRC_DIR}/board.c ${SRC_DIR}/chess.c
@@ -28,9 +29,8 @@ set(BOT_SOURCES ${SRC_DIR}/main.c ${SOURCES})
 set(BOT_HEADERS ${INC_DIR}/main.h ${HEADERS})
 
 # sources specific only to testing - containing test main
-set(TEST_SOURCES ${SRC_DIR}/unity.c ${SRC_DIR}/unit_test.c ${SOURCES})
-set(TEST_HEADERS ${INC_DIR}/unity.h ${INC_DIR}/unity_internals.h
-    ${HEADERS})
+set(TEST_SOURCES ${TEST_DIR}/unity.c ${TEST_DIR}/unit_test.c ${SOURCES})
+set(TEST_HEADERS ${TEST_DIR}/unity.h ${TEST_DIR}/unity_internals.h ${HEADERS})
 
 # sources specific only to benchmarking - containing benchmark main
 set(BENCHMARK_SOURCES ${SRC_DIR}/benchmark.c ${SOURCES})
