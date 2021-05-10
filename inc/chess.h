@@ -24,7 +24,7 @@ static int PIECE_VALUES[] = { 0, 1, 4, 4, 5, 9, 1000000 };
  * TODO: These are just stubs to get a general idea of what we need.
  * Change and move them as u wish.
  */
-enum COLOR { WHITE, BLACK };
+enum COLOR { BLACK = -1, WHITE = +1 };
 // clang-format off
 enum POS {
     A8, B8, C8, D8, E8, F8, G8, H8,

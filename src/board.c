@@ -68,7 +68,10 @@ piece_e_to_chr(enum PIECE_E piece)
 char
 piece_to_chr(struct PIECE piece)
 {
-	return piece_e_to_chr(piece.type) + (piece.color ? WHITE_TO_BLACK_OFF : 0);
+	char c = piece_e_to_chr(piece.type);
+	if (piece.color == BLACK)
+		c += WHITE_TO_BLACK_OFF;
+	return c;
 }
 
 struct PIECE

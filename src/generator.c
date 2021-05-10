@@ -29,7 +29,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		return false;
 	}
 
-	struct chess game = { .moving = !board[mate_move->start].color };
+	struct chess game = { .moving = -1 * board[mate_move->start].color };
 	memcpy(game.board, board, 64 * sizeof(*board));
 
 	// Generate moves for the king
@@ -268,21 +268,15 @@ generate_moves_helper(struct PIECE board[], enum POS pos, int range,
  * Piece based move generators
  * ----------------------------*/
 
-/**
- * @arg factor: Use this parameter to decide whther to subtract (factor = -1) or add
- * (factor = 1) values.
- */
 struct list*
 generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
                            bool check_checkless, bool hit_allies)
 {
 	struct list* moves = calloc(1, sizeof(*moves));
 
-	int factor = board[pos].color == WHITE ? -1 : 1;
-
 	for (int i = -1; i <= 1; i++) {
 		// value the start position needs to be modified by
-		int move_by = (WIDTH + i) * factor;
+		int move_by = (WIDTH + i) * -board[pos].color;
 
 		int target = pos + move_by;
 
@@ -409,7 +403,7 @@ generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless,
 	if (!list_count(all_moves) || !check_checkless)
 		return all_moves;
 
-	struct chess game = { .moving = !board[pos].color };
+	struct chess game = { .moving = -1 * board[pos].color };
 	memcpy(game.board, board, 64 * sizeof(*board));
 
 	struct list* possible_hit_moves = generate_moves(&game, false, true);
@@ -497,7 +491,7 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless,
 		// No king, or not needed as we moved the king itself.
 		return moves;
 
-	struct chess game = { .moving = !board[pos].color };
+	struct chess game = { .moving = -1 * board[pos].color };
 	memcpy(game.board, board, 64 * sizeof(*board));
 
 	// Remove all moves that leave the king hittable.
