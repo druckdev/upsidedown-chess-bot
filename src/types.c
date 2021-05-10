@@ -86,10 +86,14 @@ struct list*
 list_append_list(struct list* first, struct list* second)
 {
 	// if null or empty return other list
-	if (!first || !first->first)
+	if (!first || !first->first) {
+		free(first);
 		return second;
-	if (!second || !second->first)
+	}
+	if (!second || !second->first) {
+		free(second);
 		return first;
+	}
 
 	// link the two lists together
 	first->last->next   = second->first;
@@ -98,6 +102,7 @@ list_append_list(struct list* first, struct list* second)
 	// update first and free second instance
 	first->last = second->last;
 	first->count += second->count;
+
 	free(second);
 
 	return first;

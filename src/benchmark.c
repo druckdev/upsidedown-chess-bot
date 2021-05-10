@@ -49,6 +49,8 @@ main(int argc, char* argv[])
 				/* functions to benchmark */
 
 				moves = generate_moves(&chess, true, false);
+				if (k != ITERATIONS - 1)
+					list_free(moves);
 
 				/* \functions to benchmark */
 			}

@@ -524,6 +524,7 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless,
 			if (hit_move->target == king_pos) {
 				cur        = list_remove(moves, cur);
 				opens_king = true;
+				free(hit_move);
 				break;
 			}
 

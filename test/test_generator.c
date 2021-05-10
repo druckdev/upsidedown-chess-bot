@@ -48,6 +48,8 @@ test_game_samples()
 	if (list_length != test_boards[test_idx].move_cnt) {
 		printf("\n");
 		print_board(chess.board, list);
+	} else {
+		list_free(list);
 	}
 
 	free(chess.board);
