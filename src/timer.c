@@ -107,5 +107,7 @@ get_remaining_move_time(struct chess_timer* timer)
 		timer->t_cur_move.tv_nsec - t_spend.tv_nsec
 	};
 
+	// TODO(Aurel): Verify 1e9 is actually correct to transform seconds into
+	// nanoseconds.
 	return t_remaining.tv_sec * 1e9 + t_remaining.tv_nsec;
 }
