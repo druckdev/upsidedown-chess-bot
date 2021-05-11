@@ -4,7 +4,6 @@
 
 #include "devel_generator.h"
 
-
 #include "helper.h"
 /* THIS IS AN EXAMPLE. */
 void
@@ -27,8 +26,6 @@ test_generate_moves_piece()
 
 	TEST_ASSERT_EQUAL_INT(list_length, test_boards[0].move_cnt);
 }
-
-
 
 static size_t test_idx = 0;
 void
