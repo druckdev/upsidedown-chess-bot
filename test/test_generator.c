@@ -1,7 +1,8 @@
 #include "board.h"
 #include "chess.h"
-#include "generator.h"
 #include "unity.h"
+
+#include "devel_generator.h"
 
 
 #include "helper.h"
