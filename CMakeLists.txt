@@ -15,40 +15,33 @@ set(CMAKE_BUILD_TYPE Debug)
 set(SRC_DIR src)
 set(INC_DIR inc)
 set(TEST_DIR test)
+set(TEST_INC_DIR test/inc)
 
 # sources
 set(SOURCES ${SRC_DIR}/board.c ${SRC_DIR}/chess.c
     ${SRC_DIR}/bot.c ${SRC_DIR}/generator.c ${SRC_DIR}/timemanagement.c
     ${SRC_DIR}/types.c)
-set(HEADERS ${INC_DIR}/board.h ${INC_DIR}/chess.h
-    ${INC_DIR}/bot.h ${INC_DIR}/generator.h ${INC_DIR}/timemanagement.h
-    ${INC_DIR}/types.h)
 
 # sources specific to the bot itself - cotaining bot main
 set(BOT_SOURCES ${SRC_DIR}/main.c ${SOURCES})
-set(BOT_HEADERS ${INC_DIR}/main.h ${HEADERS})
 
 # sources specific only to testing - containing test main
 set(TEST_SOURCES ${TEST_DIR}/unity.c ${TEST_DIR}/unit_test.c
     ${TEST_DIR}/test_generator.c
     ${SOURCES})
-set(TEST_HEADERS ${TEST_DIR}/unity.h ${TEST_DIR}/unity_internals.h
-    ${TEST_DIR}/test_generator.h
-    ${HEADERS})
 
 # sources specific only to benchmarking - containing benchmark main
 set(BENCHMARK_SOURCES ${SRC_DIR}/benchmark.c ${SOURCES})
-set(BENCHMARK_HEADERS ${HEADERS})
 
 # executables
-add_executable(bot ${BOT_SOURCES} ${BOT_HEADERS})
-add_executable(test ${TEST_SOURCES} ${TEST_HEADERS})
-add_executable(benchmark ${BENCHMARK_SOURCES} ${BENCHMARK_HEADERS})
+add_executable(bot ${BOT_SOURCES})
+add_executable(test ${TEST_SOURCES})
+add_executable(benchmark ${BENCHMARK_SOURCES})
 
 # includes
-target_include_directories(bot PRIVATE inc)
-target_include_directories(test PRIVATE inc)
-target_include_directories(benchmark PRIVATE inc)
+target_include_directories(bot PRIVATE ${INC_DIR})
+target_include_directories(test PRIVATE ${TEST_INC_DIR} ${INC_DIR})
+target_include_directories(benchmark PRIVATE ${INC_DIR})
 
 # preprocessor variables
 target_compile_definitions(test PRIVATE UNITY_OUTPUT_COLOR)
