@@ -4,10 +4,6 @@
 #include "chess.h"
 #include "types.h"
 
-// Generate all legal moves for the piece at `pos`.
-struct list* generate_moves_piece(struct PIECE board[], enum POS pos,
-                                  bool check_checkless, bool hit_allies);
-
 /**
  * Generates all moves possible in the current chess-game state.
  */

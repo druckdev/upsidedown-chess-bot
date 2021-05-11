@@ -12,6 +12,9 @@
 
 #define DEBUG_PRINTS true
 
+struct list* generate_moves_piece(struct PIECE board[], enum POS pos,
+		bool check_checkless, bool hit_allies);
+
 /**
  * @arg board - the current board state
  * @arg mate_move - the move on `board` that has the king as target.
