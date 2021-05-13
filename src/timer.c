@@ -110,14 +110,9 @@ get_remaining_move_time(struct chess_timer* timer)
 		return 0;
 
 	// clang-format off
-	struct timespec t_spend = { 
-		t_cur.tv_sec - timer->t_cur_move_start.tv_sec,
-		t_cur.tv_nsec - timer->t_cur_move_start.tv_nsec,
-	};
-
 	struct timespec t_remaining = {
-		timer->t_cur_move.tv_sec - t_spend.tv_sec,
-		timer->t_cur_move.tv_nsec - t_spend.tv_nsec
+		timer->t_cur_move.tv_sec - t_cur.tv_sec,
+		timer->t_cur_move.tv_nsec - t_cur.tv_nsec
 	};
 	// clang-format on
 
