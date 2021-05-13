@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <time.h>
 
 // clang-format off
 // NOTE(Aurel): these need to be included in this order
