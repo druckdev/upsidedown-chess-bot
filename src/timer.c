@@ -77,15 +77,17 @@ update_timer(struct chess_timer* timer, struct chess* game)
 	if (!game)
 		return timer;
 
-	struct timespec t_cur;
-	if(clock_gettime(CLOCK, &t_cur) != 0)
-		return NULL;
+	if (game->t_remaining_ns > 0) {
+		struct timespec t_cur;
+		if (clock_gettime(CLOCK, &t_cur) != 0)
+			return NULL;
 
-	timer->t_cur_move_start = t_cur;
+		timer->t_cur_move_start = t_cur;
 
-	// offset timer by the remaining time
-	timer->t_end = t_cur;
-	timer->t_end.tv_nsec += game->t_remaining_ns;
+		// offset timer by the remaining time
+		timer->t_end = t_cur;
+		timer->t_end.tv_nsec += game->t_remaining_ns;
+	}
 
 	// update time-per-move t_cur_move
 	timer->t_cur_move = get_move_time(timer, game, UNIFORM_DISTRIBUTION);
