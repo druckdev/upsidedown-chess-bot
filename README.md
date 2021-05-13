@@ -21,3 +21,9 @@ Run `make` to compile and link and then execute the executable.
 make
 ./bot
 ```
+
+## Bitboards
+
+Resources :
+- https://essays.jwatzman.org/essays/chess-move-generation-with-magic-bitboards.html
+- http://pradu.us/old/Nov27_2008/Buzz/research/magic/Bitboards.pdf
