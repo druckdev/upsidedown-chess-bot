@@ -9,6 +9,9 @@
 #define WIDTH 8
 #define HEIGHT 8
 
+// TODO(Aurel): Is this right? What does the game-server team say?
+#define MAX_MOVE_COUNT 50
+
 #define DEFAULT_BOARD "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
 enum PIECE_E {
