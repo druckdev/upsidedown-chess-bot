@@ -74,6 +74,9 @@ update_timer(struct chess_timer* timer, struct chess* game)
 	if (!timer)
 	    return NULL;
 
+	if (!game)
+		return timer;
+
 	struct timespec t_cur;
 	if(clock_gettime(CLOCK, &t_cur) != 0)
 		return NULL;
