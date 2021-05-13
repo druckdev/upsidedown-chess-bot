@@ -1,9 +1,9 @@
-#include <stdlib.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
-#include "timer.h"
 #include "chess.h"
+#include "timer.h"
 
 #define CLOCK CLOCK_MONOTONIC
 #define FUNC_UNIFORM_DISTRIBUTION
@@ -19,7 +19,7 @@ start_timer(long t_total_ns)
 
 	struct chess_timer* timer = malloc(sizeof(*timer));
 	if (!timer)
-	    return NULL;
+		return NULL;
 
 	// offset timer by the total time
 	timer->t_end = t_cur;
@@ -36,20 +36,24 @@ struct timespec
 uniform_distribution(struct chess_timer* timer, struct chess* game)
 {
 	struct timespec t_cur;
-	if(clock_gettime(CLOCK, &t_cur) != 0)
+	if (clock_gettime(CLOCK, &t_cur) != 0)
 		return (struct timespec){ 0 };
 
+	// clang-format off
 	struct timespec t_remaining = {
 		timer->t_end.tv_sec - t_cur.tv_sec,
 		timer->t_end.tv_nsec - t_cur.tv_nsec
 	};
+	// clang-format on
 
 	// uniformly distribute the remaining time over the remaining moves
 	int remaining_moves = game->max_moves - game->move_count;
+	// clang-format off
 	struct timespec t_move = {
 		t_remaining.tv_sec / remaining_moves,
 		t_remaining.tv_nsec / remaining_moves
 	};
+	// clang-format on
 
 	return t_move;
 }
@@ -58,13 +62,13 @@ uniform_distribution(struct chess_timer* timer, struct chess* game)
 
 struct timespec
 get_move_time(struct chess_timer* timer, struct chess* game,
-		enum t_move_distribution_function method)
+              enum t_move_distribution_function method)
 {
 	switch (method) {
-		case UNIFORM_DISTRIBUTION: 
-			return uniform_distribution(timer, game);
-		default:
-			assert(("No timer function is being used", false));
+	case UNIFORM_DISTRIBUTION:
+		return uniform_distribution(timer, game);
+	default:
+		assert(("No timer function is being used", false));
 	}
 }
 
@@ -72,7 +76,7 @@ struct chess_timer*
 update_timer(struct chess_timer* timer, struct chess* game)
 {
 	if (!timer)
-	    return NULL;
+		return NULL;
 
 	if (!game)
 		return timer;
@@ -99,9 +103,10 @@ long
 get_remaining_move_time(struct chess_timer* timer)
 {
 	struct timespec t_cur;
-	if(clock_gettime(CLOCK, &t_cur) != 0)
+	if (clock_gettime(CLOCK, &t_cur) != 0)
 		return 0;
 
+	// clang-format off
 	struct timespec t_spend = { 
 		t_cur.tv_sec - timer->t_cur_move_start.tv_sec,
 		t_cur.tv_nsec - timer->t_cur_move_start.tv_nsec,
@@ -111,6 +116,7 @@ get_remaining_move_time(struct chess_timer* timer)
 		timer->t_cur_move.tv_sec - t_spend.tv_sec,
 		timer->t_cur_move.tv_nsec - t_spend.tv_nsec
 	};
+	// clang-format on
 
 	// TODO(Aurel): Verify 1e9 is actually correct to transform seconds into
 	// nanoseconds.
