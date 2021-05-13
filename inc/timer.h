@@ -4,7 +4,7 @@
 #include <time.h>
 
 struct chess_timer {
-	struct timespec t_end, t_cur_move_start, t_cur_move;
+	struct timespec t_end, t_cur_move_start, t_cur_move_end;
 };
 
 enum t_move_distribution_function {
