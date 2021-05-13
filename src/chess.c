@@ -62,6 +62,7 @@ init_chess(enum COLOR c)
 	chess.board        = calloc(64, sizeof(*chess.board));
 	fen_to_chess(DEFAULT_BOARD, &chess);
 	chess.moving = c;
+	chess.max_moves = MAX_MOVE_COUNT;
 	return chess;
 }
 
@@ -89,5 +90,6 @@ run_chess(struct chess* game)
 		struct move oppo_move;
 		assert(do_move(game->board, opponent_move(&oppo_move)));
 		// print_board(game->board, NULL);
+		game->move_count++;
 	}
 }
