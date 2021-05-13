@@ -97,7 +97,7 @@ update_timer(struct chess_timer* timer, struct chess* game)
 	}
 
 	// update time-per-move t_cur_move
-	timer->t_cur_move = get_move_time(timer, game, UNIFORM_DISTRIBUTION);
+	timer->t_cur_move_end = get_move_time(timer, game, UNIFORM_DISTRIBUTION);
 
 	return timer;
 }
@@ -111,8 +111,8 @@ get_remaining_move_time(struct chess_timer* timer)
 
 	// clang-format off
 	struct timespec t_remaining = {
-		timer->t_cur_move.tv_sec - t_cur.tv_sec,
-		timer->t_cur_move.tv_nsec - t_cur.tv_nsec
+		timer->t_cur_move_end.tv_sec - t_cur.tv_sec,
+		timer->t_cur_move_end.tv_nsec - t_cur.tv_nsec
 	};
 	// clang-format on
 
