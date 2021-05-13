@@ -11,6 +11,7 @@ enum t_move_distribution_function {
 	UNIFORM_DISTRIBUTION,
 };
 
+// NOTE(Aurel): This needs to included after the declaration of the struct.
 #include "chess.h"
 
 /**

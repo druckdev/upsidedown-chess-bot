@@ -2,8 +2,11 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "chess.h"
+// clang-format off
+// NOTE(Aurel): these need to be included in this order
 #include "timer.h"
+#include "chess.h"
+// clang-format on
 
 #define CLOCK CLOCK_MONOTONIC
 #define FUNC_UNIFORM_DISTRIBUTION
