@@ -79,10 +79,8 @@ run_chess(struct chess* game)
 		struct move* move = calloc(1, sizeof(*move));
 		assert(do_move(game->board, opponent_move(move)));
 		if (BOARD_WHEN_PLAYING) {
-			// struct list* list = list_push(NULL, move);
-			// print_board(game->board, NULL);
-			print_board(game->board, NULL);
-			free(move);
+			struct list* list = list_push(NULL, move);
+			print_board(game->board, list);
 		} else {
 			free(move);
 		}
@@ -96,23 +94,17 @@ run_chess(struct chess* game)
 
 		assert(do_move(game->board, move));
 		if (BOARD_WHEN_PLAYING) {
-			// struct list* list = list_push(NULL, move);
-			// print_board(game->board, list);
-			print_board(game->board, NULL);
-			free(move);
+			struct list* list = list_push(NULL, move);
+			print_board(game->board, list);
 		} else {
 			free(move);
 		}
 
-		struct move oppo_move;
-		assert(do_move(game->board, opponent_move(&oppo_move)));
+		struct move* oppo_move = malloc(sizeof(*oppo_move));
+		assert(do_move(game->board, opponent_move(oppo_move)));
 		if (BOARD_WHEN_PLAYING) {
-			// struct list* list = list_push(NULL, move);
-			// print_board(game->board, list);
-			print_board(game->board, NULL);
-			free(move);
-		} else {
-			free(move);
+			struct list* list = list_push(NULL, oppo_move);
+			print_board(game->board, list);
 		}
 	}
 }
