@@ -33,15 +33,20 @@ set(TEST_SOURCES ${TEST_DIR}/unity.c ${TEST_DIR}/unit_test.c
 # sources specific only to benchmarking - containing benchmark main
 set(BENCHMARK_SOURCES ${SRC_DIR}/benchmark.c ${SOURCES})
 
+# tmp sources
+set(TMP_SRC ${SRC_DIR}/generator.c ${SRC_DIR}/board.c)
+
 # executables
-add_executable(bot ${BOT_SOURCES})
-add_executable(test ${TEST_SOURCES})
-add_executable(benchmark ${BENCHMARK_SOURCES})
+add_executable(tmp ${TMP_SRC})
+# add_executable(bot ${BOT_SOURCES})
+# add_executable(test ${TEST_SOURCES})
+# add_executable(benchmark ${BENCHMARK_SOURCES})
 
 # includes
-target_include_directories(bot PRIVATE ${INC_DIR})
-target_include_directories(test PRIVATE ${TEST_INC_DIR} ${INC_DIR})
-target_include_directories(benchmark PRIVATE ${INC_DIR})
+target_include_directories(tmp PRIVATE ${INC_DIR})
+# target_include_directories(bot PRIVATE ${INC_DIR})
+# target_include_directories(test PRIVATE ${TEST_INC_DIR} ${INC_DIR})
+# target_include_directories(benchmark PRIVATE ${INC_DIR})
 
 # preprocessor variables
-target_compile_definitions(test PRIVATE UNITY_OUTPUT_COLOR)
+# target_compile_definitions(test PRIVATE UNITY_OUTPUT_COLOR)
