@@ -80,24 +80,27 @@ init_move_masks_knight(struct move_masks* move_masks)
 	U64 one = 1; // helper, outsource later
 	
 	int x = 0, y = 0;
-	for (int i=A1; i < MAX; i++) {
+	for (int i=H1; i < MAX; i++) {
 
-		x++;
 		if (x >= WIDTH) {
 			x = 0;
 			y++;
 		}
 
 		if (x > 1 && x < 7 && y > 1 && y < 7) {
+			move_masks->knights[i] = 0;
+
 			move_masks->knights[i] |= one << i + 10;
 			move_masks->knights[i] |= one << i + 17;
-			move_masks->knights[i] |= one << i + 14;
+			move_masks->knights[i] |= one << i + 15;
 			move_masks->knights[i] |= one << i + 6;
 			move_masks->knights[i] |= one << i - 10;
 			move_masks->knights[i] |= one << i - 17;
-			move_masks->knights[i] |= one << i - 14;
+			move_masks->knights[i] |= one << i - 15;
 			move_masks->knights[i] |= one << i - 6;
 		}
+
+		x++;
 	}
 }
 
@@ -152,4 +155,8 @@ int
 main(int argc, char* argv[])
 {
 	
+	struct chess chess;
+	fen_to_game(DEFAULT_BOARD, &chess);
+	printf("\n\ncomplete");
+	print_board(&(chess.board));
 }
