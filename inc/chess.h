@@ -43,7 +43,7 @@ struct PIECE {
 };
 static struct PIECE empty_piece = { EMPTY, WHITE };
 
-typedef unsigned long long U64;
+typedef unsigned long long U64; // TODO(luis): check portability, keywords : LL suffix, int64_t
 
 
 // bitboards to represent an entire board
