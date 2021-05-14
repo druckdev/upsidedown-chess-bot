@@ -54,9 +54,24 @@ set_board_from_char(char fen_piece, enum POS pos, struct board* board)
 }
 
 void
+set_boards_zero(struct board* board)
+{
+    board->white_pieces = 0;
+    board->black_pieces = 0;
+    board->knights = 0;
+    board->pawns = 0;
+    board->bishops = 0;
+    board->kings = 0;
+    board->queens = 0;
+    board->rooks = 0;	
+}
+
+void
 fen_to_game(char* fen, struct chess* game)
 {
     int i = -1, pos = 0; // fen string (is counted up immediately, hence -1) and board iterator
+
+    set_boards_zero(&(game->board));
 
     // set bitboards
     while (fen[++i] && pos < 64) {
