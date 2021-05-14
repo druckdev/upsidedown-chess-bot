@@ -20,45 +20,31 @@ bool is_set_at(U64 bitboard, enum POS pos);
 char
 get_piece_char(struct board* board, enum POS pos) 
 {
-    if (is_set_at(board->black_pieces, pos)) {
-        if (is_set_at(board->knights, pos))
-            return 'n';
+    char res;
 
-        if (is_set_at(board->pawns, pos))
-            return 'p';
+    if (is_set_at(board->knights, pos))
+        res = 'n';
 
-        if (is_set_at(board->bishops, pos))
-            return 'b';
+    if (is_set_at(board->pawns, pos))
+        res = 'p';
 
-        if (is_set_at(board->kings, pos))
-            return 'k';
+    if (is_set_at(board->bishops, pos))
+        res = 'b';
 
-        if (is_set_at(board->queens, pos))
-            return 'q';
+    if (is_set_at(board->kings, pos))
+        res = 'k';
 
-        if (is_set_at(board->rooks, pos))
-            return 'r';
+    if (is_set_at(board->queens, pos))
+        res = 'q';
 
+    if (is_set_at(board->rooks, pos))
+        res = 'r';
+    
+    if (is_set_at(board->white_pieces, pos)) {    
+        res -= 32; // ascii distance between lower and upper case
     }
-    else if (is_set_at(board->white_pieces, pos)) {
-        if (is_set_at(board->knights, pos))
-            return 'N';
 
-        if (is_set_at(board->pawns, pos))
-            return 'P';
-
-        if (is_set_at(board->bishops, pos))
-            return 'B';
-
-        if (is_set_at(board->kings, pos))
-            return 'K';
-
-        if (is_set_at(board->queens, pos))
-            return 'Q';
-
-        if (is_set_at(board->rooks, pos))
-            return 'R';
-    }
+    return res;
 }
 
 void
