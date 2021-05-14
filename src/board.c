@@ -82,7 +82,7 @@ char
 piece_to_chr(struct PIECE piece)
 {
 	char c = piece_e_to_chr(piece.type);
-	if (piece.color == BLACK)
+	if (c != ' ' && piece.color == BLACK)
 		c += WHITE_TO_BLACK_OFF;
 	return c;
 }
