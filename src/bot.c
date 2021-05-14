@@ -25,7 +25,8 @@ rate_board(struct chess* chess)
 {
 	int rating = 0;
 	for (size_t i = 0; i < 64; ++i) {
-		rating += PIECE_VALUES[chess->board[i].type];
+		struct PIECE p = chess->board[i];
+		rating += p.color * PIECE_VALUES[p.type];
 	}
 	chess->rating = rating;
 
@@ -56,7 +57,7 @@ struct negamax_return
 negamax(struct chess* game, size_t depth)
 {
 	if (!depth) /* or checkmate */
-		return (struct negamax_return){ game->moving * rate_board(game), NULL };
+		return (struct negamax_return){ -1 * game->moving * rate_board(game), NULL };
 
 	struct list* moves = generate_moves(game, true, false);
 
