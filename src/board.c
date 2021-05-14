@@ -109,19 +109,19 @@ set_boards_zero(struct board* board)
 void
 fen_to_game(char* fen, struct chess* game)
 {
-    int i = -1, pos = 0; // fen string (is counted up immediately, hence -1) and board iterator
+    int i = -1, pos = A8; // fen string (is counted up immediately, hence -1) and board iterator
 
     set_boards_zero(&(game->board));
 
     // set bitboards
-    while (fen[++i] && pos < MAX) {
+    while (fen[++i] && pos > MIN) {
 		if (fen[i] >= '0' && fen[i] <= '9') {
 			// Skip number of fields indicated by number in fen[i].
-			pos += atoi(&fen[i]);
+			pos -= atoi(&fen[i]);
 		} 
         else if (fen[i] != '/') {
 			set_board_from_char(fen[i], pos, &(game->board));
-            pos++;
+            pos--;
 		}
 	}
 
@@ -138,20 +138,21 @@ void
 print_bitboard(U64 board)
 {
     U64 one = 1; // helper, outsource later
-    for (int i = A1; i < MAX ;i++) {
-        if (i % WIDTH == 0)
+    U64 max = one << 63; 
+
+    printf("\n max %llu \n", max);
+    for (int i = A8; i > MIN ;i--) {
+        if (i % WIDTH == 7)
             printf("\n");
         
-        printf("%u ", board & one ? 1 : 0); // print lsb
-        board = board >> 1;
+        printf("%u ", board & max ? 1 : 0); // print msb
+        board = board << 1;
     }
 }
 
 void
 print_board(struct board* board)
-{
-    U64 one = 1; // helper, outsource later
-        
+{        
     U64 all = board->black_pieces|board->white_pieces;
     
     printf("\n ");
@@ -161,9 +162,9 @@ print_board(struct board* board)
     }
 
     // print board
-    for (int i = A1; i < MAX ;i++) {
-        if (i % WIDTH == 0)
-            printf("\n%d", (int)i / WIDTH);
+    for (int i = A8; i > MIN ;i--) {
+        if (i % WIDTH == 7)
+            printf("\n%d", ((int)i / WIDTH)+1);
         
         printf("[");
         if (is_set_at(all, i)) {
