@@ -9,6 +9,7 @@
 
 #define WHITE_TO_BLACK_OFF ('a' - 'A')
 
-struct board* fen_to_bitboard();
+void fen_to_game(char* fen, struct chess* game);
+void print_bitboard(U64 board);
 
 #endif /* BOARD_H */
