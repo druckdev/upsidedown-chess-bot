@@ -1,3 +1,4 @@
+#include "types.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +9,8 @@
 #include "bot.h"
 #include "chess.h"
 #include "generator.h"
+
+#define BOARD_WHEN_PLAYING true
 
 int
 get_piece_value(enum PIECE_E piece)
@@ -68,26 +71,48 @@ init_chess(enum COLOR c)
 void
 run_chess(struct chess* game)
 {
-	// print_board(game->board, NULL);
+	if (BOARD_WHEN_PLAYING)
+		print_board(game->board, NULL);
 
 	if (game->moving == BLACK) {
 		// Let opponent make the first move
-		struct move move;
-		assert(do_move(game->board, opponent_move(&move)));
-		// print_board(game->board, NULL);
+		struct move* move = calloc(1, sizeof(*move));
+		assert(do_move(game->board, opponent_move(move)));
+		if (BOARD_WHEN_PLAYING) {
+			// struct list* list = list_push(NULL, move);
+			// print_board(game->board, NULL);
+			print_board(game->board, NULL);
+			free(move);
+		} else {
+			free(move);
+		}
 	}
 
 	while (!game->checkmate) {
 		// sleep(1);
-		struct list* moves = generate_moves(game, true, false);
-		struct move* move  = choose_move(game, moves);
+		struct negamax_return ret = negamax(game, 5);
+		struct move* move = ret.move;
 		print_move(move);
 
 		assert(do_move(game->board, move));
-		list_free(moves);
+		if (BOARD_WHEN_PLAYING) {
+			// struct list* list = list_push(NULL, move);
+			// print_board(game->board, list);
+			print_board(game->board, NULL);
+			free(move);
+		} else {
+			free(move);
+		}
 
 		struct move oppo_move;
 		assert(do_move(game->board, opponent_move(&oppo_move)));
-		// print_board(game->board, NULL);
+		if (BOARD_WHEN_PLAYING) {
+			// struct list* list = list_push(NULL, move);
+			// print_board(game->board, list);
+			print_board(game->board, NULL);
+			free(move);
+		} else {
+			free(move);
+		}
 	}
 }

@@ -405,6 +405,7 @@ generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless,
 	};
 
 	struct list* possible_hit_moves = generate_moves(&game, false, true);
+
 	// TODO: use bitboard and & with king moves bitboard
 	bool targets[64] = { 0 };
 	are_attacked(possible_hit_moves, targets);

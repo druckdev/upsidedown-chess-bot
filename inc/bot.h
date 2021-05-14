@@ -4,7 +4,13 @@
 #include "chess.h"
 #include "types.h"
 
-int rate_board(struct chess* chess, struct move move);
+struct negamax_return {
+	int val;
+	struct move* move;
+};
+
+int rate_board(struct chess* chess);
 struct move* choose_move(struct chess* game, struct list* moves);
+struct negamax_return negamax(struct chess* game, size_t depth);
 
 #endif /* BOT_H */
