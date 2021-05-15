@@ -87,7 +87,7 @@ init_move_masks_knight(struct move_masks* move_masks)
 			y++;
 		}
 
-		if (x > 1 && x < 7 && y > 1 && y < 7) {
+		if (x > 1 && x < 6 && y > 1 && y < 6) {
 			move_masks->knights[i] = 0;
 
 			move_masks->knights[i] |= one << i + 10;
