@@ -124,6 +124,37 @@ init_move_masks_queen(struct move_masks* move_masks)
 void
 init_move_masks_rook(struct move_masks* move_masks)
 {
+	U64 one = 1; // helper, outsource later
+	
+	int x = 0, y = 0;
+	for (int i=H1; i < MAX; i++) {
+		if (x >= WIDTH) {
+			x = 0;
+			y++;
+		}
+
+		move_masks->rooks[i] = 0;
+
+		// generate horizontal moves
+		int lower_x = (WIDTH * y)-1; // is immediatly incremented
+		int higher_x = (lower_x + WIDTH);
+		
+		while (lower_x++ < higher_x) {
+			if (lower_x != i)
+				move_masks->rooks[i] |= one << lower_x;
+		}
+		
+		// generate vertical moves
+		int lower_y = -1;
+		int higher_y = lower_y+HEIGHT;
+		while (lower_y++ < higher_y) {
+			int curr = lower_y * WIDTH + x;
+			if (curr != i)
+				move_masks->rooks[i] |= one << curr;
+		}
+
+		x++;
+	}
 }
 
 void
