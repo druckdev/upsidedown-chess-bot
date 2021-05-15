@@ -11,6 +11,7 @@
 #include "generator.h"
 
 #define BOARD_WHEN_PLAYING true
+#define PLAYING_VS_HUMAN true
 
 int
 get_piece_value(enum PIECE_E piece)
@@ -71,7 +72,7 @@ init_chess(enum COLOR c)
 void
 run_chess(struct chess* game)
 {
-	if (BOARD_WHEN_PLAYING)
+	if (BOARD_WHEN_PLAYING && (game->moving != BLACK || PLAYING_VS_HUMAN))
 		print_board(game->board, NULL);
 
 	if (game->moving == BLACK) {
@@ -80,7 +81,7 @@ run_chess(struct chess* game)
 
 		struct move* move = calloc(1, sizeof(*move));
 		assert(do_move(game->board, opponent_move(move)));
-		if (BOARD_WHEN_PLAYING) {
+		if (BOARD_WHEN_PLAYING && PLAYING_VS_HUMAN) {
 			struct list* list = list_push(NULL, move);
 			print_board(game->board, list);
 		} else {
@@ -107,7 +108,7 @@ run_chess(struct chess* game)
 
 		struct move* oppo_move = calloc(1, sizeof(*oppo_move));
 		assert(do_move(game->board, opponent_move(oppo_move)));
-		if (BOARD_WHEN_PLAYING) {
+		if (BOARD_WHEN_PLAYING && PLAYING_VS_HUMAN) {
 			struct list* list = list_push(NULL, oppo_move);
 			print_board(game->board, list);
 		} else {
