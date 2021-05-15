@@ -29,10 +29,10 @@ generate_moves_knight(U64 ally_board, U64 enemy_board, enum POS pos,
 						struct move_masks* move_masks)
 {
 	struct list* moves;
-	
+
 	U64 mask = move_masks->knights[pos];
 	U64 friendly_fire = ally_board & mask;
-	U64 valid = friendly_fire | mask;
+	U64 valid = mask - friendly_fire;
 
 	return moves;
 }
