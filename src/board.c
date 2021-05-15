@@ -140,7 +140,6 @@ print_bitboard(U64 board)
     U64 one = 1; // helper, outsource later
     U64 max = one << 63; 
 
-    printf("\n max %llu \n", max);
     for (int i = A8; i > MIN ;i--) {
         if (i % WIDTH == 7)
             printf("\n");
