@@ -110,6 +110,8 @@ run_chess(struct chess* game)
 		if (BOARD_WHEN_PLAYING) {
 			struct list* list = list_push(NULL, oppo_move);
 			print_board(game->board, list);
+		} else {
+			free(oppo_move);
 		}
 
 		game->moving *= -1;
