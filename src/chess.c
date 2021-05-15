@@ -88,8 +88,7 @@ run_chess(struct chess* game)
 
 	while (!game->checkmate) {
 		// sleep(1);
-		struct negamax_return ret = negamax(game, 5);
-		struct move* move = ret.move;
+		struct move* move = choose_move(game);
 		print_move(move);
 
 		assert(do_move(game->board, move));
@@ -100,7 +99,7 @@ run_chess(struct chess* game)
 			free(move);
 		}
 
-		struct move* oppo_move = malloc(sizeof(*oppo_move));
+		struct move* oppo_move = calloc(1, sizeof(*oppo_move));
 		assert(do_move(game->board, opponent_move(oppo_move)));
 		if (BOARD_WHEN_PLAYING) {
 			struct list* list = list_push(NULL, oppo_move);
