@@ -87,18 +87,30 @@ init_move_masks_knight(struct move_masks* move_masks)
 			y++;
 		}
 
-		if (x > 1 && x < 6 && y > 1 && y < 6) {
-			move_masks->knights[i] = 0;
-
+		move_masks->knights[i] = 0;
+		if (x < 6 && y < 7) 
 			move_masks->knights[i] |= one << i + 10;
+
+		if (x < 7 && y < 6)	
 			move_masks->knights[i] |= one << i + 17;
+		
+		if (x > 0 && y < 6)
 			move_masks->knights[i] |= one << i + 15;
+		
+		if (x > 1 && y < 7)
 			move_masks->knights[i] |= one << i + 6;
+
+		if (x > 1 && y > 0)
 			move_masks->knights[i] |= one << i - 10;
+		
+		if (x > 0 && y > 1)
 			move_masks->knights[i] |= one << i - 17;
+		
+		if (x < 7 && y > 1)
 			move_masks->knights[i] |= one << i - 15;
+		
+		if (x < 6 && y > 0)
 			move_masks->knights[i] |= one << i - 6;
-		}
 
 		x++;
 	}
