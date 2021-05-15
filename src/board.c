@@ -16,6 +16,8 @@ do_move(struct PIECE* board, struct move* move)
 	if (!board || !move)
 		return false;
 
+	assert(move->target != move->start);
+
 	board[move->target] =
 			move->promotes_to.type ? move->promotes_to : board[move->start];
 	board[move->start].type = EMPTY;
