@@ -29,14 +29,5 @@ int
 main(int argc, char* argv[])
 {
 	// printf("Upside Down Chess Bot version %'.1f\n", VERSION);
-
-	enum COLOR c = WHITE;
-	if (argc >= 2 && argv[1][0] == '1')
-		c = BLACK;
-
-	struct chess chess = init_chess(c);
-	run_chess(&chess);
-
-	free(chess.board);
-	//list_example(); // An example on how to use the list.
+	run_chess();
 }

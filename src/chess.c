@@ -10,6 +10,8 @@
 #include "chess.h"
 #include "generator.h"
 
+#define MAX_FEN_STR_LEN 128
+
 #define BOARD_WHEN_PLAYING true
 #define PLAYING_VS_HUMAN true
 
@@ -70,54 +72,40 @@ init_chess(enum COLOR c)
 }
 
 void
-run_chess(struct chess* game)
+run_chess()
 {
-	if (BOARD_WHEN_PLAYING && (game->moving != BLACK || PLAYING_VS_HUMAN))
-		print_board(game->board, NULL);
 
-	if (game->moving == BLACK) {
-		// Let opponent make the first move
-		game->moving *= -1;
+	struct chess game;
+	game.board = malloc(64 * sizeof(*(game.board)));
+	char fen[MAX_FEN_STR_LEN];
 
-		struct move* move = calloc(1, sizeof(*move));
-		assert(do_move(game->board, opponent_move(move)));
-		if (BOARD_WHEN_PLAYING && PLAYING_VS_HUMAN) {
-			struct list* list = list_push(NULL, move);
-			print_board(game->board, list);
-		} else {
-			free(move);
+	while (!game.checkmate) {
+		ssize_t bytes_read = read(STDIN_FILENO, fen, sizeof(fen) - 1);
+		if (bytes_read < 0) {
+			perror("Error reading");
+			free(game.board);
+			exit(1);
 		}
 
-		game->moving *= -1;
-	}
+		fen_to_chess(fen, &game);
 
-	while (!game->checkmate) {
-		// sleep(1);
-		struct move* move = choose_move(game);
-		print_move(move);
+		if (BOARD_WHEN_PLAYING && PLAYING_VS_HUMAN)
+			print_board(game.board, NULL);
 
-		assert(do_move(game->board, move));
-		if (BOARD_WHEN_PLAYING) {
-			struct list* list = list_push(NULL, move);
-			print_board(game->board, list);
-		} else {
-			free(move);
-		}
-
-		game->moving *= -1;
-
-		if (game->checkmate)
+		struct move* move = choose_move(&game);
+		if (!move)
 			break;
 
-		struct move* oppo_move = calloc(1, sizeof(*oppo_move));
-		assert(do_move(game->board, opponent_move(oppo_move)));
-		if (BOARD_WHEN_PLAYING && PLAYING_VS_HUMAN) {
-			struct list* list = list_push(NULL, oppo_move);
-			print_board(game->board, list);
-		} else {
-			free(oppo_move);
-		}
+		print_move(move);
 
-		game->moving *= -1;
+		assert(do_move(game.board, move));
+		if (BOARD_WHEN_PLAYING) {
+			struct list* list = list_push(NULL, move);
+			print_board(game.board, list);
+		} else {
+			free(move);
+		}
 	}
+
+	free(game.board);
 }

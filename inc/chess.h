@@ -61,6 +61,6 @@ struct move {
 int get_piece_value(enum PIECE_E piece);
 struct move* opponent_move(struct move*);
 struct chess init_chess(enum COLOR c);
-void run_chess(struct chess* game);
+void run_chess();
 
 #endif /* CHESS_H */
