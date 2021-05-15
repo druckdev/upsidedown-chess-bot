@@ -39,12 +39,16 @@ choose_move(struct chess* game)
 	struct move* best = NULL;
 	for (size_t i = 1; i < 5 /* TODO: check time */; i++) {
 		struct negamax_return ret = negamax(game, i);
+		if (!ret.move)
+			return NULL;
 
 		free(best);
 		best = ret.move;
-		if (ret.mate_depth == i)
+		if (ret.mate_depth == i) {
 			// ret.move leads to checkmate
+			game->checkmate = true;
 			break;
+		}
 	}
 	return best;
 }

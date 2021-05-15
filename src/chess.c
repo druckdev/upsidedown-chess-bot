@@ -106,6 +106,9 @@ run_chess(struct chess* game)
 
 		game->moving *= -1;
 
+		if (game->checkmate)
+			break;
+
 		struct move* oppo_move = calloc(1, sizeof(*oppo_move));
 		assert(do_move(game->board, opponent_move(oppo_move)));
 		if (BOARD_WHEN_PLAYING && PLAYING_VS_HUMAN) {
