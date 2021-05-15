@@ -76,6 +76,8 @@ run_chess(struct chess* game)
 
 	if (game->moving == BLACK) {
 		// Let opponent make the first move
+		game->moving *= -1;
+
 		struct move* move = calloc(1, sizeof(*move));
 		assert(do_move(game->board, opponent_move(move)));
 		if (BOARD_WHEN_PLAYING) {
@@ -84,6 +86,8 @@ run_chess(struct chess* game)
 		} else {
 			free(move);
 		}
+
+		game->moving *= -1;
 	}
 
 	while (!game->checkmate) {
@@ -99,11 +103,15 @@ run_chess(struct chess* game)
 			free(move);
 		}
 
+		game->moving *= -1;
+
 		struct move* oppo_move = calloc(1, sizeof(*oppo_move));
 		assert(do_move(game->board, opponent_move(oppo_move)));
 		if (BOARD_WHEN_PLAYING) {
 			struct list* list = list_push(NULL, oppo_move);
 			print_board(game->board, list);
 		}
+
+		game->moving *= -1;
 	}
 }
