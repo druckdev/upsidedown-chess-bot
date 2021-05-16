@@ -21,14 +21,20 @@
 // set on the given 'bitboard'
 struct list*
 moves_from_bitboard(U64 bitboard, enum POS pos) {
-	struct list* moves;
+	struct list* moves = NULL;
 
 	for (int i = 0; i < MAX; i++) {
 		if (is_set_at(bitboard, i)) {
-			struct move* move = calloc(1, sizeof(*move));
+			struct move* move = malloc(sizeof(*move));
+
+			if (!move)
+				return NULL;
+
 			move->start = pos; 
 			move->target = i;
 			moves = list_push(moves, move);
+			if (!moves)
+				return NULL;
 		}
 	}
 
@@ -54,7 +60,8 @@ generate_moves_knight(U64 ally_board, U64 enemy_board, enum POS pos,
 	U64 friendly_fire = ally_board & mask;
 	U64 valid = mask - friendly_fire;
 
-	return moves_from_bitboard(valid, pos);
+	struct list* moves = moves_from_bitboard(valid, pos);
+	return moves;
 }
 
 struct list*
@@ -201,7 +208,7 @@ generate_moves(struct chess* game)
 struct move_masks*
 init_move_masks()
 {
-	struct move_masks* move_masks = calloc(1, sizeof(*move_masks));
+	struct move_masks* move_masks = malloc(sizeof(*move_masks));
 	
 	init_move_masks_king(move_masks);
 	init_move_masks_knight(move_masks);
