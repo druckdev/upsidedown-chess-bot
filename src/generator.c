@@ -20,7 +20,7 @@
 // start being the given 'pos' and targets being the bits
 // set on the given 'bitboard'
 struct list*
-moves_from_bitboard(U64 bitboard, enum POS pos) {
+moves_from_bitboard(U64 bitboard, enum POS pos, U64 enemy_board) {
 	struct list* moves = NULL;
 
 	for (int i = 0; i < MAX; i++) {
@@ -32,6 +32,10 @@ moves_from_bitboard(U64 bitboard, enum POS pos) {
 
 			move->start = pos; 
 			move->target = i;
+
+			if (is_set_at(enemy_board, i))
+				move->hit = true;
+
 			moves = list_push(moves, move);
 			if (!moves)
 				return NULL;
@@ -60,7 +64,7 @@ generate_moves_knight(U64 ally_board, U64 enemy_board, enum POS pos,
 	U64 friendly_fire = ally_board & mask;
 	U64 valid = mask - friendly_fire;
 
-	struct list* moves = moves_from_bitboard(valid, pos);
+	struct list* moves = moves_from_bitboard(valid, pos, enemy_board);
 	return moves;
 }
 
