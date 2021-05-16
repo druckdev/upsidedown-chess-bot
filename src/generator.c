@@ -226,7 +226,23 @@ main(int argc, char* argv[])
 {
 	
 	struct chess chess;
+	
 	fen_to_game(DEFAULT_BOARD, &chess);
 	printf("\n\ncomplete");
-	print_board(&(chess.board));
+	print_board(&(chess.board), NULL);
+
+	fen_to_game("4KBNR/4PPPP/8/8/8/8/pppp4/rnbq4", &chess);
+	printf("\n\ncomplete");
+	print_board(&(chess.board), NULL);
+	
+	struct move_masks* move_masks = malloc(sizeof(*move_masks));
+	init_move_masks_knight(move_masks);
+	print_bitboard(move_masks->knights[57]);
+
+	struct list* knight_moves = generate_moves_knight(chess.board.white_pieces, 
+														chess.board.white_pieces, 
+														57, move_masks);
+	print_moves(knight_moves);
+	printf("\n knight moves : \n");
+	print_board(&(chess.board), knight_moves);
 }
