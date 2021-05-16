@@ -231,10 +231,14 @@ print_board(struct board* board, struct list* moves)
 void 
 print_moves(struct list* moves)
 {
+    printf("Moves:\n");
+
+    if (!moves)
+        return;
+
     struct list_elem* cur = moves->first;
     struct move* move = (struct move*)cur->object;
 	
-    printf("Moves:\n");
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
 
