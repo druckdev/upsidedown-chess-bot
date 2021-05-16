@@ -102,6 +102,23 @@ set_boards_zero(struct board* board)
     board->rooks = 0;	
 }
 
+/*
+ * Fills `str` with the corresponding human-readable string (null-terminated)
+ * describing the field encoded in `pos`.
+ * `str` should be at least (3 * sizeof(char)) big.
+ *
+ * Returns: `str`
+ */
+char*
+pos_to_str(enum POS pos, char* str)
+{
+	str[0] = 'H' - pos % 8;
+	str[1] = '1' + pos / 8;
+	str[2] = '\0';
+
+	return str;
+}
+
 /*----------------------------------
  * Exposed functions
  * --------------------------------*/
@@ -174,6 +191,25 @@ print_board(struct board* board)
         }
         printf("]");
     }
+}
+
+void 
+print_moves(struct list* moves)
+{
+    struct list_elem* cur = moves->first;
+    struct move* move = (struct move*)cur->object;
+	
+    printf("Moves:\n");
+	while (cur) {
+		struct move* move = (struct move*)cur->object;
+
+        char start[3], target[3];
+        pos_to_str(move->start, start);
+        pos_to_str(move->target, target);
+		printf("%s -> %s\n", start, target);
+		
+        cur = cur->next;
+	}
 }
 
 bool 
