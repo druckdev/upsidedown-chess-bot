@@ -11,7 +11,7 @@
 
 void fen_to_game(char* fen, struct chess* game);
 void print_bitboard(U64 board);
-void print_board(struct board* board);
+void print_board(struct board* board, struct list* moves);
 void print_moves(struct list* moves);
 bool is_set_at(U64 bitboard, enum POS pos);
 

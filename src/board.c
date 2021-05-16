@@ -102,6 +102,32 @@ set_boards_zero(struct board* board)
     board->rooks = 0;	
 }
 
+// Returns an array that indicates if a position is attackable by a move in
+// `moves`.
+// `moves` is consumed and freed.
+// Allocates memory if the passed pointer equals to NULL.
+bool*
+are_attacked(struct list* moves, bool* targets)
+{
+	if (!targets) {
+		targets = calloc(sizeof(bool), 64);
+		if (!targets)
+			return NULL;
+	}
+
+	if (!moves)
+		return targets;
+
+	while (moves->last) {
+		struct move* move     = list_pop(moves);
+		targets[move->target] = true;
+		free(move);
+	}
+	list_free(moves);
+
+	return targets;
+}
+
 /*
  * Fills `str` with the corresponding human-readable string (null-terminated)
  * describing the field encoded in `pos`.
@@ -167,10 +193,12 @@ print_bitboard(U64 board)
 }
 
 void
-print_board(struct board* board)
+print_board(struct board* board, struct list* moves)
 {        
     U64 all = board->black_pieces|board->white_pieces;
     
+    bool* targets = are_attacked(moves, NULL);
+
     printf("\n ");
     // print column name A-H 
     for (char col = 'A'; col < 'A'+WIDTH; col++) {
@@ -182,7 +210,12 @@ print_board(struct board* board)
         if (i % WIDTH == 7)
             printf("\n%d", ((int)i / WIDTH)+1);
         
+        if (targets[i]) {
+			printf(ANSI_RED);
+        }
+
         printf("[");
+        
         if (is_set_at(all, i)) {
             printf("%c", get_piece_char(board, i));
         }
@@ -190,6 +223,8 @@ print_board(struct board* board)
             printf(" ");
         }
         printf("]");
+
+        printf(ANSI_RESET);
     }
 }
 
