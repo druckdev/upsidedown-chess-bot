@@ -34,7 +34,7 @@ set(TEST_SOURCES ${TEST_DIR}/unity.c ${TEST_DIR}/unit_test.c
 set(BENCHMARK_SOURCES ${SRC_DIR}/benchmark.c ${SOURCES})
 
 # tmp sources
-set(TMP_SRC ${SRC_DIR}/generator.c ${SRC_DIR}/board.c)
+set(TMP_SRC ${SRC_DIR}/generator.c ${SRC_DIR}/board.c ${SRC_DIR}/types.c)
 
 # executables
 add_executable(tmp ${TMP_SRC})
@@ -49,4 +49,5 @@ target_include_directories(tmp PRIVATE ${INC_DIR})
 # target_include_directories(benchmark PRIVATE ${INC_DIR})
 
 # preprocessor variables
+target_compile_definitions(tmp PRIVATE UNITY_OUTPUT_COLOR)
 # target_compile_definitions(test PRIVATE UNITY_OUTPUT_COLOR)

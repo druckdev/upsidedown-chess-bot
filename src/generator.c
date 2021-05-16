@@ -12,6 +12,28 @@
 
 #define DEBUG_PRINTS true
 
+/*-----------------------------
+ * Helper
+ * ---------------------------*/
+
+// generates a list of moves (allocates memory) with
+// start being the given 'pos' and targets being the bits
+// set on the given 'bitboard'
+struct list*
+moves_from_bitboard(U64 bitboard, enum POS pos) {
+	struct list* moves;
+
+	for (int i = 0; i < MAX; i++) {
+		if (is_set_at(bitboard, i)) {
+			struct move* move = calloc(1, sizeof(*move));
+			move->start = pos; 
+			move->target = i;
+			moves = list_push(moves, move);
+		}
+	}
+
+	return moves;
+}
 
 /*-----------------------------
  * Piece based move generators
@@ -28,13 +50,11 @@ struct list*
 generate_moves_knight(U64 ally_board, U64 enemy_board, enum POS pos, 
 						struct move_masks* move_masks)
 {
-	struct list* moves;
-
 	U64 mask = move_masks->knights[pos];
 	U64 friendly_fire = ally_board & mask;
 	U64 valid = mask - friendly_fire;
 
-	return moves;
+	return moves_from_bitboard(valid, pos);
 }
 
 struct list*
@@ -78,7 +98,7 @@ void
 init_move_masks_knight(struct move_masks* move_masks)
 {
 	U64 one = 1; // helper, outsource later
-	
+
 	int x = 0, y = 0;
 	for (int i=H1; i < MAX; i++) {
 
