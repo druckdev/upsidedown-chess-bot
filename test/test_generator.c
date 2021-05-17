@@ -53,7 +53,7 @@ test_game_samples()
 	}
 
 	free(chess.board);
-	TEST_ASSERT_EQUAL_INT(list_length, test_boards[test_idx].move_cnt);
+	TEST_ASSERT_EQUAL_INT(test_boards[test_idx].move_cnt, list_length);
 }
 
 void
