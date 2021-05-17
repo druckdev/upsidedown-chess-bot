@@ -27,7 +27,7 @@ test_generate_moves_piece()
 		print_board(chess.board, list);
 	}
 
-	TEST_ASSERT_EQUAL_INT(list_length, test_boards[0].move_cnt);
+	TEST_ASSERT_EQUAL_INT(test_boards[0].move_cnt, list_length);
 }
 
 static size_t test_idx = 0;
