@@ -26,8 +26,11 @@ test_generate_moves_piece()
 	if (list_length != test_boards[0].move_cnt) {
 		printf("\n");
 		print_board(chess.board, list);
+	} else {
+		list_free(list);
 	}
 
+	free(chess.board);
 	TEST_ASSERT_EQUAL_INT(test_boards[0].move_cnt, list_length);
 }
 
