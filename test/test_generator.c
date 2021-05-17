@@ -16,6 +16,7 @@ test_generate_moves_piece()
 
 	// init game
 	struct chess chess;
+	chess.board = calloc(64, sizeof(*chess.board));
 	fen_to_chess(test_boards[0].fen, &chess);
 
 // verify generator
