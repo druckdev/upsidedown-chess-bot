@@ -18,8 +18,6 @@ struct negamax_return {
 	size_t mate_depth;
 };
 
-struct negamax_return negamax(struct chess* game, size_t depth);
-
 int
 rate_board(struct chess* chess)
 {
@@ -31,6 +29,104 @@ rate_board(struct chess* chess)
 	chess->rating = rating;
 
 	return rating;
+}
+
+struct negamax_return
+negamax(struct chess* game, size_t depth)
+{
+	// max depth reached
+	if (!depth)
+		return (struct negamax_return){ -game->moving * rate_board(game),
+			                            NULL, UNDEFINED, 0 };
+
+	struct list* moves = generate_moves(game, true, false);
+
+	// check checkmate - terminal node in tree
+	if (!list_count(moves)) {
+		list_free(moves);
+		return (struct negamax_return){ -game->moving * rate_board(game),
+			                            NULL, -game->moving, depth + 1 };
+	}
+
+	game->moving *= -1;
+	struct negamax_return best = { INT_MIN + 1, NULL, UNDEFINED, 0 };
+
+	// iterate over all moves (child nodes) to find best move
+	while (list_count(moves)) {
+		struct move* move = list_pop(moves);
+		struct PIECE old  = game->board[move->target];
+
+		// execute move and see what happens down the tree - dfs
+		do_move(game->board, move);
+		struct negamax_return ret = negamax(game, depth - 1);
+		undo_move(game->board, move, old);
+
+		/*
+		 * NOTE(Aurel): game->moving is the opponent.
+		 *
+		 * Four cases:
+		 *	1. The subtree will end in the opponent's king in checkmate.
+		 *	2. The subtree will end in my king in checkmate.
+		 *		- as we never actually reach the checkmate we need to check it
+		 *		  differently.
+		 *	3. The subtree simply leads to a better score.
+		 *	4. The subtree does not improve the current best move.
+		 */
+		if (ret.mate_for == -game->moving) {
+			// we will checkmate the opponent
+
+			if (ret.mate_depth == depth) {
+				// current move checkmates the opponent
+				free(best.move);
+				free(ret.move);
+				list_free(moves);
+
+				ret.move = move;
+				return ret;
+			}
+
+			if (best.mate_for != -game->moving ||
+			           best.mate_depth < ret.mate_depth) {
+				// Either best_move is not checkamting the opponent or best_move is
+				// deeper down the tree.
+				free(best.move);
+
+				best      = ret;
+				best.move = move;
+			} else {
+				free(move);
+			}
+		} else if (ret.mate_for == game->moving) {
+			// the opponent will checkmate me
+			if (best.val == INT_MIN + 1 || (ret.mate_for == game->moving &&
+			                                ret.mate_depth > best.mate_depth)) {
+				// We currently have no other move or the currently best move
+				// can set us also mate but in less steps.
+				free(best.move);
+
+				best      = ret;
+				best.move = move;
+			} else {
+				free(move);
+			}
+		} else if (ret.val > best.val || best.mate_for == game->moving) {
+			// move leads to a better rating or can save us from checkmate
+			free(best.move);
+
+			best      = ret;
+			best.move = move;
+		} else {
+			// no better move found
+			free(move);
+		}
+		free(ret.move);
+	}
+	list_free(moves);
+
+	game->moving *= -1;
+	best.val *= -1;
+
+	return best;
 }
 
 struct move*
@@ -50,88 +146,5 @@ choose_move(struct chess* game)
 			break;
 		}
 	}
-	return best;
-}
-
-struct negamax_return
-negamax(struct chess* game, size_t depth)
-{
-	// End of tree to calculate
-	if (!depth)
-		return (struct negamax_return){ -1 * game->moving * rate_board(game),
-			                            NULL, UNDEFINED, 0 };
-
-	struct list* moves = generate_moves(game, true, false);
-
-	// Check mate
-	if (!list_count(moves)) {
-		list_free(moves);
-		return (struct negamax_return){ -1 * game->moving * rate_board(game),
-			                            NULL, -1 * game->moving, depth + 1 };
-	}
-
-	game->moving *= -1;
-	struct negamax_return best = { INT_MIN + 1, NULL, UNDEFINED, 0 };
-
-	while (list_count(moves)) {
-		struct move* move = list_pop(moves);
-		struct PIECE old  = game->board[move->target];
-
-		do_move(game->board, move);
-		struct negamax_return ret = negamax(game, depth - 1);
-		undo_move(game->board, move, old);
-
-		if (ret.mate_for == -1 * game->moving) {
-			// We can set the opponent mate with a move down the tree.
-
-			if (ret.mate_depth == depth) {
-				// This moves sets opponent mate
-				free(best.move);
-				free(ret.move);
-				list_free(moves);
-
-				ret.move = move;
-				return ret;
-			} else if (best.mate_for != -1 * game->moving ||
-			           best.mate_depth < ret.mate_depth) {
-				// A move down the tree can set the opponent mate and we
-				// currently do not have a better mate move
-				free(best.move);
-
-				best      = ret;
-				best.move = move;
-			} else {
-				free(move);
-			}
-		} else if (ret.mate_for == game->moving) {
-			// Opponent has somewhere down the tree the possibility to set us
-			// mate.
-			if (best.val == INT_MIN + 1 || (ret.mate_for == game->moving &&
-			                                ret.mate_depth > best.mate_depth)) {
-				// We currently have no other move or the currently best move
-				// can set us also mate but in less steps.
-				free(best.move);
-
-				best      = ret;
-				best.move = move;
-			} else {
-				free(move);
-			}
-		} else if (ret.val > best.val || best.mate_for == game->moving) {
-			// Move can lead to better rating or can save us from checkmate
-			free(best.move);
-
-			best      = ret;
-			best.move = move;
-		} else {
-			free(move);
-		}
-		free(ret.move);
-	}
-	list_free(moves);
-
-	game->moving *= -1;
-	best.val *= -1;
-
 	return best;
 }
