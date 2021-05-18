@@ -62,21 +62,19 @@ print_move(struct move* move)
 }
 
 struct chess
-init_chess(enum COLOR c)
+init_chess()
 {
-	struct chess chess = { 0 };
-	chess.board        = calloc(64, sizeof(*chess.board));
-	fen_to_chess(DEFAULT_BOARD, &chess);
-	chess.moving = c;
+	struct chess chess;
+	chess.checkmate = false;
+	chess.moving = UNDEFINED;
+	chess.board = calloc(64, sizeof(*(chess.board)));
 	return chess;
 }
 
 void
 run_chess()
 {
-
-	struct chess game;
-	game.board = malloc(64 * sizeof(*(game.board)));
+	struct chess game = init_chess();
 	char fen[MAX_FEN_STR_LEN];
 
 	while (!game.checkmate) {
