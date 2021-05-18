@@ -44,6 +44,10 @@ static struct game_samples test_boards[] = {
 	{ "K7/2r5/1q6/8/8/8/8/8 b", 31 },  // check checkmate
 	{ "8/8/8/8/8/8/8/3K1k2 w", 3 },    // check weird king interaction 1
 	{ "8/8/8/8/8/4R3/8/3K1k2 w", 15 }, // check weird king interaction 2
+	{ "K7/r7/1q6/8/8/8/8/8 w", 0 }, // check there are no moves when in checkmate
+	{ "K7/r7/1q6/8/8/5P2/8/8 w", 0 }, // check there are no moves when in checkmate
+	{ "K7/r7/1q6/8/8/5P2/8/R7 w", 1 }, // check checkmate prevention
+	{ "K7/2r5/1q6/8/8/5P2/8/R7 b", 29 }, // check checkmate prevention
 
 	{ "8/8/8/8/8/8/2p3p1/3k4 b", 12 }, // Check pawn promotion (ally king)
 	{ "8/8/8/8/8/K7/2p5/8 b", 2 },     // Check pawn promotion (q, b)
