@@ -89,8 +89,6 @@ update_timer(struct chess_timer* timer, struct chess* game)
 	if (clock_gettime(CLOCK, &t_cur) != 0)
 		return NULL;
 
-	timer->t_cur_move_start = t_cur;
-
 	if (game->t_remaining_s > 0) {
 		// offset timer by the remaining time
 		timer->t_end = t_cur;
