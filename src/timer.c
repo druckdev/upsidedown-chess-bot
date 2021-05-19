@@ -105,7 +105,7 @@ update_timer(struct chess_timer* timer, struct chess* game)
 	return timer;
 }
 
-long
+double
 get_remaining_move_time(struct chess_timer* timer)
 {
 	struct timespec t_cur;
@@ -121,5 +121,5 @@ get_remaining_move_time(struct chess_timer* timer)
 
 	// TODO(Aurel): Verify 1e9 is actually correct to transform seconds into
 	// nanoseconds.
-	return t_remaining.tv_sec * 1e9 + t_remaining.tv_nsec;
+	return t_remaining.tv_sec + t_remaining.tv_nsec * 1e-9;
 }
