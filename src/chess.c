@@ -74,7 +74,7 @@ init_chess()
 
 	// TODO(Aurel): Once the server implements it, this will need to change.
 	//chess.t_remaining_s = -1;
-	chess.t_remaining_s = 100; // Always update timer to have 100s left
+	chess.t_remaining_s = 1000; // Always update timer to have 1000s left
 
 	return chess;
 }
