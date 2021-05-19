@@ -25,17 +25,19 @@ do_move(struct PIECE* board, struct move* move)
 	return true;
 }
 
-void
+bool
 undo_move(struct PIECE* board, struct move* move, struct PIECE old)
 {
 	if (!board || !move)
-		return;
+		return false;
 
 	board[move->start] = board[move->target];
 	if (move->promotes_to.type)
 		board[move->start].type = PAWN;
 
 	board[move->target] = old;
+
+	return true;
 }
 
 /*
