@@ -139,7 +139,9 @@ choose_move(struct chess* game)
 		if (!ret.move)
 			return NULL;
 
-		free(best);
+		if (best)
+			free(best);
+
 		best = ret.move;
 		if (ret.mate_depth == i) {
 			// ret.move leads to checkmate
