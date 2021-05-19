@@ -10,6 +10,7 @@
 #include "chess.h"
 #include "generator.h"
 #include "types.h"
+#include "timer.h"
 
 #define MAX_NEGAMAX_DEPTH 3
 
@@ -133,7 +134,7 @@ negamax(struct chess* game, size_t depth)
 }
 
 struct move*
-choose_move(struct chess* game)
+choose_move(struct chess* game, struct chess_timer *timer)
 {
 	struct move* best = NULL;
 	for (size_t i = 1; i <= MAX_NEGAMAX_DEPTH /* TODO: check time */; i++) {

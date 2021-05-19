@@ -9,6 +9,7 @@
 #include "bot.h"
 #include "chess.h"
 #include "generator.h"
+#include "timer.h"
 
 #define MAX_FEN_STR_LEN 128
 
@@ -78,6 +79,7 @@ run_chess()
 {
 	struct chess game = init_chess();
 	char fen[MAX_FEN_STR_LEN] = { 0 };
+	struct chess_timer *timer = start_timer(10 * 60);
 
 	while (!game.checkmate) {
 		ssize_t bytes_read = read(STDIN_FILENO, fen, sizeof(fen) - 1);
@@ -92,7 +94,7 @@ run_chess()
 		if (BOARD_WHEN_PLAYING && PLAYING_VS_HUMAN)
 			print_board(game.board, NULL);
 
-		struct move* move = choose_move(&game);
+		struct move* move = choose_move(&game, timer);
 		if (!move)
 			break;
 
@@ -109,4 +111,5 @@ run_chess()
 	}
 
 	free(game.board);
+	free(timer);
 }
