@@ -11,6 +11,8 @@
 #include "generator.h"
 #include "types.h"
 
+#define MAX_NEGAMAX_DEPTH 3
+
 struct negamax_return {
 	int val;
 	struct move* move;
@@ -134,7 +136,7 @@ struct move*
 choose_move(struct chess* game)
 {
 	struct move* best = NULL;
-	for (size_t i = 1; i <= 4 /* TODO: check time */; i++) {
+	for (size_t i = 1; i <= MAX_NEGAMAX_DEPTH /* TODO: check time */; i++) {
 		struct negamax_return ret = negamax(game, i);
 		if (!ret.move)
 			return NULL;
