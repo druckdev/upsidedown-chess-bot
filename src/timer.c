@@ -98,7 +98,9 @@ update_timer(struct chess_timer* timer, struct chess* game)
 	}
 
 	// update time-per-move t_cur_move
-	timer->t_cur_move_end = get_move_time(timer, game, UNIFORM_DISTRIBUTION);
+	struct timespec t_cur_move_time = get_move_time(timer, game, UNIFORM_DISTRIBUTION);
+	timer->t_cur_move_end.tv_sec = t_cur.tv_sec + t_cur_move_time.tv_sec;
+	timer->t_cur_move_end.tv_nsec = t_cur.tv_nsec + t_cur_move_time.tv_nsec;
 
 	return timer;
 }
