@@ -4,8 +4,13 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "timer.h"
+
 #define WIDTH 8
 #define HEIGHT 8
+
+// TODO(Aurel): Is this right? What does the game-server team say?
+#define MAX_MOVE_COUNT 50
 
 #define DEFAULT_BOARD "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
@@ -50,6 +55,9 @@ struct chess {
 	enum COLOR moving;
 	uint32_t checkmate;
 	int rating;
+	struct chess_timer timer;
+	long t_remaining_s;
+	int max_moves, move_count;
 };
 
 struct move {

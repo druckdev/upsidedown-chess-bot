@@ -68,6 +68,8 @@ init_chess()
 	chess.checkmate = false;
 	chess.moving = UNDEFINED;
 	chess.board = calloc(64, sizeof(*(chess.board)));
+	chess.move_count = 0;
+	chess.max_moves = MAX_MOVE_COUNT;
 	return chess;
 }
 
@@ -103,6 +105,7 @@ run_chess()
 		} else {
 			free(move);
 		}
+		game.move_count++;
 	}
 
 	free(game.board);
