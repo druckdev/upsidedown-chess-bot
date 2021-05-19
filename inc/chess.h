@@ -58,7 +58,7 @@ struct chess {
 	uint32_t checkmate;
 	int rating;
 	struct chess_timer timer;
-	long t_remaining_ns;
+	long t_remaining_s;
 	int max_moves, move_count;
 };
 

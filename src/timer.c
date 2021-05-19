@@ -91,10 +91,10 @@ update_timer(struct chess_timer* timer, struct chess* game)
 
 	timer->t_cur_move_start = t_cur;
 
-	if (game->t_remaining_ns > 0) {
+	if (game->t_remaining_s > 0) {
 		// offset timer by the remaining time
 		timer->t_end = t_cur;
-		timer->t_end.tv_nsec += game->t_remaining_ns;
+		timer->t_end.tv_sec += game->t_remaining_s;
 	}
 
 	// update time-per-move t_cur_move
