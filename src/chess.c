@@ -71,6 +71,11 @@ init_chess()
 	chess.board = calloc(64, sizeof(*(chess.board)));
 	chess.move_count = 0;
 	chess.max_moves = MAX_MOVE_COUNT;
+
+	// TODO(Aurel): Once the server implements it, this will need to change.
+	//chess.t_remaining_s = -1;
+	chess.t_remaining_s = 100; // Always update timer to have 100s left
+
 	return chess;
 }
 
@@ -88,6 +93,8 @@ run_chess()
 			free(game.board);
 			exit(1);
 		}
+
+		update_timer(timer, &game);
 
 		fen_to_chess(fen, &game);
 
