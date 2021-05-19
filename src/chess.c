@@ -75,7 +75,7 @@ void
 run_chess()
 {
 	struct chess game = init_chess();
-	char fen[MAX_FEN_STR_LEN];
+	char fen[MAX_FEN_STR_LEN] = { 0 };
 
 	while (!game.checkmate) {
 		ssize_t bytes_read = read(STDIN_FILENO, fen, sizeof(fen) - 1);
