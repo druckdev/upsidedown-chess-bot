@@ -67,8 +67,8 @@ negamax(struct chess* game, size_t depth)
 		 * Four cases:
 		 *	1. The subtree will end in the opponent's king in checkmate.
 		 *	2. The subtree will end in my king in checkmate.
-		 *		- as we never actually reach the checkmate we need to check it
-		 *		  differently.
+		 *		- As we never actually reach the checkmate its checked
+		 *		  differently and thus needs to be checked for here as well.
 		 *	3. The subtree simply leads to a better score.
 		 *	4. The subtree does not improve the current best move.
 		 */
@@ -76,7 +76,8 @@ negamax(struct chess* game, size_t depth)
 			// we will checkmate the opponent
 
 			if (ret.mate_depth == depth) {
-				// current move checkmates the opponent
+				// current move checkmates the opponent - this is the best move
+				// possible - return
 				free(best.move);
 				free(ret.move);
 				list_free(moves);
@@ -87,7 +88,7 @@ negamax(struct chess* game, size_t depth)
 
 			if (best.mate_for != -game->moving ||
 			           best.mate_depth < ret.mate_depth) {
-				// Either best_move is not checkamting the opponent or best_move is
+				// Either best_move is not checkmating the opponent or best_move is
 				// deeper down the tree.
 				free(best.move);
 
@@ -100,8 +101,8 @@ negamax(struct chess* game, size_t depth)
 			// the opponent will checkmate me
 			if (best.val == INT_MIN + 1 || (ret.mate_for == game->moving &&
 			                                ret.mate_depth > best.mate_depth)) {
-				// We currently have no other move or the currently best move
-				// can set us also mate but in less steps.
+				// We currently have no other move or best_move also checkmates
+				// me, but in less steps.
 				free(best.move);
 
 				best      = ret;
@@ -110,7 +111,7 @@ negamax(struct chess* game, size_t depth)
 				free(move);
 			}
 		} else if (ret.val > best.val || best.mate_for == game->moving) {
-			// move leads to a better rating or can save us from checkmate
+			// move leads to a better rating or can save me from checkmate
 			free(best.move);
 
 			best      = ret;
