@@ -80,10 +80,10 @@ negamax(struct chess* game, size_t depth)
 				// possible - return
 				free(best.move);
 				free(ret.move);
-				list_free(moves);
 
-				ret.move = move;
-				return ret;
+				best = ret;
+				best.move = move;
+				break;
 			}
 
 			if (best.mate_for != -game->moving ||
@@ -134,7 +134,7 @@ struct move*
 choose_move(struct chess* game)
 {
 	struct move* best = NULL;
-	for (size_t i = 1; i < 5 /* TODO: check time */; i++) {
+	for (size_t i = 1; i <= 4 /* TODO: check time */; i++) {
 		struct negamax_return ret = negamax(game, i);
 		if (!ret.move)
 			return NULL;
