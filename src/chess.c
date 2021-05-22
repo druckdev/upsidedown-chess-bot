@@ -93,6 +93,7 @@ run_chess()
 			free(game.board);
 			exit(1);
 		}
+		fen[bytes_read] = '\0';
 
 		update_timer(timer, &game);
 
