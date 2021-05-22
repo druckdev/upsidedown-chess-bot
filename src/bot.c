@@ -103,8 +103,8 @@ negamax(struct chess* game, size_t depth)
 			}
 		} else if (ret.mate_for == game->moving) {
 			// the opponent will checkmate me
-			if (best.val == INT_MIN + 1 || (ret.mate_for == game->moving &&
-			                                ret.mate_depth > best.mate_depth)) {
+			if (best.val == INT_MIN + 1 || (best.mate_for == game->moving &&
+			                                ret.mate_depth < best.mate_depth)) {
 				// We currently have no other move or best_move also checkmates
 				// me, but in less steps.
 				free(best.move);
