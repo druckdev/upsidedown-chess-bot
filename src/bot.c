@@ -14,10 +14,15 @@
 #include "types.h"
 
 #define MAX_NEGAMAX_DEPTH 3
+// #define DEBUG_NEGAMAX_USE_LIST
 
 struct negamax_return {
 	int val;
+#ifdef DEBUG_NEGAMAX_USE_LIST
+	struct list* moves;
+#else
 	struct move* move;
+#endif
 	enum COLOR mate_for;
 	size_t mate_depth;
 };
@@ -147,14 +152,24 @@ negamax(struct chess* game, size_t depth)
 		}
 
 		free(move);
+#ifdef DEBUG_NEGAMAX_USE_LIST
+		list_free(ret.moves);
+#else
 		free(ret.move);
+#endif
 		continue;
 
 overwrite_best_move:
+#ifdef DEBUG_NEGAMAX_USE_LIST
+		list_free(best.moves);
+		best       = ret;
+		best.moves = list_push(best.moves, move);
+#else
 		free(best.move);
 		best      = ret;
 		best.move = move;
 		free(ret.move);
+#endif
 	}
 	list_free(moves);
 
@@ -192,14 +207,23 @@ choose_move(struct chess* game, struct chess_timer* timer)
 		if (clock_gettime(CLOCK_MONOTONIC, &t_beg))
 			return NULL;
 
-		struct negamax_return ret = negamax(game, i);
-		if (!ret.move)
-			return NULL;
-
 		if (best)
 			free(best);
 
+		struct negamax_return ret = negamax(game, i);
+
+#ifdef DEBUG_NEGAMAX_USE_LIST
+		if (!ret.moves)
+			return NULL;
+
+		best = list_pop(ret.moves);
+		list_free(ret.moves);
+#else
+		if (!ret.move)
+			return NULL;
+
 		best = ret.move;
+#endif
 		if (ret.mate_depth == i) {
 			// ret.move leads to checkmate
 			game->checkmate = true;
