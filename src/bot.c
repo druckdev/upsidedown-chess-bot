@@ -45,11 +45,13 @@ negamax(struct chess* game, size_t depth)
 
 	struct list* moves = generate_moves(game, true, false);
 
-	// check checkmate - terminal node in tree
+	// draw by stalemate - terminal node in tree
+	// NOTE: If the list is empty because of a checkmate move, we will recognize
+	//       that over move->is_checkmate and override ret.mate_for.
 	if (!list_count(moves)) {
 		list_free(moves);
 		return (struct negamax_return){ -game->moving * rate_board(game),
-			                            NULL, -game->moving, depth + 1 };
+			                            NULL, UNDEFINED, depth };
 	}
 
 	game->moving *= -1;
@@ -64,6 +66,11 @@ negamax(struct chess* game, size_t depth)
 		do_move(game->board, move);
 		struct negamax_return ret = negamax(game, depth - 1);
 		undo_move(game->board, move, old);
+
+		if (move->is_checkmate) {
+			ret.mate_for = -game->moving;
+			ret.mate_depth = depth;
+		}
 
 		/*
 		 * NOTE(Aurel): game->moving is the opponent.

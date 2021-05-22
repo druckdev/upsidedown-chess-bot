@@ -104,6 +104,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 /**
  * Execute move and check if the same piece from the new positions can hit the
  * opponent's king.
+ * Also updates move->is_checkmate if true.
  */
 bool
 is_checkless_move(struct PIECE board[], struct move* move)
@@ -124,12 +125,15 @@ is_checkless_move(struct PIECE board[], struct move* move)
 			continue;
 		}
 
-		if (board[cur_move->target].type == KING &&
-		    !is_checkmate(board, cur_move)) {
-			// Found checkless move
-			free(cur_move);
-			is_checkless_move = false;
-			break;
+		if (board[cur_move->target].type == KING) {
+		    if (!is_checkmate(board, cur_move)) {
+				// Found checkless move
+				free(cur_move);
+				is_checkless_move = false;
+				break;
+			} else {
+				move->is_checkmate = true;
+			}
 		}
 		free(cur_move);
 	}
@@ -237,21 +241,16 @@ generate_moves_helper(struct PIECE board[], enum POS pos, int range,
 			 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 			 * be the last check!
 			 */
-			struct move test_move = { pos, target, hit, EMPTY };
+			struct move test_move = { pos, target, hit, false, empty_piece };
 			if (!check_checkless || is_checkless_move(board, &test_move)) {
 				// Move passed all tests
 
 				struct move* move = malloc(sizeof(*move));
-				// TODO(Aurel): Should we cleanup the list moves?
-				assert(move);
-
-				move->start       = pos;
-				move->target      = target;
-				move->hit         = hit;
-				move->promotes_to = empty_piece;
+				if (!move)
+					return NULL;
+				memcpy(move, &test_move, sizeof(*move));
 
 				moves = list_push(moves, move);
-				assert(moves);
 			}
 
 			prev_target     = target;
@@ -319,7 +318,7 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 		if (target < 8 || target > 55)
 			promotes_to.type = QUEEN;
 		while (promotes_to.type <= QUEEN && promotes_to.type != PAWN) {
-			struct move test = { pos, target, occupied_by_enemy && i,
+			struct move test = { pos, target, occupied_by_enemy && i, false,
 				                 promotes_to };
 			promotes_to.type--;
 
@@ -330,7 +329,7 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 			struct move* move = malloc(sizeof(*move));
 			if (!move)
 				return NULL;
-			memcpy(move, &test, sizeof(test));
+			memcpy(move, &test, sizeof(*move));
 
 			moves = list_push(moves, move);
 
@@ -371,17 +370,15 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos,
 	 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 	 * be the last check!
 	 */
-	struct move test_move = { pos, target, occupied_by_enemy, EMPTY };
+	struct move test_move = { pos, target, occupied_by_enemy, false,
+		                      empty_piece };
 	if (check_checkless && !is_checkless_move(board, &test_move))
 		return NULL;
 
 	struct move* move = malloc(sizeof(*move));
 	if (!move)
 		return NULL;
-	move->start       = pos;
-	move->target      = target;
-	move->hit         = occupied_by_enemy;
-	move->promotes_to = empty_piece;
+	memcpy(move, &test_move, sizeof(*move));
 
 	return move;
 }

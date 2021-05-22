@@ -59,7 +59,7 @@ struct chess {
 
 struct move {
 	enum POS start, target;
-	bool hit;
+	bool hit, is_checkmate;
 	struct PIECE promotes_to;
 };
 

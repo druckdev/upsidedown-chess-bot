@@ -8,6 +8,33 @@
 #include "devel_generator.h"
 
 #include "helper.h"
+
+void
+test_checkmate()
+{
+	char* fen = "8/8/8/8/8/5n2/pppppppN/rnbqkbr1 w";
+	struct chess chess;
+	chess.board = calloc(64, sizeof(*chess.board));
+	fen_to_chess(fen, &chess);
+
+	struct list* moves = generate_moves(&chess, true, false);
+
+	TEST_ASSERT_EQUAL_INT(3, list_count(moves));
+
+	while (list_count(moves)) {
+		struct move* move = list_pop(moves);
+
+		if (move->start != H2 || move->target != F3) {
+			free(move);
+			continue;
+		}
+
+		TEST_ASSERT_MESSAGE(move->is_checkmate, "Move should be a checkmate move.");
+		free(move);
+	}
+	list_free(moves);
+}
+
 /* THIS IS AN EXAMPLE. */
 void
 test_generate_moves_piece()
@@ -69,4 +96,5 @@ test_generator()
 		RUN_TEST(test_game_samples);
 	}
 	RUN_TEST(test_generate_moves_piece);
+	RUN_TEST(test_checkmate);
 }
