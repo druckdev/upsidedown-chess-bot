@@ -126,7 +126,7 @@ is_checkless_move(struct PIECE board[], struct move* move)
 		}
 
 		if (board[cur_move->target].type == KING) {
-		    if (!is_checkmate(board, cur_move)) {
+			if (!is_checkmate(board, cur_move)) {
 				// Found checkless move
 				free(cur_move);
 				is_checkless_move = false;

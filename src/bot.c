@@ -10,8 +10,8 @@
 #include "bot.h"
 #include "chess.h"
 #include "generator.h"
-#include "types.h"
 #include "timer.h"
+#include "types.h"
 
 #define MAX_NEGAMAX_DEPTH 3
 
@@ -40,8 +40,8 @@ negamax(struct chess* game, size_t depth)
 {
 	// max depth reached
 	if (!depth)
-		return (struct negamax_return){ -game->moving * rate_board(game),
-			                            NULL, UNDEFINED, 0 };
+		return (struct negamax_return){ -game->moving * rate_board(game), NULL,
+			                            UNDEFINED, 0 };
 
 	struct list* moves = generate_moves(game, true, false);
 
@@ -50,8 +50,8 @@ negamax(struct chess* game, size_t depth)
 	//       that over move->is_checkmate and override ret.mate_for.
 	if (!list_count(moves)) {
 		list_free(moves);
-		return (struct negamax_return){ -game->moving * rate_board(game),
-			                            NULL, UNDEFINED, depth };
+		return (struct negamax_return){ -game->moving * rate_board(game), NULL,
+			                            UNDEFINED, depth };
 	}
 
 	game->moving *= -1;
@@ -68,7 +68,7 @@ negamax(struct chess* game, size_t depth)
 		undo_move(game->board, move, old);
 
 		if (move->is_checkmate) {
-			ret.mate_for = -game->moving;
+			ret.mate_for   = -game->moving;
 			ret.mate_depth = depth;
 		}
 
@@ -92,13 +92,13 @@ negamax(struct chess* game, size_t depth)
 				free(best.move);
 				free(ret.move);
 
-				best = ret;
+				best      = ret;
 				best.move = move;
 				break;
 			}
 
 			if (best.mate_for != -game->moving ||
-			           best.mate_depth < ret.mate_depth) {
+			    best.mate_depth < ret.mate_depth) {
 				// Either best_move is not checkmating the opponent or best_move is
 				// deeper down the tree.
 				free(best.move);
@@ -142,7 +142,7 @@ negamax(struct chess* game, size_t depth)
 }
 
 struct move*
-choose_move(struct chess* game, struct chess_timer *timer)
+choose_move(struct chess* game, struct chess_timer* timer)
 {
 	struct move* best = NULL;
 
@@ -154,14 +154,15 @@ choose_move(struct chess* game, struct chess_timer *timer)
 	 * the previous move's calculations took.
 	 */
 	size_t i = 1;
-	while(true) {
+	while (true) {
 		if (i > MAX_NEGAMAX_DEPTH)
-		    break;
+			break;
 
 		double t_remaining = get_remaining_move_time(timer);
-		double min_t_remaining = 3 * (t_prev_move.tv_sec + t_prev_move.tv_nsec * 1e-9);
+		double min_t_remaining =
+				3 * (t_prev_move.tv_sec + t_prev_move.tv_nsec * 1e-9);
 		if (t_remaining < min_t_remaining)
-		    break;
+			break;
 
 		// take beginning time
 		struct timespec t_beg;

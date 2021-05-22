@@ -29,7 +29,8 @@ test_checkmate()
 			continue;
 		}
 
-		TEST_ASSERT_MESSAGE(move->is_checkmate, "Move should be a checkmate move.");
+		TEST_ASSERT_MESSAGE(move->is_checkmate,
+		                    "Move should be a checkmate move.");
 		free(move);
 	}
 	list_free(moves);
@@ -46,7 +47,7 @@ test_generate_moves_piece()
 	chess.board = calloc(64, sizeof(*chess.board));
 	fen_to_chess(test_boards[0].fen, &chess);
 
-// verify generator
+	// verify generator
 	struct list* list = generate_moves_piece(chess.board, D3, true, false);
 	int list_length   = list_count(list);
 
