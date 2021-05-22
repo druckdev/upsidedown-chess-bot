@@ -67,6 +67,7 @@ negamax(struct chess* game, size_t depth)
 		struct negamax_return ret = negamax(game, depth - 1);
 		undo_move(game->board, move, old);
 
+		// Set checkmate details if appropriate.
 		if (move->is_checkmate) {
 			ret.mate_for   = -game->moving;
 			ret.mate_depth = depth;
@@ -75,16 +76,29 @@ negamax(struct chess* game, size_t depth)
 		/*
 		 * NOTE(Aurel): game->moving is the opponent.
 		 *
-		 * Four cases:
-		 *	1. The subtree will end in the opponent's king in checkmate.
-		 *	2. The subtree will end in my king in checkmate.
-		 *		- As we never actually reach the checkmate its checked
-		 *		  differently and thus needs to be checked for here as well.
-		 *	3. The subtree simply leads to a better score.
-		 *	4. The subtree does not improve the current best move.
+		 * In following cases do we want to overwrite our current best move with
+		 * the new move:
+		 *  1. The observed move leads directly to a checkmate.
+		 *  2. The observed move leads potentially later to a checkmate and our
+		 *     current best move does not as far as we know.
+		 *  3. The observed move leads potentially later to a checkmate and does
+		 *     it faster than the current best move.
+		 *  4. The observed move leads potentially later to a checkmate in
+		 *     equally many steps, but with a better rating for us.
+		 *
+		 *  5. The observed move leads to an opponents checkmate, but we
+		 *     currently have no other move at all.
+		 *  6. The observed move leads to an opponents checkmate but does it
+		 *     slower than our current best move.
+		 *  7. The observed move leads to an opponents checkmate in equally many
+		 *     steps, but with a better rating for us.
+		 *
+		 *  8. The observed move leads to a better rating.
+		 *  9. The observed move saves us from a checkmate that out current best
+		 *     move would lead to potentially.
 		 */
 		if (ret.mate_for == -game->moving) {
-			// we will checkmate the opponent
+			// I will checkmate the opponent
 
 			if (ret.mate_depth == depth) {
 				// Current move checkmates the opponent
