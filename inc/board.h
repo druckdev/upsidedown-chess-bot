@@ -18,6 +18,7 @@ char piece_to_chr(struct PIECE piece);
 struct PIECE chr_to_piece(char fen_piece);
 void fen_to_chess(char* fen, struct chess* game);
 bool* are_attacked(struct list* moves, bool* targets);
+void print_move_b(struct PIECE* board, struct move* move);
 void print_board(struct PIECE board[], struct list* moves);
 
 #endif /* BOARD_H */

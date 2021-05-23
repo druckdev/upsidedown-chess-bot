@@ -3,6 +3,8 @@
 
 #include <stddef.h>
 
+#include "chess.h"
+
 /**
  * A doubly linked list.
  */
@@ -69,5 +71,7 @@ void list_free(struct list* list);
 
 struct list_elem* list_get_first(struct list* list);
 struct list_elem* list_get_next(struct list_elem* elem);
+
+void list_print_moves(struct PIECE* board, struct list* moves);
 
 #endif /* TYPES_H */

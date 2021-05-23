@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "board.h"
 #include "types.h"
 
 struct list*
@@ -140,4 +141,15 @@ struct list_elem*
 list_get_next(struct list_elem* elem)
 {
 	return elem ? elem->next : NULL;
+}
+
+void
+list_print_moves(struct PIECE* board, struct list* moves)
+{
+	struct list_elem* cur = moves->last;
+	while (cur) {
+		struct move* move = cur->object;
+		print_move_b(board, move);
+		cur = cur->prev;
+	}
 }

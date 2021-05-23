@@ -10,7 +10,7 @@
 #include "generator.h"
 #include "types.h"
 
-#define DEBUG_PRINTS true
+#define DEBUG_PRINTS false
 
 struct list* generate_moves_piece(struct PIECE board[], enum POS pos,
                                   bool check_checkless, bool hit_allies);
@@ -18,8 +18,8 @@ struct list* generate_moves_piece(struct PIECE board[], enum POS pos,
 /**
  * @arg board - the current board state
  * @arg mate_move - the move on `board` that has the king as target.
- * Returns: If board is a checkmate position or if the color of the attacked
- *          king can still get out of check.
+ * @return If board is a checkmate position or if the color of the attacked king
+ *         can still get out of check.
  */
 bool
 is_checkmate(struct PIECE board[], struct move* mate_move)
@@ -140,6 +140,7 @@ is_checkless_move(struct PIECE board[], struct move* move)
 	list_free(new_moves);
 
 	undo_move(board, move, old);
+
 	return is_checkless_move;
 }
 
@@ -553,5 +554,6 @@ generate_moves(struct chess* game, bool check_checkless, bool hit_allies)
 		                                                     check_checkless,
 		                                                     hit_allies));
 	}
+
 	return moves;
 }

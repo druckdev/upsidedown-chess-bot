@@ -199,6 +199,15 @@ are_attacked(struct list* moves, bool* targets)
 	return targets;
 }
 
+void
+print_move_b(struct PIECE* board, struct move* move)
+{
+	char str1[3];
+	char str2[3];
+	printf("%s -> %s %c\n", pos_to_str(move->start, str1),
+			pos_to_str(move->target, str2), piece_to_chr(move->promotes_to));
+}
+
 /**
  * @arg moves: optional for marking attacked fields, set to NULL if not wanted
  *             Because of efficiency reasons, moves is 'consumed' and freed.

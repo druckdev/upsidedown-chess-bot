@@ -13,7 +13,7 @@
 
 #define MAX_FEN_STR_LEN 128
 
-#define BOARD_WHEN_PLAYING true
+#define BOARD_WHEN_PLAYING false
 #define PLAYING_VS_HUMAN true
 
 int

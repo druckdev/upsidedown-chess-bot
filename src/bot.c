@@ -13,8 +13,8 @@
 #include "timer.h"
 #include "types.h"
 
-#define MAX_NEGAMAX_DEPTH 3
-// #define DEBUG_NEGAMAX_USE_LIST
+#define MAX_NEGAMAX_DEPTH 6
+#define DEBUG_NEGAMAX_USE_LIST
 
 struct negamax_return {
 	int val;
@@ -191,7 +191,7 @@ choose_move(struct chess* game, struct chess_timer* timer)
 	 * Currently the remaining move time must be larger than 3 times the time
 	 * the previous move's calculations took.
 	 */
-	size_t i = 1;
+	size_t i = 6;
 	while (true) {
 		if (i > MAX_NEGAMAX_DEPTH)
 			break;
@@ -199,8 +199,10 @@ choose_move(struct chess* game, struct chess_timer* timer)
 		double t_remaining = get_remaining_move_time(timer);
 		double min_t_remaining =
 				3 * (t_prev_move.tv_sec + t_prev_move.tv_nsec * 1e-9);
+#if 0
 		if (t_remaining < min_t_remaining)
-			break;
+		    break;
+#endif
 
 		// take beginning time
 		struct timespec t_beg;
@@ -215,6 +217,10 @@ choose_move(struct chess* game, struct chess_timer* timer)
 #ifdef DEBUG_NEGAMAX_USE_LIST
 		if (!ret.moves)
 			return NULL;
+
+		printf("depth %lu\n", i);
+		list_print_moves(game->board, ret.moves);
+		printf("\n");
 
 		best = list_pop(ret.moves);
 		list_free(ret.moves);

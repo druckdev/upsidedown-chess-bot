@@ -60,6 +60,9 @@ static struct game_samples test_boards[] = {
 	{ "3k4/4P3/8/2Q5/3R4/8/8/8 b", 1 },
 	{ "8/1K6/8/8/8/8/p7/r7 w", 8 },
 
+	//
+	{ "RNBQKB1R/PPPPPPPP/8/8/8/5n2/pppppNpp/rnbqkbr1 b", 12 },
+
 	/* Invalid boards */
 	{ "r1bqkb1r/pppppppp/2n2n2/8/8/2N2N2/PPPPPPPP/R1BQKB1R w", 18 },
 	{ "r1bqkbqr/pppppp1p/2n2n2/8/8/2N2N2/P1PPPPPP/RQBQKB1R w", 23 },
