@@ -1,0 +1,111 @@
+commit 94d4acc550b10db271654c9ebffc9d32f41918a6
+Merge: 70b1938 b3733f6
+Author: druckdev <druckdev@protonmail.com>
+Date:   Mon May 10 22:53:59 2021 +0200
+
+    WIP on dev: 70b1938 Encapsulate list more over interface functions
+
+diff --cc CMakeLists.txt
+index d4bf999,d4bf999..340e24d
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@@ -50,3 -50,3 +50,4 @@@ target_include_directories(benchmark PR
+  
+  #preprocessor variables
+  target_compile_definitions(test PRIVATE UNITY_OUTPUT_COLOR)
+++target_compile_definitions(test PRIVATE UNITY_INCLUDE_EXEC_TIME)
+diff --cc src/unit_test.c
+index a9a8a01,a9a8a01..25f065c
+--- a/src/unit_test.c
++++ b/src/unit_test.c
+@@@ -1,4 -1,4 +1,5 @@@
+  #include <stdio.h>
+++#include <string.h>
+  
+  #include "board.h"
+  #include "generator.h"
+@@@ -6,6 -6,6 +7,8 @@@
+  #include "types.h"
+  #include "unity.h"
+  
+++#define MAX_FEN_STR_LEN (8 * 8 + 7 + 2)
+++
+  // Necessary for Unity
+  // clang-format off
+  void setUp(void)    {}
+@@@ -19,22 -19,22 +22,35 @@@ static size_t test_idx = 0
+  void
+  test_generator(void)
+  {
+--	printf("TEST: %s\n", test_boards[test_idx].fen);
+++	printf("TEST: %s ", test_boards[test_idx].fen);
+++	for (size_t i = MAX_FEN_STR_LEN;
+++	     i > strnlen(test_boards[test_idx].fen, MAX_FEN_STR_LEN); --i)
+++		putchar(' ');
+++	fflush(stdout);
+  
+  	// init game
+  	struct chess chess;
+  	fen_to_chess(test_boards[test_idx].fen, &chess);
+  
+  	// verify generator
+--	struct list* list = generate_moves(&chess, true, false);
+--	int list_length   = list_count(list);
+++	struct list* list;
+++	int old_len;
+++	for (size_t i = 0; i < 10000; i++) {
+++		list = generate_moves(&chess, true, false);
+  
+--	if (list_length != test_boards[test_idx].move_cnt) {
+--		printf("\n");
+--		print_board(chess.board, list);
+--	}
+++		int list_len = list_count(list);
+++		if ((i && list_len != old_len) ||
+++		    list_len != test_boards[test_idx].move_cnt) {
+++			printf("\n");
+++			print_board(chess.board, list);
+++		}
+  
+--	TEST_ASSERT_EQUAL_INT(list_length, test_boards[test_idx].move_cnt);
+++		if (i)
+++			TEST_ASSERT_EQUAL_INT(old_len, list_len);
+++		TEST_ASSERT_EQUAL_INT(list_len, test_boards[test_idx].move_cnt);
+++
+++		old_len = list_len;
+++	}
+  }
+  
+  // TODO(Luis): use generate_test_runner.rb
+diff --cc src/unity.c
+index bd6f19a,bd6f19a..c559beb
+--- a/src/unity.c
++++ b/src/unity.c
+@@@ -516,7 -516,7 +516,7 @@@ UnityTestResultsBegin(const char* file
+  static void
+  UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
+  {
+--	UnityTestResultsBegin(Unity.TestFile, line);
+++	// UnityTestResultsBegin(Unity.TestFile, line);
+  	UnityPrint(UnityStrFail);
+  	UNITY_OUTPUT_CHAR(':');
+  }
+@@@ -529,16 -529,16 +529,15 @@@ UnityConcludeTest(void
+  		Unity.TestIgnores++;
+  	} else if (!Unity.CurrentTestFailed) {
+  		// UnityTestResultsBegin(Unity.TestFile, Unity.CurrentTestLineNumber);
+--		// UnityPrint(UnityStrPass);
+++		UnityPrint(UnityStrPass);
+  	} else {
+  		Unity.TestFailures++;
+--		UNITY_PRINT_EOL();
+--		UNITY_PRINT_EOL();
+  	}
+  
+  	Unity.CurrentTestFailed  = 0;
+  	Unity.CurrentTestIgnored = 0;
+  	UNITY_PRINT_EXEC_TIME();
+++	UNITY_PRINT_EOL();
+  	UNITY_FLUSH_CALL();
+  }
+  
