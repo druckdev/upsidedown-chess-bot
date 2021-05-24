@@ -2,6 +2,7 @@
 
 #include "unity.h"
 
+#include "test_bot.h"
 #include "test_generator.h"
 
 // Necessary for Unity
@@ -16,5 +17,6 @@ main(void)
 {
 	UNITY_BEGIN();
 	test_generator();
+	test_bot();
 	return UNITY_END();
 }
