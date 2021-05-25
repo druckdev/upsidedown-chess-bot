@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "board.h"
 #include "chess.h"
@@ -8,6 +9,8 @@
 #include "devel_generator.h"
 
 #include "helper.h"
+
+#define ITERATIONS 10000
 
 void
 test_checkmate()
@@ -66,7 +69,11 @@ static size_t test_idx = 0;
 void
 test_game_samples()
 {
-	printf("TEST: %s\n", test_boards[test_idx].fen);
+	printf("TEST: %s ", test_boards[test_idx].fen);
+	size_t len = strnlen(test_boards[test_idx].fen, 73);
+	for (size_t i = 73; i > len; --i)
+		putchar(' ');
+	fflush(stdout);
 
 	// init game
 	struct chess chess;
@@ -74,18 +81,28 @@ test_game_samples()
 	fen_to_chess(test_boards[test_idx].fen, &chess);
 
 	// verify generator
-	struct list* list = generate_moves(&chess, true, false);
-	int list_length   = list_count(list);
+	struct list* list;
+	int old_len;
+	for (size_t i = 0; i < ITERATIONS; i++) {
+		list = generate_moves(&chess, true, false);
 
-	if (list_length != test_boards[test_idx].move_cnt) {
-		printf("\n");
-		print_board(chess.board, list);
-	} else {
-		list_free(list);
+		int list_len = list_count(list);
+		if ((i && list_len != old_len) ||
+				list_len != test_boards[test_idx].move_cnt) {
+			printf("\n");
+			print_board(chess.board, list);
+		} else {
+			list_free(list);
+		}
+
+		if (i)
+			TEST_ASSERT_EQUAL_INT(old_len, list_len);
+		TEST_ASSERT_EQUAL_INT(test_boards[test_idx].move_cnt, list_len);
+
+		old_len = list_len;
 	}
-
 	free(chess.board);
-	TEST_ASSERT_EQUAL_INT(test_boards[test_idx].move_cnt, list_length);
+
 }
 
 void

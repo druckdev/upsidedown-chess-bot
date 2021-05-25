@@ -46,3 +46,4 @@ target_include_directories(benchmark PRIVATE ${INC_DIR})
 
 # preprocessor variables
 target_compile_definitions(tests PRIVATE UNITY_OUTPUT_COLOR)
+target_compile_definitions(tests PRIVATE UNITY_INCLUDE_EXEC_TIME)
