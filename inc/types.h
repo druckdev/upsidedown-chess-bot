@@ -9,6 +9,7 @@
 struct list_elem {
 	struct list_elem *prev, *next;
 	void* object;
+	int prio;
 };
 
 struct list {
@@ -77,5 +78,7 @@ void list_free(struct list* list);
 
 struct list_elem* list_get_first(struct list* list);
 struct list_elem* list_get_next(struct list_elem* elem);
+
+void list_sort(struct list* list);
 
 #endif /* TYPES_H */

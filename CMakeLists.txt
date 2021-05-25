@@ -32,7 +32,7 @@ set(BOT_SOURCES ${SRC_DIR}/main.c ${SOURCES})
 
 # sources specific only to testing - containing test main
 set(TEST_SOURCES ${TEST_DIR}/unity.c ${TEST_DIR}/unit_test.c
-    ${TEST_DIR}/test_generator.c ${TEST_DIR}/test_bot.c
+    ${TEST_DIR}/test_generator.c ${TEST_DIR}/test_bot.c ${TEST_DIR}/test_types.c
     ${SOURCES})
 
 # sources specific only to benchmarking - containing benchmark main

@@ -164,3 +164,50 @@ list_get_next(struct list_elem* elem)
 {
 	return elem ? elem->next : NULL;
 }
+
+// Sort a list inplace.
+// This uses insertion sort as the lists that we typically use are rather small
+// in length.
+void
+list_sort(struct list* list)
+{
+	if (!list || !list->count)
+		return;
+
+	struct list_elem* cur = list->first->next;
+	struct list_elem *before, *next;
+	while (cur) {
+		before = cur->prev;
+		while (before && before->prio > cur->prio)
+			before = before->prev;
+
+		// Backup next before reordering
+		next = cur->next;
+
+		// Move `cur` from current position behind `before`
+		// This is a hybrid form of `list_remove` and `list_insert` but without
+		// unnecessary instructions.
+
+		// Remove --------------------------------------------------------------
+		// cur->prev can never be NULL as we are starting at first->next
+		cur->prev->next = cur->next;
+		if (cur->next)
+			cur->next->prev = cur->prev;
+		if (list->last == cur)
+			list->last = cur->prev;
+		// cur can never be list->first as we are starting at first->next
+
+		// Insert --------------------------------------------------------------
+		cur->prev = before;
+		if (before) {
+			cur->next = before->next;
+			before->next = cur;
+		} else {
+			cur->next = list->first;
+			list->first = cur;
+		}
+		cur->next->prev = cur;
+
+		cur = next;
+	}
+}

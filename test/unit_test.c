@@ -4,6 +4,7 @@
 
 #include "test_bot.h"
 #include "test_generator.h"
+#include "test_types.h"
 
 // Necessary for Unity
 // clang-format off
@@ -21,5 +22,6 @@ main(int argc, char* argv[])
 	UNITY_BEGIN();
 	test_generator();
 	test_bot();
+	test_types();
 	return UNITY_END();
 }
