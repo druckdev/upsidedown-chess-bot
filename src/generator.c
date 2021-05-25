@@ -172,6 +172,10 @@ is_occupied_by_enemy(struct PIECE board[], enum POS pos, enum POS target)
 
 enum MOVES_TYPE { DIAGONAL, ORTHOGONAL, BOTH };
 
+static int offsets_diag[4] = { +9, +7, -9, -7 };
+static int offsets_orth[4] = { +1, +8, -1, -8 };
+static int offsets_both[8] = { +1, +9, +8, +7, -1, -9, -8, -7 };
+
 /**
  * @arg range: Use this parameter to calculate diagonal and orthogonal moves up
  * to a certain range, i.e. the king who may only walk one tile. Use -1 for
@@ -192,20 +196,20 @@ generate_moves_helper(struct PIECE board[], enum POS pos, int range,
 	size_t len;
 	switch (type) {
 	case DIAGONAL:
-		len     = 4;
-		offsets = (int[4]){ +9, +7, -9, -7 };
+		offsets = offsets_diag;
+		len = sizeof(offsets_diag) / sizeof(*offsets_diag);
 		break;
 	case ORTHOGONAL:
-		len     = 4;
-		offsets = (int[4]){ +1, +8, -1, -8 };
+		offsets = offsets_orth;
+		len = sizeof(offsets_orth) / sizeof(*offsets_orth);
 		break;
 	case BOTH:
-		len     = 8;
-		offsets = (int[8]){ +1, +9, +8, +7, -1, -9, -8, -7 };
+		offsets = offsets_both;
+		len = sizeof(offsets_both) / sizeof(*offsets_both);
 		break;
 	default:
 		fprintf(stderr, "Unknown moves type: %i", type);
-		break;
+		return NULL;
 	}
 
 	bool hit;
