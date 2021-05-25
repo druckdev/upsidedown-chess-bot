@@ -219,11 +219,11 @@ choose_move(struct chess* game, struct chess_timer* timer)
 		best = list_pop(ret.moves);
 		list_free(ret.moves);
 #else
-		if (!ret.move)
-			return NULL;
-
 		best = ret.move;
 #endif
+		if (!best)
+			return NULL;
+
 		if (ret.mate_depth == i) {
 			// ret.move leads to checkmate
 			game->checkmate = true;

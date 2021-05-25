@@ -47,6 +47,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 	// check all possible moves if they can prevent the checkmate
 	// TODO: Add bitmask to check everything but the kings moves
 	counter_moves = generate_moves(&game, false, false);
+	bool is_checkmate = true;
 	while (list_count(counter_moves)) {
 		struct move* cur_counter_move = (struct move*)list_pop(counter_moves);
 
@@ -84,21 +85,19 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		}
 		list_free(moves);
 
-		if (mate_declined) {
-			// counter_move successful
-			free(cur_counter_move);
-			list_free(counter_moves);
-			return false;
-		}
-
 		// Undo move
 		undo_move(game.board, cur_counter_move, old);
-
 		free(cur_counter_move);
-	}
 
+		if (mate_declined) {
+			// counter_move successful
+			counter_moves = false;
+			break;
+		}
+	}
 	list_free(counter_moves);
-	return true;
+
+	return is_checkmate;
 }
 
 /**
