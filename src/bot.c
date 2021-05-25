@@ -191,11 +191,7 @@ choose_move(struct chess* game, struct chess_timer* timer)
 	 * Currently the remaining move time must be larger than 3 times the time
 	 * the previous move's calculations took.
 	 */
-	size_t i = 1;
-	while (true) {
-		if (i > MAX_NEGAMAX_DEPTH)
-			break;
-
+	for (size_t i = 1; i <= MAX_NEGAMAX_DEPTH; ++i) {
 		double t_remaining = get_remaining_move_time(timer);
 		double min_t_remaining =
 				3 * (t_prev_move.tv_sec + t_prev_move.tv_nsec * 1e-9);
@@ -207,8 +203,7 @@ choose_move(struct chess* game, struct chess_timer* timer)
 		if (clock_gettime(CLOCK_MONOTONIC, &t_beg))
 			return NULL;
 
-		if (best)
-			free(best);
+		free(best);
 
 		struct negamax_return ret = negamax(game, i);
 
@@ -236,8 +231,6 @@ choose_move(struct chess* game, struct chess_timer* timer)
 		t_prev_move = t_end;
 		t_prev_move.tv_sec -= t_beg.tv_sec;
 		t_prev_move.tv_nsec -= t_beg.tv_nsec;
-
-		++i;
 	}
 	return best;
 }
