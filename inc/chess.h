@@ -21,7 +21,7 @@ enum PIECE_E {
 	QUEEN  = 5,
 	KING   = 6
 };
-static int PIECE_VALUES[] = { 0, 100, 400, 400, 500, 900, 1000000 };
+extern int PIECE_VALUES[];
 
 /*
  * TODO: These are just stubs to get a general idea of what we need.
@@ -46,7 +46,7 @@ struct PIECE {
 	enum PIECE_E type;
 	enum COLOR color;
 };
-static struct PIECE empty_piece = { EMPTY, WHITE };
+extern struct PIECE empty_piece;
 
 struct chess {
 	struct PIECE* board;

@@ -76,7 +76,7 @@ test_game_samples()
 	fflush(stdout);
 
 	// init game
-	struct chess chess;
+	struct chess chess = { 0 };
 	chess.board = calloc(64, sizeof(*chess.board));
 	fen_to_chess(test_boards[test_idx].fen, &chess);
 
