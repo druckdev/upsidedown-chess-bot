@@ -6,6 +6,7 @@
 struct list*
 list_push(struct list* list, void* object)
 {
+	// NOTE: generator.c depends on this break condition!
 	if (!object)
 		return list;
 
@@ -200,10 +201,10 @@ list_sort(struct list* list)
 		// Insert --------------------------------------------------------------
 		cur->prev = before;
 		if (before) {
-			cur->next = before->next;
+			cur->next    = before->next;
 			before->next = cur;
 		} else {
-			cur->next = list->first;
+			cur->next   = list->first;
 			list->first = cur;
 		}
 		cur->next->prev = cur;

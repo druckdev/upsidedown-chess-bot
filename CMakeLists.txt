@@ -23,17 +23,16 @@ set(TEST_DIR test)
 set(TEST_INC_DIR test/inc)
 
 # sources
-set(SOURCES ${SRC_DIR}/board.c ${SRC_DIR}/chess.c
-    ${SRC_DIR}/bot.c ${SRC_DIR}/generator.c
-    ${SRC_DIR}/types.c ${SRC_DIR}/timer.c)
+set(SOURCES ${SRC_DIR}/board.c ${SRC_DIR}/chess.c ${SRC_DIR}/bot.c
+	${SRC_DIR}/generator.c ${SRC_DIR}/types.c ${SRC_DIR}/timer.c)
 
 # sources specific to the bot itself - cotaining bot main
 set(BOT_SOURCES ${SRC_DIR}/main.c ${SOURCES})
 
 # sources specific only to testing - containing test main
 set(TEST_SOURCES ${TEST_DIR}/unity.c ${TEST_DIR}/unit_test.c
-    ${TEST_DIR}/test_generator.c ${TEST_DIR}/test_bot.c ${TEST_DIR}/test_types.c
-    ${SOURCES})
+	${TEST_DIR}/test_generator.c ${TEST_DIR}/test_bot.c ${TEST_DIR}/test_types.c
+	${SOURCES})
 
 # sources specific only to benchmarking - containing benchmark main
 set(BENCHMARK_SOURCES ${SRC_DIR}/benchmark.c ${SOURCES})

@@ -53,7 +53,8 @@ struct list_elem* list_remove(struct list* list, struct list_elem* elem);
  *
  * Runtime: O(1)
  */
-void list_insert(struct list* list, struct list_elem* new_elem, struct list_elem* before);
+void list_insert(struct list* list, struct list_elem* new_elem,
+                 struct list_elem* before);
 
 /**
  * Appends `second` to `first`.
