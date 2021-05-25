@@ -10,7 +10,11 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 #set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_BUILD_TYPE Release)
-set(CMAKE_C_FLAGS_RELEASE "-O3")
+# Set optimization level of 3 and undefine `NDEBUG` as this can lead to
+# "non-deterministically" behaviour (see manpage ASSERT(3)).
+# (And it actually does break our program)
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -UNDEBUG")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra")
 
 # directories
 set(SRC_DIR src)

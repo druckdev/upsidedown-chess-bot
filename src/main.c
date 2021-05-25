@@ -28,6 +28,9 @@ list_example()
 int
 main(int argc, char* argv[])
 {
+	(void)argc;
+	(void)argv;
+
 	// printf("Upside Down Chess Bot version %'.1f\n", VERSION);
 	run_chess();
 }

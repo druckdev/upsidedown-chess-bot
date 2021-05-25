@@ -163,12 +163,12 @@ is_attacked(struct list* moves, enum POS pos)
 	if (!moves)
 		return false;
 
-	struct list_elem* cur = moves->first;
+	struct list_elem* cur = list_get_first(moves);
 	while (cur) {
 		struct move* move = (struct move*)cur->object;
 		if (move->target == pos)
 			return true;
-		cur = cur->next;
+		cur = list_get_next(cur);
 	}
 	return false;
 }
@@ -189,7 +189,7 @@ are_attacked(struct list* moves, bool* targets)
 	if (!moves)
 		return targets;
 
-	while (moves->last) {
+	while (list_count(moves)) {
 		struct move* move     = list_pop(moves);
 		targets[move->target] = true;
 		free(move);

@@ -82,7 +82,7 @@ test_game_samples()
 
 	// verify generator
 	struct list* list;
-	int old_len;
+	int old_len = 0;
 	for (size_t i = 0; i < ITERATIONS; i++) {
 		list = generate_moves(&chess, true, false);
 
@@ -108,7 +108,7 @@ void
 test_generator()
 {
 	// run test cases
-	int tests_length = sizeof(test_boards) / sizeof(*test_boards);
+	size_t tests_length = sizeof(test_boards) / sizeof(*test_boards);
 	for (test_idx = 0; test_idx < tests_length; test_idx++) {
 		RUN_TEST(test_game_samples);
 	}

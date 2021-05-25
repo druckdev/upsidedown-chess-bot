@@ -72,7 +72,7 @@ get_move_time(struct chess_timer* timer, struct chess* game,
 	case UNIFORM_DISTRIBUTION:
 		return uniform_distribution(timer, game);
 	default:
-		assert(("No timer function is being used", false));
+		assert(false && "No timer function is being used");
 	}
 }
 

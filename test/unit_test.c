@@ -13,8 +13,11 @@ void tearDown(void) {}
 
 // TODO(Luis): use generate_test_runner.rb
 int
-main(void)
+main(int argc, char* argv[])
 {
+	(void)argc;
+	(void)argv;
+
 	UNITY_BEGIN();
 	test_generator();
 	test_bot();
