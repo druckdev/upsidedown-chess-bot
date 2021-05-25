@@ -10,7 +10,7 @@
 
 #include "helper.h"
 
-#define ITERATIONS 10000
+#define ITERATIONS 1000
 
 void
 test_checkmate()
