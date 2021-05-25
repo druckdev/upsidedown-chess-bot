@@ -18,7 +18,7 @@ test_rate_board()
 	TEST_ASSERT_MESSAGE(game.rating == rating, "Rating not properly set.");
 
 	char fen[] = " 7/8/8/8/8/8/8/8";
-	for (enum COLOR c = BLACK; c <= WHITE; c += 2 ) {
+	for (enum COLOR c = BLACK; c <= WHITE; c += 2) {
 		for (struct PIECE p = { PAWN, c }; p.type <= KING; ++(p.type)) {
 			fen[0] = piece_to_chr(p);
 
@@ -26,7 +26,8 @@ test_rate_board()
 			rating = rate_board(&game);
 
 			TEST_ASSERT_EQUAL_INT(rating, c * PIECE_VALUES[p.type]);
-			TEST_ASSERT_MESSAGE(game.rating == rating, "Rating not properly set.");
+			TEST_ASSERT_MESSAGE(game.rating == rating,
+			                    "Rating not properly set.");
 		}
 	}
 }

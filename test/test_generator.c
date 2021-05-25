@@ -77,7 +77,7 @@ test_game_samples()
 
 	// init game
 	struct chess chess = { 0 };
-	chess.board = calloc(64, sizeof(*chess.board));
+	chess.board        = calloc(64, sizeof(*chess.board));
 	fen_to_chess(test_boards[test_idx].fen, &chess);
 
 	// verify generator
@@ -88,7 +88,7 @@ test_game_samples()
 
 		int list_len = list_count(list);
 		if ((i && list_len != old_len) ||
-				list_len != test_boards[test_idx].move_cnt) {
+		    list_len != test_boards[test_idx].move_cnt) {
 			printf("\n");
 			print_board(chess.board, list);
 		} else {
@@ -102,7 +102,6 @@ test_game_samples()
 		old_len = list_len;
 	}
 	free(chess.board);
-
 }
 
 void

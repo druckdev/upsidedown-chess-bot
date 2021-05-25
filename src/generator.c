@@ -18,8 +18,8 @@ struct list* generate_moves_piece(struct PIECE board[], enum POS pos,
 /**
  * @arg board - the current board state
  * @arg mate_move - the move on `board` that has the king as target.
- * Returns: If board is a checkmate position or if the color of the attacked
- *          king can still get out of check.
+ * @return If board is a checkmate position or if the color of the attacked king
+ *         can still get out of check.
  */
 bool
 is_checkmate(struct PIECE board[], struct move* mate_move)
@@ -46,7 +46,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 
 	// check all possible moves if they can prevent the checkmate
 	// TODO: Add bitmask to check everything but the kings moves
-	counter_moves = generate_moves(&game, false, false);
+	counter_moves     = generate_moves(&game, false, false);
 	bool is_checkmate = true;
 	while (list_count(counter_moves)) {
 		struct move* cur_counter_move = (struct move*)list_pop(counter_moves);
@@ -197,15 +197,15 @@ generate_moves_helper(struct PIECE board[], enum POS pos, int range,
 	switch (type) {
 	case DIAGONAL:
 		offsets = offsets_diag;
-		len = sizeof(offsets_diag) / sizeof(*offsets_diag);
+		len     = sizeof(offsets_diag) / sizeof(*offsets_diag);
 		break;
 	case ORTHOGONAL:
 		offsets = offsets_orth;
-		len = sizeof(offsets_orth) / sizeof(*offsets_orth);
+		len     = sizeof(offsets_orth) / sizeof(*offsets_orth);
 		break;
 	case BOTH:
 		offsets = offsets_both;
-		len = sizeof(offsets_both) / sizeof(*offsets_both);
+		len     = sizeof(offsets_both) / sizeof(*offsets_both);
 		break;
 	default:
 		fprintf(stderr, "Unknown moves type: %i", type);

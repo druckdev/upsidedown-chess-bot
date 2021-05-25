@@ -17,7 +17,7 @@
 #define PLAYING_VS_HUMAN true
 
 struct PIECE empty_piece = { EMPTY, WHITE };
-int PIECE_VALUES[] = { 0, 100, 400, 400, 500, 900, 1000000 };
+int PIECE_VALUES[]       = { 0, 100, 400, 400, 500, 900, 1000000 };
 
 int
 get_piece_value(enum PIECE_E piece)
