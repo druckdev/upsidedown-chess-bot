@@ -108,7 +108,7 @@ list_append_list(struct list* first, struct list* second)
 	return first;
 }
 
-int
+size_t
 list_count(struct list* list)
 {
 	return list ? list->count : 0;

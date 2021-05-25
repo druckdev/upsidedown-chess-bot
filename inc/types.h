@@ -58,7 +58,7 @@ struct list* list_append_list(struct list* first, struct list* second);
  *
  * Runtime: O(n)
  */
-int list_count(struct list* list);
+size_t list_count(struct list* list);
 
 /**
  * Frees all elements, their objects and the list itself.
