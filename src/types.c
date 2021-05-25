@@ -82,6 +82,29 @@ list_remove(struct list* list, struct list_elem* elem)
 	return next;
 }
 
+void
+list_insert(struct list* list, struct list_elem* new_elem,
+            struct list_elem* before)
+{
+	if (!list || !new_elem)
+		return;
+
+	new_elem->prev = before;
+	if (before) {
+		new_elem->next = before->next;
+		before->next   = new_elem;
+	} else {
+		new_elem->next = list->first;
+		list->first    = new_elem;
+	}
+	new_elem->next->prev = new_elem;
+
+	if (!list->last)
+		list->last = new_elem;
+
+	list->count++;
+}
+
 struct list*
 list_append_list(struct list* first, struct list* second)
 {
