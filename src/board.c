@@ -209,29 +209,29 @@ print_board(struct PIECE board[], struct list* moves)
 	bool* targets = are_attacked(moves, NULL);
 	char* padding = "     ";
 
-	printf("%s", padding);
+	fprintf(DEBUG_PRINT_STREAM, "%s", padding);
 	for (char label = 'A'; label <= 'H'; ++label)
-		printf(" %c ", label);
-	printf("\n");
+		fprintf(DEBUG_PRINT_STREAM, " %c ", label);
+	fprintf(DEBUG_PRINT_STREAM, "\n");
 
 	size_t row = 8;
 	for (enum POS pos = 0; pos < MAX; ++pos) {
 		if (pos % 8 == 0)
-			printf("%02i %li ", pos, row);
+			fprintf(DEBUG_PRINT_STREAM, "%02i %li ", pos, row);
 
 		if (targets[pos])
-			printf(ANSI_RED);
-		printf("[%c]", piece_to_chr(board[pos]));
-		printf(ANSI_RESET);
+			fprintf(DEBUG_PRINT_STREAM, ANSI_RED);
+		fprintf(DEBUG_PRINT_STREAM, "[%c]", piece_to_chr(board[pos]));
+		fprintf(DEBUG_PRINT_STREAM, ANSI_RESET);
 
 		if (pos % 8 == 7)
-			printf(" %li\n", row--);
+			fprintf(DEBUG_PRINT_STREAM, " %li\n", row--);
 	}
 
-	printf("%s", padding);
+	fprintf(DEBUG_PRINT_STREAM, "%s", padding);
 	for (char label = 'A'; label <= 'H'; ++label)
-		printf(" %c ", label);
-	printf("\n");
+		fprintf(DEBUG_PRINT_STREAM, " %c ", label);
+	fprintf(DEBUG_PRINT_STREAM, "\n");
 
 	free(targets);
 }
