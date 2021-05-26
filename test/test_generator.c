@@ -10,8 +10,6 @@
 
 #include "helper.h"
 
-#define ITERATIONS 1000
-
 void
 test_checkmate()
 {
@@ -86,7 +84,7 @@ test_game_samples()
 	// verify generator
 	struct list* list;
 	int old_len = 0;
-	for (size_t i = 0; i < ITERATIONS; i++) {
+	for (size_t i = 0; i < TEST_SAMPLES_ITERATIONS; i++) {
 		list = generate_moves(&chess, true, false);
 
 		int list_len = list_count(list);

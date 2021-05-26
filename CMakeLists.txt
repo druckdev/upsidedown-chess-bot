@@ -51,7 +51,13 @@ target_include_directories(benchmark PRIVATE ${INC_DIR})
 target_compile_definitions(tests PRIVATE UNITY_OUTPUT_COLOR)
 target_compile_definitions(tests PRIVATE UNITY_INCLUDE_EXEC_TIME)
 
+target_compile_definitions(tests PRIVATE TEST_SAMPLES_ITERATIONS=1)
+
 add_compile_definitions(DEBUG_PRINT_STREAM=stderr)
 add_compile_definitions(DEBUG_NEGAMAX_USE_LIST)
 # add_compile_definitions(NO_ALPHA_BETA_CUTOFFS)
 add_compile_definitions(DEBUG_BOARD_WHEN_PLAYING)
+
+# tests
+include(CTest)
+add_test(NAME tests COMMAND tests)
