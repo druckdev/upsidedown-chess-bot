@@ -10,34 +10,34 @@
 
 #define ANSI_RED "\033[91m"
 #define ANSI_RESET "\033[0m"
-bool
+
+struct PIECE
 do_move(struct PIECE* board, struct move* move)
 {
 	if (!board || !move)
-		return false;
+		return (struct PIECE){};
 
 	assert(move->target != move->start);
 
+	struct PIECE old = board[move->target];
 	board[move->target] =
 			move->promotes_to.type ? move->promotes_to : board[move->start];
 	board[move->start].type = EMPTY;
 
-	return true;
+	return old;
 }
 
-bool
+void
 undo_move(struct PIECE* board, struct move* move, struct PIECE old)
 {
 	if (!board || !move)
-		return false;
+		return;
 
 	board[move->start] = board[move->target];
 	if (move->promotes_to.type)
 		board[move->start].type = PAWN;
 
 	board[move->target] = old;
-
-	return true;
 }
 
 /*

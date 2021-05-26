@@ -65,8 +65,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		}
 
 		// Backup piece for undo
-		struct PIECE old = game.board[cur_counter_move->target];
-		do_move(game.board, cur_counter_move);
+		struct PIECE old = do_move(game.board, cur_counter_move);
 
 		// Check if mate_move is still doable or was declined
 		struct list* moves = generate_moves_piece(game.board, mate_move->start,
@@ -108,8 +107,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 bool
 is_checkless_move(struct PIECE board[], struct move* move)
 {
-	struct PIECE old = board[move->target];
-	assert(do_move(board, move));
+	struct PIECE old = do_move(board, move);
 
 	struct list* new_moves;
 
@@ -496,8 +494,7 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless,
 		bool opens_king       = false;
 
 		// Backup piece for undo
-		struct PIECE old = board[cur_move->target];
-		do_move(game.board, cur_move);
+		struct PIECE old = do_move(game.board, cur_move);
 
 		struct list* possible_hit_moves = generate_moves(&game, false, false);
 

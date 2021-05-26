@@ -111,7 +111,7 @@ run_chess()
 
 		print_move(move);
 
-		assert(do_move(game.board, move));
+		do_move(game.board, move);
 		if (BOARD_WHEN_PLAYING) {
 			struct list* list = list_push(NULL, move);
 			print_board(game.board, list);

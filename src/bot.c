@@ -65,10 +65,9 @@ negamax(struct chess* game, size_t depth)
 	// iterate over all moves (child nodes) to find best move
 	while (list_count(moves)) {
 		struct move* move = list_pop(moves);
-		struct PIECE old  = game->board[move->target];
 
 		// execute move and see what happens down the tree - dfs
-		do_move(game->board, move);
+		struct PIECE old          = do_move(game->board, move);
 		struct negamax_return ret = negamax(game, depth - 1);
 		undo_move(game->board, move, old);
 
