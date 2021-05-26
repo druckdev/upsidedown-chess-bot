@@ -13,7 +13,7 @@
 #include "timer.h"
 #include "types.h"
 
-#define DEBUG_PRINT_STREAM stdout
+#define DEBUG_PRINT_STREAM stderr
 
 size_t MAX_NEGAMAX_DEPTH = 3;
 
@@ -299,15 +299,17 @@ choose_move(struct chess* game, struct chess_timer* timer)
 		fprint_move_list(DEBUG_PRINT_STREAM, ret.moves);
 
 		best = list_pop(ret.moves);
-		fprintf(DEBUG_PRINT_STREAM, "cur best move: ");
-		fprint_move(DEBUG_PRINT_STREAM, best);
-		fprintf(DEBUG_PRINT_STREAM, "\n");
 		list_free(ret.moves);
 #else
 		best = ret.move;
 #endif
 		if (!best)
 			return NULL;
+
+		fprintf(DEBUG_PRINT_STREAM, "depth: %lu\n", i);
+		fprintf(DEBUG_PRINT_STREAM, "cur best move: ");
+		fprint_move(DEBUG_PRINT_STREAM, best);
+		fprintf(DEBUG_PRINT_STREAM, "\n");
 
 		if (ret.mate_depth == i) {
 			// ret.move leads to checkmate
