@@ -13,9 +13,12 @@
 #include "timer.h"
 #include "types.h"
 
+#define DEBUG_PRINT_STREAM stdout
+
 size_t MAX_NEGAMAX_DEPTH = 3;
-// #define DEBUG_NEGAMAX_USE_LIST
-// #define NO_ALPHA_BETA_CUTOFFS
+
+#define DEBUG_NEGAMAX_USE_LIST
+//#define NO_ALPHA_BETA_CUTOFFS
 
 struct negamax_return {
 	int val;
@@ -293,7 +296,12 @@ choose_move(struct chess* game, struct chess_timer* timer)
 		if (!ret.moves)
 			return NULL;
 
+		fprint_move_list(DEBUG_PRINT_STREAM, ret.moves);
+
 		best = list_pop(ret.moves);
+		fprintf(DEBUG_PRINT_STREAM, "cur best move: ");
+		fprint_move(DEBUG_PRINT_STREAM, best);
+		fprintf(DEBUG_PRINT_STREAM, "\n");
 		list_free(ret.moves);
 #else
 		best = ret.move;
