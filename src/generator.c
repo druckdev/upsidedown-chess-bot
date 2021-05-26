@@ -60,8 +60,8 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		if (cur_counter_move->target == mate_move->start) {
 			// The counter_move hits the attacking piece
 			free(cur_counter_move);
-			list_free(counter_moves);
-			return false;
+			is_checkmate = false;
+			break;
 		}
 
 		// Backup piece for undo
@@ -90,7 +90,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 
 		if (mate_declined) {
 			// counter_move successful
-			counter_moves = false;
+			is_checkmate = false;
 			break;
 		}
 	}
