@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdio.h>
 
-#include "types.h"
 #include "chess.h"
+#include "types.h"
 
 struct list*
 list_push(struct list* list, void* object)
@@ -225,10 +224,9 @@ list_sort(struct list* list)
 void
 fprint_move_list(FILE* stream, struct list* list)
 {
-
 	struct list_elem* cur_elem = list->last;
-	int i = 0;
-	while(cur_elem) {
+	int i                      = 0;
+	while (cur_elem) {
 		struct move* cur_move = cur_elem->object;
 		fprintf(stream, "%i ", i++);
 		fprint_move(stream, cur_move);
