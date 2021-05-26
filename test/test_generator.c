@@ -39,6 +39,7 @@ test_checkmate()
 		free(move);
 	}
 	list_free(moves);
+	free(chess.board);
 }
 
 /* THIS IS AN EXAMPLE. */

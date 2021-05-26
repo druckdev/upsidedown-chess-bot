@@ -73,6 +73,7 @@ test_negamax()
 	TEST_ASSERT_EQUAL_INT(expected.promotes_to.color, ret.move->promotes_to.color);
 	// clang-format on
 
+	free(ret.move);
 	free(game.board);
 }
 

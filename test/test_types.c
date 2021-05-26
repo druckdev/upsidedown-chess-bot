@@ -44,12 +44,19 @@ test_list_sort()
 
 		TEST_ASSERT_EQUAL_INT(prios_sorted[i], cur->prio);
 
+		free(old);
+
 		old = cur;
 		cur = cur->next;
 	}
 
 	TEST_ASSERT_NULL(cur);
 	TEST_ASSERT_EQUAL_PTR(list->last, old);
+
+	// We cannot use `list_free` as the object lays on the stack and is the same
+	// for each `list_elem`.
+	free(list->last);
+	free(list);
 }
 
 void
