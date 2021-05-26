@@ -95,7 +95,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	if (!list_count(moves)) {
 		list_free(moves);
 		return (struct negamax_return){ -game->moving * rate_board(game), NULL,
-			                            UNDEFINED, depth };
+			                            UNDEFINED, depth + 1 };
 	}
 
 #ifndef NO_ALPHA_BETA_CUTOFFS
@@ -141,9 +141,12 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		 *  7. The observed move leads to an opponents checkmate in equally many
 		 *     steps, but with a better rating for us.
 		 *
-		 *  8. The observed move leads to a better rating.
-		 *  9. The observed move saves us from a checkmate that out current best
-		 *     move would lead to potentially.
+		 *  8. The observed move leads to a stalemate, and the current best move
+		 *     leads to a checkmate against us.
+		 *
+		 *  9. The observed move leads to a better rating.
+		 * 10. The observed move saves us from a checkmate or stalemate that out
+		 *     current best move would lead to potentially.
 		 */
 		if (ret.mate_for == -game->moving) {
 			// I will checkmate the opponent
@@ -189,8 +192,15 @@ negamax(struct chess* game, size_t depth, int a, int b)
 					goto overwrite_best_move;
 				}
 			}
-		} else if (ret.val > best.val || best.mate_for == game->moving) {
-			// move leads to a better rating or can save me from checkmate
+		} else if (ret.mate_for == UNDEFINED && ret.mate_depth) {
+			// Stalemate
+			if (best.mate_for == game->moving) {
+				// Current best move checkmates me
+				goto overwrite_best_move;
+			}
+		} else if (ret.val > best.val || best.mate_depth) {
+			// move leads to a better rating or can save me from checkmate or
+			// the game from stalemate
 			goto overwrite_best_move;
 		}
 
