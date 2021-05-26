@@ -1,4 +1,5 @@
 #include "board.h"
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -49,7 +50,7 @@ test_negamax()
 		                  .moving = WHITE };
 	fen_to_chess("R1BQKBNR/PPPPPPPP/N7/8/8/8/pppppppp/rnbqkbnr", &game);
 
-	struct negamax_return ret = negamax(&game, 1);
+	struct negamax_return ret = negamax(&game, 1, INT_MIN + 1, INT_MAX);
 
 	// clang-format off
 	struct move expected = { .start        = B7,

@@ -13,8 +13,9 @@
 #include "timer.h"
 #include "types.h"
 
-#define MAX_NEGAMAX_DEPTH 3
+#define MAX_NEGAMAX_DEPTH 6
 // #define DEBUG_NEGAMAX_USE_LIST
+// #define NO_ALPHA_BETA_CUTOFFS
 
 struct negamax_return {
 	int val;
@@ -79,7 +80,7 @@ register_prio(struct PIECE* board, struct list* list)
 }
 
 struct negamax_return
-negamax(struct chess* game, size_t depth)
+negamax(struct chess* game, size_t depth, int a, int b)
 {
 	// max depth reached
 	if (!depth)
@@ -97,6 +98,11 @@ negamax(struct chess* game, size_t depth)
 			                            UNDEFINED, depth };
 	}
 
+#ifndef NO_ALPHA_BETA_CUTOFFS
+	register_prio(game->board, moves);
+	list_sort(moves);
+#endif
+
 	game->moving *= -1;
 	struct negamax_return best = { INT_MIN + 1, NULL, UNDEFINED, 0 };
 
@@ -106,7 +112,7 @@ negamax(struct chess* game, size_t depth)
 
 		// execute move and see what happens down the tree - dfs
 		struct PIECE old          = do_move(game->board, move);
-		struct negamax_return ret = negamax(game, depth - 1);
+		struct negamax_return ret = negamax(game, depth - 1, -b, -a);
 		undo_move(game->board, move, old);
 
 		// Set checkmate details if appropriate.
@@ -194,7 +200,8 @@ negamax(struct chess* game, size_t depth)
 #else
 		free(ret.move);
 #endif
-		continue;
+
+		goto cutoffs;
 
 overwrite_best_move:
 #ifdef DEBUG_NEGAMAX_USE_LIST
@@ -206,6 +213,15 @@ overwrite_best_move:
 		best      = ret;
 		best.move = move;
 		free(ret.move);
+#endif
+
+cutoffs:
+#ifndef NO_ALPHA_BETA_CUTOFFS
+		if (best.val > a)
+			a = best.val;
+
+		if (a >= b)
+			break;
 #endif
 	}
 	list_free(moves);
@@ -242,7 +258,7 @@ choose_move(struct chess* game, struct chess_timer* timer)
 
 		free(best);
 
-		struct negamax_return ret = negamax(game, i);
+		struct negamax_return ret = negamax(game, i, INT_MIN + 1, INT_MAX);
 
 #ifdef DEBUG_NEGAMAX_USE_LIST
 		if (!ret.moves)
