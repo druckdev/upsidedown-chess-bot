@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #define WIDTH 8
 #define HEIGHT 8
@@ -67,5 +68,7 @@ int get_piece_value(enum PIECE_E piece);
 struct move* opponent_move(struct move*);
 struct chess init_chess();
 void run_chess();
+
+void fprint_move(FILE* stream, struct move* move);
 
 #endif /* CHESS_H */

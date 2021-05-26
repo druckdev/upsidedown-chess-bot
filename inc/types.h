@@ -2,6 +2,7 @@
 #define TYPES_H
 
 #include <stddef.h>
+#include <stdio.h>
 
 /**
  * A doubly linked list.
@@ -82,4 +83,10 @@ struct list_elem* list_get_next(struct list_elem* elem);
 
 void list_sort(struct list* list);
 
+/**
+ * Prints a move list to stream.
+ *
+ * NOTE(Aurel): This only iterates over the list and does not free anything.
+ */
+void fprint_move_list(FILE* stream, struct list* list);
 #endif /* TYPES_H */
