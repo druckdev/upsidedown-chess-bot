@@ -53,7 +53,7 @@ opponent_move(struct move* move)
 }
 
 void
-print_move(struct move* move)
+gs_print_move(struct move* move)
 {
 	printf("%i,%i,", move->start, move->target);
 
@@ -109,7 +109,7 @@ run_chess()
 		if (!move)
 			break;
 
-		print_move(move);
+		gs_print_move(move);
 
 		do_move(game.board, move);
 		if (BOARD_WHEN_PLAYING) {
