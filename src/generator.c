@@ -402,7 +402,7 @@ generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless,
 	bool targets[64] = { 0 };
 	are_attacked(possible_hit_moves, targets);
 
-	// Remove all hittable fields.
+	// Remove all moves targeting an hittable field.
 	struct list_elem* cur = list_get_first(all_moves);
 	while (cur) {
 		struct move* cur_move = (struct move*)cur->object;
