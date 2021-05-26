@@ -13,9 +13,6 @@
 
 #define MAX_FEN_STR_LEN 128
 
-#define BOARD_WHEN_PLAYING true
-#define PLAYING_VS_HUMAN true
-
 struct PIECE empty_piece = { EMPTY, WHITE };
 int PIECE_VALUES[]       = { 0, 100, 400, 400, 500, 900, 1000000 };
 
@@ -121,8 +118,9 @@ run_chess()
 
 		fen_to_chess(fen, &game);
 
-		if (BOARD_WHEN_PLAYING && PLAYING_VS_HUMAN)
-			print_board(game.board, NULL);
+#ifdef DEBUG_BOARD_WHEN_PLAYING
+		print_board(game.board, NULL);
+#endif
 
 		struct move* move = choose_move(&game, timer);
 		if (!move)
@@ -131,12 +129,12 @@ run_chess()
 		gs_print_move(move);
 
 		do_move(game.board, move);
-		if (BOARD_WHEN_PLAYING) {
-			struct list* list = list_push(NULL, move);
-			print_board(game.board, list);
-		} else {
-			free(move);
-		}
+#ifdef DEBUG_BOARD_WHEN_PLAYING
+		struct list* list = list_push(NULL, move);
+		print_board(game.board, list);
+#else
+		free(move);
+#endif
 		game.move_count++;
 	}
 

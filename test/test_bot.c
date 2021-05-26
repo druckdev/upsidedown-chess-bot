@@ -51,6 +51,13 @@ test_negamax()
 	fen_to_chess("R1BQKBNR/PPPPPPPP/N7/8/8/8/pppppppp/rnbqkbnr", &game);
 
 	struct negamax_return ret = negamax(&game, 1, INT_MIN + 1, INT_MAX);
+	struct move* best;
+#ifdef DEBUG_NEGAMAX_USE_LIST
+	best = list_pop(ret.moves);
+	list_free(ret.moves);
+#else
+	best = ret.move;
+#endif
 
 	// clang-format off
 	struct move expected = { .start        = B7,
@@ -64,16 +71,16 @@ test_negamax()
 	// Only works in combination with `__attribute__((packed))` as there will be
 	// random (when allocated with malloc or on stack) padding bytes if the
 	// struct size is not dividable by 4.
-	// TEST_ASSERT_EQUAL_MEMORY(&expected, ret.move, sizeof(expected));
-	TEST_ASSERT_EQUAL_INT(expected.start, ret.move->start);
-	TEST_ASSERT_EQUAL_INT(expected.target, ret.move->target);
-	TEST_ASSERT_EQUAL_CHAR(expected.hit, ret.move->hit);
-	TEST_ASSERT_EQUAL_CHAR(expected.is_checkmate, ret.move->is_checkmate);
-	TEST_ASSERT_EQUAL_INT(expected.promotes_to.type, ret.move->promotes_to.type);
-	TEST_ASSERT_EQUAL_INT(expected.promotes_to.color, ret.move->promotes_to.color);
+	// TEST_ASSERT_EQUAL_MEMORY(&expected, best, sizeof(expected));
+	TEST_ASSERT_EQUAL_INT(expected.start, best->start);
+	TEST_ASSERT_EQUAL_INT(expected.target, best->target);
+	TEST_ASSERT_EQUAL_CHAR(expected.hit, best->hit);
+	TEST_ASSERT_EQUAL_CHAR(expected.is_checkmate, best->is_checkmate);
+	TEST_ASSERT_EQUAL_INT(expected.promotes_to.type, best->promotes_to.type);
+	TEST_ASSERT_EQUAL_INT(expected.promotes_to.color, best->promotes_to.color);
 	// clang-format on
 
-	free(ret.move);
+	free(best);
 	free(game.board);
 }
 

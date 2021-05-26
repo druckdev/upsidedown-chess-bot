@@ -13,12 +13,7 @@
 #include "timer.h"
 #include "types.h"
 
-#define DEBUG_PRINT_STREAM stderr
-
 size_t MAX_NEGAMAX_DEPTH = 3;
-
-#define DEBUG_NEGAMAX_USE_LIST
-//#define NO_ALPHA_BETA_CUTOFFS
 
 struct negamax_return {
 	int val;
