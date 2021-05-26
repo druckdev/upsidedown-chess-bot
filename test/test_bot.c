@@ -1,4 +1,5 @@
 #include "board.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "chess.h"
@@ -8,6 +9,8 @@
 void
 test_rate_board()
 {
+	printf("TEST: rate_board\t");
+
 	struct chess game = { .board  = calloc(64, sizeof(*game.board)),
 		                  .moving = WHITE };
 	int rating;
@@ -40,6 +43,8 @@ test_rate_board()
 void
 test_negamax()
 {
+	printf("TEST: negamax\t");
+
 	struct chess game = { .board  = calloc(64, sizeof(*game.board)),
 		                  .moving = WHITE };
 	fen_to_chess("R1BQKBNR/PPPPPPPP/N7/8/8/8/pppppppp/rnbqkbnr", &game);
@@ -73,6 +78,7 @@ test_negamax()
 void
 test_choose_move()
 {
+	printf("TEST: choose_move\t");
 }
 
 void

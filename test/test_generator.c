@@ -15,6 +15,8 @@
 void
 test_checkmate()
 {
+	printf("TEST: is_checkmate field of moves\t");
+
 	char* fen = "8/8/8/8/8/5n2/pppppppN/rnbqkbr1 w";
 	struct chess chess;
 	chess.board = calloc(64, sizeof(*chess.board));

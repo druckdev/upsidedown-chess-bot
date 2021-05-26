@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "types.h"
@@ -7,6 +8,8 @@
 void
 test_list_sort()
 {
+	printf("TEST: list_sort\t");
+
 	int prios_unsorted[] = { 10, 3, 4, 23, 234, -1 };
 	int prios_sorted[]   = { -1, 3, 4, 10, 23, 234 };
 	size_t len           = sizeof(prios_unsorted) / sizeof(*prios_unsorted);
