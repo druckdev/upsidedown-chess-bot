@@ -216,7 +216,8 @@ negamax(struct chess* game, size_t depth, int a, int b)
 					goto overwrite_best_move;
 				}
 			}
-		} else if (ret.val > best.val || best.mate_depth) {
+		} else if (best.mate_for != -game->moving &&
+		           (ret.val > best.val || best.mate_depth)) {
 			// move leads to a better rating or can save me from checkmate or
 			// the game from stalemate
 			goto overwrite_best_move;
