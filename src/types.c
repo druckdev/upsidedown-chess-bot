@@ -98,9 +98,9 @@ list_insert(struct list* list, struct list_elem* new_elem,
 		new_elem->next = list->first;
 		list->first    = new_elem;
 	}
-	new_elem->next->prev = new_elem;
-
-	if (!list->last)
+	if (new_elem->next)
+		new_elem->next->prev = new_elem;
+	else
 		list->last = new_elem;
 
 	list->count++;
@@ -182,6 +182,12 @@ list_sort(struct list* list)
 		while (before && before->prio > cur->prio)
 			before = before->prev;
 
+		if (before == cur->prev) {
+			// cur should stay at its place
+			cur = cur->next;
+			continue;
+		}
+
 		// Backup next before reordering
 		next = cur->next;
 
@@ -194,7 +200,7 @@ list_sort(struct list* list)
 		cur->prev->next = cur->next;
 		if (cur->next)
 			cur->next->prev = cur->prev;
-		if (list->last == cur)
+		else
 			list->last = cur->prev;
 		// cur can never be list->first as we are starting at first->next
 
@@ -207,7 +213,8 @@ list_sort(struct list* list)
 			cur->next   = list->first;
 			list->first = cur;
 		}
-		cur->next->prev = cur;
+		if (cur->next)
+			cur->next->prev = cur;
 
 		cur = next;
 	}
