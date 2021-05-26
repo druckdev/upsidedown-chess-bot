@@ -143,9 +143,13 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		 *
 		 *  8. The observed move leads to a stalemate, and the current best move
 		 *     leads to a checkmate against us.
+		 *  9. The observed move leads to a stalemate but does it slower than
+		 *     our current best move.
+		 * 10. The observed move leads to a stalemate in equally many steps, but
+		 *     with a better rating for us.
 		 *
-		 *  9. The observed move leads to a better rating.
-		 * 10. The observed move saves us from a checkmate or stalemate that out
+		 * 11. The observed move leads to a better rating.
+		 * 12. The observed move saves us from a checkmate or stalemate that out
 		 *     current best move would lead to potentially.
 		 */
 		if (ret.mate_for == -game->moving) {
@@ -194,9 +198,23 @@ negamax(struct chess* game, size_t depth, int a, int b)
 			}
 		} else if (ret.mate_for == UNDEFINED && ret.mate_depth) {
 			// Stalemate
+
 			if (best.mate_for == game->moving) {
 				// Current best move checkmates me
 				goto overwrite_best_move;
+			} else if (best.mate_for == UNDEFINED && best.mate_depth) {
+				// Current best move also leads to stalemate
+
+				if (ret.mate_depth < best.mate_depth) {
+					// Current leads to stalemate in less steps
+					goto overwrite_best_move;
+				} else if (ret.mate_depth == best.mate_depth &&
+				           ret.val > best.val) {
+					// Both take equally many steps, but the rating is better
+					// making it a potential better choice if we see an escape
+					// with a deeper tree for example.
+					goto overwrite_best_move;
+				}
 			}
 		} else if (ret.val > best.val || best.mate_depth) {
 			// move leads to a better rating or can save me from checkmate or
