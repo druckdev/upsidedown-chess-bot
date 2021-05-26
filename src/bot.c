@@ -40,6 +40,44 @@ rate_board(struct chess* chess)
 	return rating;
 }
 
+int
+rate_move(struct PIECE* board, struct move* move)
+{
+	int rating = 0;
+
+	if (move->hit) {
+		struct PIECE to = board[move->target];
+		rating -= to.color * PIECE_VALUES[to.type];
+	}
+
+	if (move->is_checkmate)
+		rating += board[move->start].color * PIECE_VALUES[KING];
+
+	struct PIECE promotes_to = move->promotes_to;
+	if (promotes_to.type) {
+		struct PIECE from = board[move->start];
+		int diff = PIECE_VALUES[promotes_to.type] - PIECE_VALUES[from.type];
+		rating += promotes_to.color * diff;
+	}
+
+	return rating;
+}
+
+void
+register_prio(struct PIECE* board, struct list* list)
+{
+	if (!list)
+		return;
+
+	struct list_elem* cur = list_get_first(list);
+	while (cur) {
+		struct move* move = cur->object;
+		cur->prio         = rate_move(board, move);
+
+		cur = list_get_next(cur);
+	}
+}
+
 struct negamax_return
 negamax(struct chess* game, size_t depth)
 {
