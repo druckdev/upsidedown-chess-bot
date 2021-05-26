@@ -4,6 +4,7 @@
 #include "types.h"
 
 #include "board.h"
+#include "bot.h"
 #include "generator.h"
 #include "main.h"
 
@@ -28,8 +29,8 @@ list_example()
 int
 main(int argc, char* argv[])
 {
-	(void)argc;
-	(void)argv;
+	if (argc > 1)
+		MAX_NEGAMAX_DEPTH = atoi(argv[1]);
 
 	// printf("Upside Down Chess Bot version %'.1f\n", VERSION);
 	run_chess();

@@ -13,7 +13,7 @@
 #include "timer.h"
 #include "types.h"
 
-#define MAX_NEGAMAX_DEPTH 6
+size_t MAX_NEGAMAX_DEPTH = 3;
 // #define DEBUG_NEGAMAX_USE_LIST
 // #define NO_ALPHA_BETA_CUTOFFS
 

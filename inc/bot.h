@@ -5,6 +5,8 @@
 #include "timer.h"
 #include "types.h"
 
+extern size_t MAX_NEGAMAX_DEPTH;
+
 int rate_board(struct chess* chess);
 struct move* choose_move(struct chess* game, struct chess_timer* timer);
 
