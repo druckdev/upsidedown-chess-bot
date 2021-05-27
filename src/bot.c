@@ -96,7 +96,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 			                            UNDEFINED, depth + 1 };
 	}
 
-#ifndef NO_ALPHA_BETA_CUTOFFS
+#ifdef ENABLE_ALPHA_BETA_CUTOFFS
 	register_prio(game->board, moves);
 	list_sort(moves);
 #endif
@@ -243,7 +243,7 @@ overwrite_best_move:
 #endif
 
 cutoffs:;
-#ifndef NO_ALPHA_BETA_CUTOFFS
+#ifdef ENABLE_ALPHA_BETA_CUTOFFS
 		if (best.val > a)
 			a = best.val;
 
