@@ -242,7 +242,7 @@ overwrite_best_move:
 		free(ret.move);
 #endif
 
-cutoffs:
+cutoffs:;
 #ifndef NO_ALPHA_BETA_CUTOFFS
 		if (best.val > a)
 			a = best.val;
