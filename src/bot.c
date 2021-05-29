@@ -118,6 +118,12 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		if (move->is_checkmate) {
 			ret.mate_for   = -game->moving;
 			ret.mate_depth = depth;
+
+			// Add kings value as if we hit the opponent king. This is needed to
+			// stop negamax from pruning out moves that can prevent a checkmate.
+			// Example that makes this noticeable:
+			// `RqBQKB1R/P1PPPPQP/2N2N2/8/8/4n3/p1pppppp/r1bqkbnr w`, depth >= 3
+			ret.val += PIECE_VALUES[KING];
 		}
 
 		/*
