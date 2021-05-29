@@ -68,12 +68,15 @@ struct timespec
 get_move_time(struct chess_timer* timer, struct chess* game,
               enum t_move_distribution_function method)
 {
+	struct timespec ts;
 	switch (method) {
 	case UNIFORM_DISTRIBUTION:
-		return uniform_distribution(timer, game);
+		ts = uniform_distribution(timer, game);
+		break;
 	default:
 		assert(false && "No timer function is being used");
 	}
+	return ts;
 }
 
 struct chess_timer*
