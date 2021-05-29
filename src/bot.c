@@ -310,9 +310,10 @@ choose_move(struct chess* game, struct chess_timer* timer)
 		if (!best)
 			return NULL;
 
-		fprintf(DEBUG_PRINT_STREAM, "depth: %lu\n", i);
 		fprintf(DEBUG_PRINT_STREAM, "cur best move: ");
 		fprint_move(DEBUG_PRINT_STREAM, best);
+		fprintf(DEBUG_PRINT_STREAM, "depth: %lu\n", i);
+		fprintf(DEBUG_PRINT_STREAM, "value: %i\n", -ret.val);
 		fprintf(DEBUG_PRINT_STREAM, "\n");
 
 		if (ret.mate_depth == i) {
