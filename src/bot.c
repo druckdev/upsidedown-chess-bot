@@ -168,58 +168,60 @@ negamax(struct chess* game, size_t depth, int a, int b)
 				goto overwrite_best_move;
 			}
 
-			if (best.mate_for != -game->moving) {
+			if (best.mate_for != -game->moving)
 				// Current best move is not a checkmate move
 				goto overwrite_best_move;
-			} else if (best.mate_depth < ret.mate_depth) {
+
+			if (best.mate_depth < ret.mate_depth)
 				// Best move needs a longer path until checkmate
 				goto overwrite_best_move;
-			} else if (best.mate_depth == ret.mate_depth &&
-			           ret.val > best.val) {
+
+			if (best.mate_depth == ret.mate_depth && ret.val > best.val)
 				// Both take equally many steps, but the rating is better making
 				// it a potential better choice if the opponent does not behave
 				// as we expect.
 				goto overwrite_best_move;
-			}
+
 		} else if (ret.mate_for == game->moving) {
 			// The opponent will checkmate me
 
-			if (best.val == INT_MIN + 1) {
+			if (best.val == INT_MIN + 1)
 				// I currently have no other move and need to use this for now.
 				goto overwrite_best_move;
-			} else if (best.mate_for == game->moving) {
+
+			if (best.mate_for == game->moving) {
 				// Current best move also checkmates me.
 
-				if (ret.mate_depth < best.mate_depth) {
+				if (ret.mate_depth < best.mate_depth)
 					// Current best move also checkmates me, but in less steps.
 					goto overwrite_best_move;
-				} else if (ret.mate_depth == best.mate_depth &&
-				           ret.val > best.val) {
+
+				if (ret.mate_depth == best.mate_depth && ret.val > best.val)
 					// Both take equally many steps, but the rating is better
 					// making it a potential better choice if we see an escape
 					// with a deeper tree for example.
 					goto overwrite_best_move;
-				}
 			}
 		} else if (ret.mate_for == UNDEFINED && ret.mate_depth) {
 			// Stalemate
 
-			if (best.mate_for == game->moving) {
+			if (best.mate_for == game->moving)
 				// Current best move checkmates me
 				goto overwrite_best_move;
-			} else if (best.mate_for == UNDEFINED && best.mate_depth) {
+
+			if (best.mate_for == UNDEFINED && best.mate_depth) {
 				// Current best move also leads to stalemate
 
-				if (ret.mate_depth < best.mate_depth) {
+				if (ret.mate_depth < best.mate_depth)
 					// Current leads to stalemate in less steps
 					goto overwrite_best_move;
-				} else if (ret.mate_depth == best.mate_depth &&
-				           ret.val > best.val) {
+
+				if (ret.mate_depth == best.mate_depth && ret.val > best.val)
 					// Both take equally many steps, but the rating is better
 					// making it a potential better choice if we see an escape
 					// with a deeper tree for example.
 					goto overwrite_best_move;
-				}
+
 			}
 		} else if (best.mate_for != -game->moving &&
 		           (ret.val > best.val || best.mate_depth)) {
