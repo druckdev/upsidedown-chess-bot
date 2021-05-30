@@ -39,24 +39,34 @@ rate_board(struct chess* chess)
 	return rating;
 }
 
+/**
+ * Rates a move from the point of view of the moving player.
+ *
+ * NOTE(Aurel): Currently it only calculates the difference in piece-value on
+ * the board the move would make.
+ */
 int
 rate_move(struct PIECE* board, struct move* move)
 {
 	int rating = 0;
 
 	if (move->hit) {
+		// add the value of the hit piece to the rating
 		struct PIECE to = board[move->target];
-		rating -= to.color * PIECE_VALUES[to.type];
+		rating += PIECE_VALUES[to.type];
 	}
 
 	if (move->is_checkmate)
-		rating += board[move->start].color * PIECE_VALUES[KING];
+		// checkmate is like hitting the king, so add the kings value to the
+		// rating
+		rating += PIECE_VALUES[KING];
 
 	struct PIECE promotes_to = move->promotes_to;
 	if (promotes_to.type) {
+		// add the difference in value between the old and new piece to the
+		// rating
 		struct PIECE from = board[move->start];
-		int diff = PIECE_VALUES[promotes_to.type] - PIECE_VALUES[from.type];
-		rating += promotes_to.color * diff;
+		rating += PIECE_VALUES[promotes_to.type] - PIECE_VALUES[from.type];
 	}
 
 	return rating;
