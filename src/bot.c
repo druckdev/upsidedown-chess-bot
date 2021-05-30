@@ -92,8 +92,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 {
 	// max depth reached
 	if (!depth)
-		return (struct negamax_return){ -game->moving * rate_board(game), NULL,
-			                            UNDEFINED, 0 };
+		return (struct negamax_return){ 0, NULL, UNDEFINED, 0 };
 
 	struct list* moves = generate_moves(game, true, false);
 
@@ -103,14 +102,8 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	//       ret.mate_for there.
 	if (!list_count(moves)) {
 		list_free(moves);
-		return (struct negamax_return){ -game->moving * rate_board(game), NULL,
-			                            UNDEFINED, depth + 1 };
+		return (struct negamax_return){ 0, NULL, UNDEFINED, depth + 1 };
 	}
-
-#ifdef ENABLE_ALPHA_BETA_CUTOFFS
-	register_prio(game->board, moves);
-	list_sort(moves);
-#endif
 
 	game->moving *= -1;
 	struct negamax_return best = { INT_MIN + 1, NULL, UNDEFINED, 0 };
@@ -124,144 +117,38 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		struct negamax_return ret = negamax(game, depth - 1, -b, -a);
 		undo_move(game->board, move, old);
 
-		// Set checkmate details if appropriate.
-		if (move->is_checkmate) {
-			ret.mate_for   = -game->moving;
-			ret.mate_depth = depth;
+		int rating = rate_move(game->board, move);
+		ret.val += rating;
 
-			// Add kings value as if we hit the opponent king. This is needed to
-			// stop negamax from pruning out moves that can prevent a checkmate.
-			// Example that makes this noticeable:
-			// `RqBQKB1R/P1PPPPQP/2N2N2/8/8/4n3/p1pppppp/r1bqkbnr w`, depth >= 3
-			ret.val += PIECE_VALUES[KING];
+#ifdef DEBUG_PRINTS
+		if (true || depth == 3) {
+			fprint_move(stdout, move);
+		    printf("%i\n\n", ret.val);
 		}
-
-		/*
-		 * NOTE(Aurel): game->moving is the opponent.
-		 *
-		 * In the following cases do we want to overwrite our current best move
-		 * with the new move:
-		 *  1. The observed move leads to a checkmate.
-		 *		1. The observed move leads potentially later to a checkmate and
-		 *		   our current best move does not as far as we know.
-		 *	    2. The observed move leads potentially later to a checkmate and
-		 *	       does it faster than the current best move.
-		 *	    3. The observed move leads potentially later to a checkmate in
-		 *	       equally many steps, but with a better rating for us.
-		 *
-		 *  2. The observed move leads to an opponents checkmate
-		 *		1. We currently have no other move at all.
-		 *		2. The observed move leads to an opponents checkmate but does it
-		 *		   slower than our current best move.
-		 *		3. The observed move leads to an opponents checkmate in equally
-		 *		   many steps, but with a better rating for us.
-		 *
-		 *  3. The observed move leads to a stalemate, and the current best move
-		 *     leads to a checkmate against us.
-		 *		1. The observed move leads to a stalemate but does it slower
-		 *		   than our current best move.
-		 *		2. The observed move leads to a stalemate in equally many steps,
-		 *		   but with a better rating for us.
-		 *
-		 * 4. The observed move leads to a better rating.
-		 *		1. The observed move saves us from a checkmate or stalemate that
-		 *		   out current best move would lead to potentially.
-		 */
-		if (ret.mate_for == -game->moving) {
-			// I will checkmate the opponent
-
-			if (ret.mate_depth == depth) {
-				// Current move checkmates the opponent
-				// Freeing moves and setting it to null breaks the loop
-				list_free(moves);
-				moves = NULL;
-				goto overwrite_best_move;
-			}
-
-			if (best.mate_for != -game->moving)
-				// Current best move is not a checkmate move
-				goto overwrite_best_move;
-
-			if (best.mate_depth < ret.mate_depth)
-				// Best move needs a longer path until checkmate
-				goto overwrite_best_move;
-
-			if (best.mate_depth == ret.mate_depth && ret.val > best.val)
-				// Both take equally many steps, but the rating is better making
-				// it a potential better choice if the opponent does not behave
-				// as we expect.
-				goto overwrite_best_move;
-
-		} else if (ret.mate_for == game->moving) {
-			// The opponent will checkmate me
-
-			if (best.val == INT_MIN + 1)
-				// I currently have no other move and need to use this for now.
-				goto overwrite_best_move;
-
-			if (best.mate_for == game->moving) {
-				// Current best move also checkmates me.
-
-				if (ret.mate_depth < best.mate_depth)
-					// Current best move also checkmates me, but in less steps.
-					goto overwrite_best_move;
-
-				if (ret.mate_depth == best.mate_depth && ret.val > best.val)
-					// Both take equally many steps, but the rating is better
-					// making it a potential better choice if we see an escape
-					// with a deeper tree for example.
-					goto overwrite_best_move;
-			}
-		} else if (ret.mate_for == UNDEFINED && ret.mate_depth) {
-			// Stalemate
-
-			if (best.mate_for == game->moving)
-				// Current best move checkmates me
-				goto overwrite_best_move;
-
-			if (best.mate_for == UNDEFINED && best.mate_depth) {
-				// Current best move also leads to stalemate
-
-				if (ret.mate_depth < best.mate_depth)
-					// Current leads to stalemate in less steps
-					goto overwrite_best_move;
-
-				if (ret.mate_depth == best.mate_depth && ret.val > best.val)
-					// Both take equally many steps, but the rating is better
-					// making it a potential better choice if we see an escape
-					// with a deeper tree for example.
-					goto overwrite_best_move;
-
-			}
-		} else if (best.mate_for != -game->moving &&
-		           (ret.val > best.val || best.mate_depth)) {
-			// move leads to a better rating or can save me from checkmate or
-			// the game from stalemate
-			goto overwrite_best_move;
-		}
-
-		free(move);
-#ifdef DEBUG_NEGAMAX_USE_LIST
-		list_free(ret.moves);
-#else
-		free(ret.move);
 #endif
 
-		goto cutoffs;
 
-overwrite_best_move:
+		// replace the current best move, if move guarantees a better score.
+		if (ret.val > best.val) {
 #ifdef DEBUG_NEGAMAX_USE_LIST
-		list_free(best.moves);
-		best       = ret;
-		best.moves = list_push(best.moves, move);
+			list_free(best.moves);
+			best       = ret;
+			best.moves = list_push(best.moves, move);
 #else
-		free(best.move);
-		best      = ret;
-		best.move = move;
-		free(ret.move);
+			free(best.move);
+			best      = ret;
+			best.move = move;
+			free(ret.move);
 #endif
-
-cutoffs:;
+#ifdef DEBUG_PRINTS
+			//printf("replacing move...\nrating %i: ", rating);
+			//printf("new best move: ");
+			//fprint_move(stdout, move);
+#endif
+		} else {
+			free(move);
+			list_free(ret.moves);
+		}
 #ifdef ENABLE_ALPHA_BETA_CUTOFFS
 		if (best.val > a)
 			a = best.val;
