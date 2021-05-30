@@ -108,7 +108,15 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	game->moving *= -1;
 	struct negamax_return best = { INT_MIN + 1, NULL, UNDEFINED, 0 };
 
-	// iterate over all moves (child nodes) to find best move
+	// TODO(Aurel): Is this a good summand? Think about this in relation to
+	// other factors and stuff once implemented. Maybe take 10 * depth or
+	// something.
+	size_t val_depth_factor = 1;
+#if 1
+	if (depth > 1)
+		val_depth_factor = .5 * depth * depth;
+#endif
+
 	while (list_count(moves)) {
 		struct move* move = list_pop(moves);
 
@@ -117,7 +125,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		struct negamax_return ret = negamax(game, depth - 1, -b, -a);
 		undo_move(game->board, move, old);
 
-		int rating = rate_move(game->board, move);
+		int rating = val_depth_factor * rate_move(game->board, move);
 		ret.val += rating;
 
 #ifdef DEBUG_PRINTS
