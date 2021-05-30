@@ -81,6 +81,11 @@ void list_free(struct list* list);
 struct list_elem* list_get_first(struct list* list);
 struct list_elem* list_get_next(struct list_elem* elem);
 
+/**
+ * Sorts the list using insertion sort based on `list_elem.prio`.
+ *
+ * Runtime: O(n^2)
+ */
 void list_sort(struct list* list);
 
 /**
