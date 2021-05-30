@@ -111,6 +111,9 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	// TODO(Aurel): Is this a good summand? Think about this in relation to
 	// other factors and stuff once implemented. Maybe take 10 * depth or
 	// something.
+	// NOTE(Aurel): This factor should increase the rating of moves higher up
+	// the tree, hopefully making the AI choose good moves first instead of at a
+	// later stage.
 	size_t val_depth_factor = 1;
 #if 1
 	if (depth > 1)
