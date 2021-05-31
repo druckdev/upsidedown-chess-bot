@@ -126,9 +126,8 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		struct move* move = list_pop(moves);
 
 		// execute move and see what happens down the tree - dfs
-		struct PIECE old = do_move(game->board, move);
-		struct negamax_return ret =
-				negamax(game, depth - 1, INT_MIN + 1, INT_MAX);
+		struct PIECE old          = do_move(game->board, move);
+		struct negamax_return ret = negamax(game, depth - 1, -b, -a);
 		undo_move(game->board, move, old);
 
 #ifdef ENABLE_ALPHA_BETA_CUTOFFS
