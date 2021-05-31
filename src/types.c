@@ -224,6 +224,9 @@ list_sort(struct list* list)
 void
 fprint_move_list(FILE* stream, struct list* list)
 {
+	if (!list)
+		return;
+
 	struct list_elem* cur_elem = list->last;
 	int i                      = 0;
 	while (cur_elem) {
