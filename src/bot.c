@@ -19,9 +19,9 @@ struct negamax_return {
 	int val;
 #ifdef DEBUG_NEGAMAX_USE_LIST
 	struct list* moves;
-#else
+#else /* DEBUG_NEGAMAX_USE_LIST */
 	struct move* move;
-#endif
+#endif /* DEBUG_NEGAMAX_USE_LIST */
 };
 
 int
@@ -132,7 +132,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 			fprint_move(stdout, move);
 		    printf("%i\n\n", ret.val);
 		}
-#endif
+#endif /* DEBUG_PRINTS */
 
 
 		// replace the current best move, if move guarantees a better score.
@@ -141,17 +141,17 @@ negamax(struct chess* game, size_t depth, int a, int b)
 			list_free(best.moves);
 			best       = ret;
 			best.moves = list_push(best.moves, move);
-#else
+#else /* DEBUG_NEGAMAX_USE_LIST */
 			free(best.move);
 			best      = ret;
 			best.move = move;
 			free(ret.move);
-#endif
+#endif /* DEBUG_NEGAMAX_USE_LIST */
 #ifdef DEBUG_PRINTS
 			//printf("replacing move...\nrating %i: ", rating);
 			//printf("new best move: ");
 			//fprint_move(stdout, move);
-#endif
+#endif /* DEBUG_PRINTS */
 		} else {
 			free(move);
 			list_free(ret.moves);
@@ -162,7 +162,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 
 		if (a >= b)
 			break;
-#endif
+#endif /* ENABLE_ALPHA_BETA_CUTOFFS */
 	}
 	list_free(moves);
 
@@ -208,17 +208,19 @@ choose_move(struct chess* game, struct chess_timer* timer)
 
 		best = list_pop(ret.moves);
 		list_free(ret.moves);
-#else
+#else /* DEBUG_NEGAMAX_USE_LIST */
 		best = ret.move;
-#endif
+#endif /* DEBUG_NEGAMAX_USE_LIST */
 		if (!best)
 			return NULL;
 
+#ifdef DEBUG_PRINTS
 		fprintf(DEBUG_PRINT_STREAM, "cur best move: ");
 		fprint_move(DEBUG_PRINT_STREAM, best);
 		fprintf(DEBUG_PRINT_STREAM, "depth: %lu\n", i);
 		fprintf(DEBUG_PRINT_STREAM, "value: %i\n", -ret.val);
 		fprintf(DEBUG_PRINT_STREAM, "\n");
+#endif /* DEBUG_PRINTS */
 
 		if (best->is_checkmate) {
 			// ret.move leads to checkmate
