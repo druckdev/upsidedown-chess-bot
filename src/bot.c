@@ -120,20 +120,19 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		struct move* move = list_pop(moves);
 
 		// execute move and see what happens down the tree - dfs
-		struct PIECE old          = do_move(game->board, move);
-		struct negamax_return ret = negamax(game, depth - 1, -b, -a);
+		struct PIECE old = do_move(game->board, move);
+		struct negamax_return ret =
+				negamax(game, depth - 1, INT_MIN + 1, INT_MAX);
 		undo_move(game->board, move, old);
 
+#ifdef ENABLE_ALPHA_BETA_CUTOFFS
+		// without ab-pruning this happens at the end of the function
+		ret.val = -ret.val;
+#endif /* ENABLE_ALPHA_BETA_CUTOFFS */
+
+		// include this moves rating in the score
 		int rating = val_depth_factor * rate_move(game->board, move);
 		ret.val += rating;
-
-#ifdef DEBUG_PRINTS
-		if (true || depth == 3) {
-			fprint_move(stdout, move);
-		    printf("%i\n\n", ret.val);
-		}
-#endif /* DEBUG_PRINTS */
-
 
 		// replace the current best move, if move guarantees a better score.
 		if (ret.val > best.val) {
@@ -141,25 +140,20 @@ negamax(struct chess* game, size_t depth, int a, int b)
 			list_free(best.moves);
 			best       = ret;
 			best.moves = list_push(best.moves, move);
-#else /* DEBUG_NEGAMAX_USE_LIST */
+#else  /* DEBUG_NEGAMAX_USE_LIST */
 			free(best.move);
 			best      = ret;
 			best.move = move;
 			free(ret.move);
 #endif /* DEBUG_NEGAMAX_USE_LIST */
-#ifdef DEBUG_PRINTS
-			//printf("replacing move...\nrating %i: ", rating);
-			//printf("new best move: ");
-			//fprint_move(stdout, move);
-#endif /* DEBUG_PRINTS */
 		} else {
 			free(move);
 			list_free(ret.moves);
 		}
+
 #ifdef ENABLE_ALPHA_BETA_CUTOFFS
 		if (best.val > a)
 			a = best.val;
-
 		if (a >= b)
 			break;
 #endif /* ENABLE_ALPHA_BETA_CUTOFFS */
@@ -167,7 +161,10 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	list_free(moves);
 
 	game->moving *= -1;
+#ifndef ENABLE_ALPHA_BETA_CUTOFFS
+	// using ab-pruning this needs to happen earlier
 	best.val *= -1;
+#endif /* ENABLE_ALPHA_BETA_CUTOFFS */
 
 	return best;
 }
