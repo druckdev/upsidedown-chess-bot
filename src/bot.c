@@ -98,6 +98,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	// NOTE: If the list is empty because of a checkmate move, we will recognize
 	//       that by checking move->is_checkmate later and overwrite
 	//       ret.mate_for there.
+	//       TODO(Aurel): This is not true anymore.
 	if (!list_count(moves)) {
 		list_free(moves);
 		return (struct negamax_return){ 0, NULL };
