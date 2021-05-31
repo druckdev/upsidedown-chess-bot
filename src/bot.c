@@ -141,15 +141,17 @@ negamax(struct chess* game, size_t depth, int a, int b)
 			list_free(best.moves);
 			best       = ret;
 			best.moves = list_push(best.moves, move);
+		} else {
+			list_free(ret.moves);
 #else  /* DEBUG_NEGAMAX_USE_LIST */
 			free(best.move);
 			best      = ret;
 			best.move = move;
 			free(ret.move);
-#endif /* DEBUG_NEGAMAX_USE_LIST */
 		} else {
+			free(ret.move);
+#endif /* DEBUG_NEGAMAX_USE_LIST */
 			free(move);
-			list_free(ret.moves);
 		}
 
 #ifdef ENABLE_ALPHA_BETA_CUTOFFS
