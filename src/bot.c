@@ -19,7 +19,7 @@ struct negamax_return {
 	int val;
 #ifdef DEBUG_NEGAMAX_USE_LIST
 	struct list* moves;
-#else /* DEBUG_NEGAMAX_USE_LIST */
+#else  /* DEBUG_NEGAMAX_USE_LIST */
 	struct move* move;
 #endif /* DEBUG_NEGAMAX_USE_LIST */
 };
@@ -205,7 +205,7 @@ choose_move(struct chess* game, struct chess_timer* timer)
 
 		best = list_pop(ret.moves);
 		list_free(ret.moves);
-#else /* DEBUG_NEGAMAX_USE_LIST */
+#else  /* DEBUG_NEGAMAX_USE_LIST */
 		best = ret.move;
 #endif /* DEBUG_NEGAMAX_USE_LIST */
 		if (!best)
