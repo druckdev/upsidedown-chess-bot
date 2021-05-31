@@ -12,8 +12,6 @@ struct negamax_return {
 #else
 	struct move* move;
 #endif
-	enum COLOR mate_for;
-	size_t mate_depth;
 };
 
 int rate_board(struct chess* chess);
