@@ -203,6 +203,7 @@ choose_move(struct chess* game, struct chess_timer* timer)
 			return NULL;
 
 		fprint_move_list(DEBUG_PRINT_STREAM, ret.moves);
+		fprintf(DEBUG_PRINT_STREAM, "\n");
 
 		best = list_pop(ret.moves);
 		list_free(ret.moves);
