@@ -72,11 +72,10 @@ fprint_move(FILE* stream, struct move* move)
 	fprintf(stream, "%s,%s,", start, target);
 
 	char promotes_to_char = piece_to_chr(move->promotes_to);
-	if (promotes_to_char != ' ')
-		fprintf(stream, "%c", promotes_to_char);
+	fprintf(stream, "%c", promotes_to_char);
 
-	fprintf(stream, "\t%s", move->hit ? "hits" : "");
-	fprintf(stream, " %s", move->is_checkmate ? "checkmates" : "");
+	fprintf(stream, "%s", move->hit ? " hits" : "");
+	fprintf(stream, "%s", move->is_checkmate ? " checkmates" : "");
 	fprintf(stream, "\n");
 	//fflush(stream);
 }

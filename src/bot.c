@@ -208,9 +208,9 @@ choose_move(struct chess* game, struct chess_timer* timer)
 		if (!ret.moves)
 			return NULL;
 
+	#ifdef DEBUG_PRINTS
 		fprint_move_list(DEBUG_PRINT_STREAM, ret.moves);
-		fprintf(DEBUG_PRINT_STREAM, "\n");
-
+	#endif
 		best = list_pop(ret.moves);
 		list_free(ret.moves);
 #else  /* DEBUG_NEGAMAX_USE_LIST */

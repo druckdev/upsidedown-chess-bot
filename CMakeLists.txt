@@ -54,6 +54,7 @@ target_compile_definitions(tests PRIVATE UNITY_INCLUDE_EXEC_TIME)
 target_compile_definitions(tests PRIVATE TEST_SAMPLES_ITERATIONS=1)
 
 add_compile_definitions(DEBUG_PRINT_STREAM=stderr)
+add_compile_definitions(DEBUG_PRINTS)
 add_compile_definitions(DEBUG_NEGAMAX_USE_LIST)
 add_compile_definitions(DEBUG_BOARD_WHEN_PLAYING)
 
