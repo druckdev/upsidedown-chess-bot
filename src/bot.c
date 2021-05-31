@@ -115,10 +115,8 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	// the tree, hopefully making the AI choose good moves first instead of at a
 	// later stage.
 	size_t val_depth_factor = 1;
-#if 1
 	if (depth > 1)
 		val_depth_factor = .5 * depth * depth;
-#endif
 
 	while (list_count(moves)) {
 		struct move* move = list_pop(moves);
