@@ -104,6 +104,11 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		return (struct negamax_return){ 0, NULL };
 	}
 
+#ifdef ENABLE_ALPHA_BETA_CUTOFFS
+	register_prio(game->board, moves);
+	list_sort(moves);
+#endif
+
 	game->moving *= -1;
 	struct negamax_return best = { INT_MIN + 1, NULL };
 
