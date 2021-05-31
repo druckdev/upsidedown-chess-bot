@@ -10,8 +10,6 @@
 #include "generator.h"
 #include "types.h"
 
-#define DEBUG_PRINTS true
-
 struct list* generate_moves_piece(struct PIECE board[], enum POS pos,
                                   bool check_checkless, bool hit_allies);
 
