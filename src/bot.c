@@ -22,8 +22,6 @@ struct negamax_return {
 #else
 	struct move* move;
 #endif
-	enum COLOR mate_for;
-	size_t mate_depth;
 };
 
 int
@@ -92,7 +90,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 {
 	// max depth reached
 	if (!depth)
-		return (struct negamax_return){ 0, NULL, UNDEFINED, 0 };
+		return (struct negamax_return){ 0, NULL };
 
 	struct list* moves = generate_moves(game, true, false);
 
@@ -102,11 +100,11 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	//       ret.mate_for there.
 	if (!list_count(moves)) {
 		list_free(moves);
-		return (struct negamax_return){ 0, NULL, UNDEFINED, depth + 1 };
+		return (struct negamax_return){ 0, NULL };
 	}
 
 	game->moving *= -1;
-	struct negamax_return best = { INT_MIN + 1, NULL, UNDEFINED, 0 };
+	struct negamax_return best = { INT_MIN + 1, NULL };
 
 	// TODO(Aurel): Is this a good summand? Think about this in relation to
 	// other factors and stuff once implemented. Maybe take 10 * depth or
@@ -222,7 +220,7 @@ choose_move(struct chess* game, struct chess_timer* timer)
 		fprintf(DEBUG_PRINT_STREAM, "value: %i\n", -ret.val);
 		fprintf(DEBUG_PRINT_STREAM, "\n");
 
-		if (ret.mate_depth == i) {
+		if (best->is_checkmate) {
 			// ret.move leads to checkmate
 			game->checkmate = true;
 			break;
