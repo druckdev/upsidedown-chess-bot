@@ -130,10 +130,18 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	while (list_count(moves)) {
 		struct move* move = list_pop(moves);
 
-		// execute move and see what happens down the tree - dfs
-		struct PIECE old          = do_move(game->board, move);
-		struct negamax_return ret = negamax(game, depth - 1, -b, -a);
-		undo_move(game->board, move, old);
+		struct negamax_return ret;
+		if (move->is_checkmate)
+			// If we know it will checkmate, there are no more moves left for
+			// the enemy to do and thus we already know what ret should look
+			// like.
+			ret = (struct negamax_return){ 0, NULL };
+		else {
+			// execute move and see what happens down the tree - dfs
+			struct PIECE old          = do_move(game->board, move);
+			ret = negamax(game, depth - 1, -b, -a);
+			undo_move(game->board, move, old);
+		}
 
 #ifdef ENABLE_ALPHA_BETA_CUTOFFS
 		// without ab-pruning this happens at the end of the function
