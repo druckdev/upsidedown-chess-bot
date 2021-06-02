@@ -112,15 +112,20 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	game->moving *= -1;
 	struct negamax_return best = { INT_MIN + 1, NULL };
 
-	// TODO(Aurel): Is this a good summand? Think about this in relation to
-	// other factors and stuff once implemented. Maybe take 10 * depth or
-	// something.
-	// NOTE(Aurel): This factor should increase the rating of moves higher up
-	// the tree, hopefully making the AI choose good moves first instead of at a
-	// later stage.
-	size_t val_depth_factor = 1;
-	if (depth > 1)
-		val_depth_factor = .5 * depth * depth;
+	/*
+	 * NOTE(Aurel): This factor should increase the rating of moves higher up
+	 * the tree, hopefully making the AI choose good moves first instead of at a
+	 * later stage.
+	 * TODO(Aurel): Tinker around with the values.
+	 * Factor:
+	 *	- depth: difference between two levels is the same up and down the tree.
+	 *		Does not work.
+	 *	- depth^2: might be too steep a curve and cause other problems.
+	 *
+	 *  - Final thoughts: a * depth^2 + 1 , a = 1/(2^k)
+	 *		((depth * depth) >> a) + 1;
+	 */
+	size_t val_depth_factor = ((depth * depth) >> 3) + 1;
 
 	while (list_count(moves)) {
 		struct move* move = list_pop(moves);
