@@ -14,6 +14,9 @@
 int
 main(int argc, char* argv[])
 {
+	(void)argc;
+	(void)argv;
+
 	printf("Benchmarking function generate_moves()...\n");
 
 	size_t len = sizeof(test_boards) / sizeof(*test_boards);

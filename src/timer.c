@@ -15,7 +15,7 @@
 // TODO(Aurel): All these functions assume the game server sends remaining time
 // in nano seconds.
 struct chess_timer*
-start_timer(long t_total_ns)
+start_timer(long t_total_s)
 {
 	struct timespec t_cur;
 	if (clock_gettime(CLOCK, &t_cur))
@@ -27,7 +27,7 @@ start_timer(long t_total_ns)
 
 	// offset timer by the total time
 	timer->t_end = t_cur;
-	timer->t_end.tv_nsec += t_total_ns;
+	timer->t_end.tv_sec += t_total_s;
 	return timer;
 }
 
@@ -68,12 +68,15 @@ struct timespec
 get_move_time(struct chess_timer* timer, struct chess* game,
               enum t_move_distribution_function method)
 {
+	struct timespec ts;
 	switch (method) {
 	case UNIFORM_DISTRIBUTION:
-		return uniform_distribution(timer, game);
+		ts = uniform_distribution(timer, game);
+		break;
 	default:
-		assert(("No timer function is being used", false));
+		assert(false && "No timer function is being used");
 	}
+	return ts;
 }
 
 struct chess_timer*
@@ -89,8 +92,6 @@ update_timer(struct chess_timer* timer, struct chess* game)
 	if (clock_gettime(CLOCK, &t_cur) != 0)
 		return NULL;
 
-	timer->t_cur_move_start = t_cur;
-
 	if (game->t_remaining_s > 0) {
 		// offset timer by the remaining time
 		timer->t_end = t_cur;
@@ -98,12 +99,15 @@ update_timer(struct chess_timer* timer, struct chess* game)
 	}
 
 	// update time-per-move t_cur_move
-	timer->t_cur_move_end = get_move_time(timer, game, UNIFORM_DISTRIBUTION);
+	struct timespec t_cur_move_time =
+			get_move_time(timer, game, UNIFORM_DISTRIBUTION);
+	timer->t_cur_move_end.tv_sec  = t_cur.tv_sec + t_cur_move_time.tv_sec;
+	timer->t_cur_move_end.tv_nsec = t_cur.tv_nsec + t_cur_move_time.tv_nsec;
 
 	return timer;
 }
 
-long
+double
 get_remaining_move_time(struct chess_timer* timer)
 {
 	struct timespec t_cur;
@@ -119,5 +123,5 @@ get_remaining_move_time(struct chess_timer* timer)
 
 	// TODO(Aurel): Verify 1e9 is actually correct to transform seconds into
 	// nanoseconds.
-	return t_remaining.tv_sec * 1e9 + t_remaining.tv_nsec;
+	return t_remaining.tv_sec + t_remaining.tv_nsec * 1e-9;
 }

@@ -8,6 +8,7 @@ struct game_samples {
 	int move_cnt;
 };
 
+// clang-format off
 static struct game_samples test_boards[] = {
 	// Test single figures
 	{ "8/8/8/8/8/3k4/8/8 b", 8 },  // test king
@@ -41,9 +42,17 @@ static struct game_samples test_boards[] = {
 
 	{ "R1QQKBNR/PP1PPPPP/2N5/3b1B2/4q3/2n1n3/pppppppp/r1b1k2r w", 22 },
 
+	// Checkmate and it's prevention
 	{ "K7/2r5/1q6/8/8/8/8/8 b", 31 },  // check checkmate
 	{ "8/8/8/8/8/8/8/3K1k2 w", 3 },    // check weird king interaction 1
 	{ "8/8/8/8/8/4R3/8/3K1k2 w", 15 }, // check weird king interaction 2
+	{ "K7/r7/1q6/8/8/8/8/8 w", 0 }, // check there are no moves when in checkmate
+	{ "K7/r7/1q6/8/8/5P2/8/8 w", 0 }, // check there are no moves when in checkmate
+	{ "K7/r7/1q6/8/8/5P2/8/R7 w", 1 },   // check checkmate prevention
+	{ "K7/2r5/1q6/8/8/5P2/8/R7 b", 29 }, // check checkmate prevention
+	{ "8/8/8/8/4r3/2P1P3/2P1P3/2PKP3 b", 11 }, // checkmate
+	{ "8/8/8/8/4r3/8/2P1P3/2PKP3 b", 13},      // checkmate prevention
+	{ "8/8/8/8/4r3/R7/2P1P3/2PKP3 b", 12 },    // checkmate prevention
 
 	{ "8/8/8/8/8/8/2p3p1/3k4 b", 12 }, // Check pawn promotion (ally king)
 	{ "8/8/8/8/8/K7/2p5/8 b", 2 },     // Check pawn promotion (q, b)
@@ -61,4 +70,5 @@ static struct game_samples test_boards[] = {
 	{ "r1bqk1nr/pppppp1p/2k4b/8/8/2N2N2/P1PPPP1P/RQBQKB1R w", 19 },
 	{ "r1bqkqnr/ppppp2p/2n4b/3N4/8/5N2/P1PPPP1P/RQBQKB1R w", 27 },
 };
+// clang-format on
 #endif /* HELPER_H */

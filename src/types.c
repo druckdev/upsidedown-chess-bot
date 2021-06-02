@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "chess.h"
 #include "types.h"
 
 struct list*
 list_push(struct list* list, void* object)
 {
+	// NOTE: generator.c depends on this break condition!
 	if (!object)
 		return list;
 
@@ -82,6 +84,29 @@ list_remove(struct list* list, struct list_elem* elem)
 	return next;
 }
 
+void
+list_insert(struct list* list, struct list_elem* new_elem,
+            struct list_elem* before)
+{
+	if (!list || !new_elem)
+		return;
+
+	new_elem->prev = before;
+	if (before) {
+		new_elem->next = before->next;
+		before->next   = new_elem;
+	} else {
+		new_elem->next = list->first;
+		list->first    = new_elem;
+	}
+	if (new_elem->next)
+		new_elem->next->prev = new_elem;
+	else
+		list->last = new_elem;
+
+	list->count++;
+}
+
 struct list*
 list_append_list(struct list* first, struct list* second)
 {
@@ -108,7 +133,7 @@ list_append_list(struct list* first, struct list* second)
 	return first;
 }
 
-int
+size_t
 list_count(struct list* list)
 {
 	return list ? list->count : 0;
@@ -140,4 +165,74 @@ struct list_elem*
 list_get_next(struct list_elem* elem)
 {
 	return elem ? elem->next : NULL;
+}
+
+// Sort a list inplace.
+// This uses insertion sort as the lists that we typically use are rather small
+// in length.
+void
+list_sort(struct list* list)
+{
+	if (!list || !list->count)
+		return;
+
+	struct list_elem* cur = list->first->next;
+	struct list_elem *before, *next;
+	while (cur) {
+		before = cur->prev;
+		while (before && before->prio > cur->prio)
+			before = before->prev;
+
+		if (before == cur->prev) {
+			// cur should stay at its place
+			cur = cur->next;
+			continue;
+		}
+
+		// Backup next before reordering
+		next = cur->next;
+
+		// Move `cur` from current position behind `before`
+		// This is a hybrid form of `list_remove` and `list_insert` but without
+		// unnecessary instructions.
+
+		// Remove --------------------------------------------------------------
+		// cur->prev can never be NULL as we are starting at first->next
+		cur->prev->next = cur->next;
+		if (cur->next)
+			cur->next->prev = cur->prev;
+		else
+			list->last = cur->prev;
+		// cur can never be list->first as we are starting at first->next
+
+		// Insert --------------------------------------------------------------
+		cur->prev = before;
+		if (before) {
+			cur->next    = before->next;
+			before->next = cur;
+		} else {
+			cur->next   = list->first;
+			list->first = cur;
+		}
+		if (cur->next)
+			cur->next->prev = cur;
+
+		cur = next;
+	}
+}
+
+void
+fprint_move_list(FILE* stream, struct list* list)
+{
+	if (!list)
+		return;
+
+	struct list_elem* cur_elem = list->last;
+	int i                      = 0;
+	while (cur_elem) {
+		struct move* cur_move = cur_elem->object;
+		fprintf(stream, "%i ", i++);
+		fprint_move(stream, cur_move);
+		cur_elem = cur_elem->prev;
+	}
 }

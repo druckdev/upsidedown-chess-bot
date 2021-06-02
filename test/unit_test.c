@@ -2,7 +2,9 @@
 
 #include "unity.h"
 
+#include "test_bot.h"
 #include "test_generator.h"
+#include "test_types.h"
 
 // Necessary for Unity
 // clang-format off
@@ -12,9 +14,14 @@ void tearDown(void) {}
 
 // TODO(Luis): use generate_test_runner.rb
 int
-main(void)
+main(int argc, char* argv[])
 {
+	(void)argc;
+	(void)argv;
+
 	UNITY_BEGIN();
 	test_generator();
+	test_bot();
+	test_types();
 	return UNITY_END();
 }

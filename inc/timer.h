@@ -4,7 +4,7 @@
 #include <time.h>
 
 struct chess_timer {
-	struct timespec t_end, t_cur_move_start, t_cur_move_end;
+	struct timespec t_end, t_cur_move_end;
 };
 
 enum t_move_distribution_function {
@@ -34,6 +34,6 @@ struct chess_timer* update_timer(struct chess_timer* timer, struct chess* game);
 /**
  * Returns the remaining time for a specific move.
  */
-long get_remaining_move_time(struct chess_timer* timer);
+double get_remaining_move_time(struct chess_timer* timer);
 
 #endif /* TIMER_H */

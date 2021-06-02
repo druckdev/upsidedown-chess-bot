@@ -4,6 +4,7 @@
 #include "types.h"
 
 #include "board.h"
+#include "bot.h"
 #include "generator.h"
 #include "main.h"
 
@@ -28,15 +29,9 @@ list_example()
 int
 main(int argc, char* argv[])
 {
+	if (argc > 1)
+		MAX_NEGAMAX_DEPTH = atoi(argv[1]);
+
 	// printf("Upside Down Chess Bot version %'.1f\n", VERSION);
-
-	enum COLOR c = WHITE;
-	if (argc >= 2 && argv[1][0] == '1')
-		c = BLACK;
-
-	struct chess chess = init_chess(c);
-	run_chess(&chess);
-
-	free(chess.board);
-	//list_example(); // An example on how to use the list.
+	run_chess();
 }

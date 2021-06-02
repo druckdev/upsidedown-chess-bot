@@ -2,6 +2,7 @@
 #define TYPES_H
 
 #include <stddef.h>
+#include <stdio.h>
 
 /**
  * A doubly linked list.
@@ -9,6 +10,7 @@
 struct list_elem {
 	struct list_elem *prev, *next;
 	void* object;
+	int prio;
 };
 
 struct list {
@@ -46,6 +48,15 @@ void* list_pop(struct list* list);
  */
 struct list_elem* list_remove(struct list* list, struct list_elem* elem);
 
+/*
+ * Insert `new_elem` after `before` in `list`.
+ * If `before == NULL` it is inserted at the very beginning.
+ *
+ * Runtime: O(1)
+ */
+void list_insert(struct list* list, struct list_elem* new_elem,
+                 struct list_elem* before);
+
 /**
  * Appends `second` to `first`.
  *
@@ -58,7 +69,7 @@ struct list* list_append_list(struct list* first, struct list* second);
  *
  * Runtime: O(n)
  */
-int list_count(struct list* list);
+size_t list_count(struct list* list);
 
 /**
  * Frees all elements, their objects and the list itself.
@@ -70,4 +81,17 @@ void list_free(struct list* list);
 struct list_elem* list_get_first(struct list* list);
 struct list_elem* list_get_next(struct list_elem* elem);
 
+/**
+ * Sorts the list using insertion sort based on `list_elem.prio`.
+ *
+ * Runtime: O(n^2)
+ */
+void list_sort(struct list* list);
+
+/**
+ * Prints a move list to stream.
+ *
+ * NOTE(Aurel): This only iterates over the list and does not free anything.
+ */
+void fprint_move_list(FILE* stream, struct list* list);
 #endif /* TYPES_H */

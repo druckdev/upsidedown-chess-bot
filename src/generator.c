@@ -10,16 +10,14 @@
 #include "generator.h"
 #include "types.h"
 
-#define DEBUG_PRINTS true
-
 struct list* generate_moves_piece(struct PIECE board[], enum POS pos,
                                   bool check_checkless, bool hit_allies);
 
 /**
  * @arg board - the current board state
  * @arg mate_move - the move on `board` that has the king as target.
- * Returns: If board is a checkmate position or if the color of the attacked
- *          king can still get out of check.
+ * @return If board is a checkmate position or if the color of the attacked king
+ *         can still get out of check.
  */
 bool
 is_checkmate(struct PIECE board[], struct move* mate_move)
@@ -46,7 +44,8 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 
 	// check all possible moves if they can prevent the checkmate
 	// TODO: Add bitmask to check everything but the kings moves
-	counter_moves = generate_moves(&game, false, false);
+	counter_moves     = generate_moves(&game, false, false);
+	bool is_checkmate = true;
 	while (list_count(counter_moves)) {
 		struct move* cur_counter_move = (struct move*)list_pop(counter_moves);
 
@@ -59,13 +58,12 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		if (cur_counter_move->target == mate_move->start) {
 			// The counter_move hits the attacking piece
 			free(cur_counter_move);
-			list_free(counter_moves);
-			return false;
+			is_checkmate = false;
+			break;
 		}
 
 		// Backup piece for undo
-		struct PIECE old = game.board[cur_counter_move->target];
-		do_move(game.board, cur_counter_move);
+		struct PIECE old = do_move(game.board, cur_counter_move);
 
 		// Check if mate_move is still doable or was declined
 		struct list* moves = generate_moves_piece(game.board, mate_move->start,
@@ -84,32 +82,30 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		}
 		list_free(moves);
 
-		if (mate_declined) {
-			// counter_move successful
-			free(cur_counter_move);
-			list_free(counter_moves);
-			return false;
-		}
-
 		// Undo move
 		undo_move(game.board, cur_counter_move, old);
-
 		free(cur_counter_move);
-	}
 
+		if (mate_declined) {
+			// counter_move successful
+			is_checkmate = false;
+			break;
+		}
+	}
 	list_free(counter_moves);
-	return true;
+
+	return is_checkmate;
 }
 
 /**
  * Execute move and check if the same piece from the new positions can hit the
  * opponent's king.
+ * Also updates move->is_checkmate if true.
  */
 bool
 is_checkless_move(struct PIECE board[], struct move* move)
 {
-	struct PIECE old = board[move->target];
-	assert(do_move(board, move));
+	struct PIECE old = do_move(board, move);
 
 	struct list* new_moves;
 
@@ -124,12 +120,15 @@ is_checkless_move(struct PIECE board[], struct move* move)
 			continue;
 		}
 
-		if (board[cur_move->target].type == KING &&
-		    !is_checkmate(board, cur_move)) {
-			// Found checkless move
-			free(cur_move);
-			is_checkless_move = false;
-			break;
+		if (board[cur_move->target].type == KING) {
+			if (!is_checkmate(board, cur_move)) {
+				// Found checkless move
+				free(cur_move);
+				is_checkless_move = false;
+				break;
+			} else {
+				move->is_checkmate = true;
+			}
 		}
 		free(cur_move);
 	}
@@ -169,40 +168,39 @@ is_occupied_by_enemy(struct PIECE board[], enum POS pos, enum POS target)
 
 enum MOVES_TYPE { DIAGONAL, ORTHOGONAL, BOTH };
 
+static int offsets_diag[4] = { +9, +7, -9, -7 };
+static int offsets_orth[4] = { +1, +8, -1, -8 };
+static int offsets_both[8] = { +1, +9, +8, +7, -1, -9, -8, -7 };
+
 /**
  * @arg range: Use this parameter to calculate diagonal and orthogonal moves up
  * to a certain range, i.e. the king who may only walk one tile. Use -1 for
  * "unlimited" range, meaning until the end of the board is reached.
  */
 struct list*
-generate_moves_helper(struct PIECE board[], enum POS pos, int range,
+generate_moves_helper(struct PIECE board[], enum POS pos, bool endless,
                       enum MOVES_TYPE type, bool check_checkless,
                       bool hit_allies)
 {
-	if (range < -1) {
-		fprintf(stderr, "Parameter `range` can't be lower than -1.\n");
-		return NULL;
-	}
-
 	struct list* moves = calloc(1, sizeof(*moves));
 	int* offsets;
 	size_t len;
 	switch (type) {
 	case DIAGONAL:
-		len     = 4;
-		offsets = (int[4]){ +9, +7, -9, -7 };
+		offsets = offsets_diag;
+		len     = sizeof(offsets_diag) / sizeof(*offsets_diag);
 		break;
 	case ORTHOGONAL:
-		len     = 4;
-		offsets = (int[4]){ +1, +8, -1, -8 };
+		offsets = offsets_orth;
+		len     = sizeof(offsets_orth) / sizeof(*offsets_orth);
 		break;
 	case BOTH:
-		len     = 8;
-		offsets = (int[8]){ +1, +9, +8, +7, -1, -9, -8, -7 };
+		offsets = offsets_both;
+		len     = sizeof(offsets_both) / sizeof(*offsets_both);
 		break;
 	default:
 		fprintf(stderr, "Unknown moves type: %i", type);
-		break;
+		return NULL;
 	}
 
 	bool hit;
@@ -212,9 +210,8 @@ generate_moves_helper(struct PIECE board[], enum POS pos, int range,
 		bool diagonal        = !(offsets[i] % 7) || !(offsets[i] % 9);
 		hit                  = false;
 
-		size_t counter = 0;
 		// Continue as long as we are in range and did not hit something
-		for (; !hit && (counter < range || range == -1); ++counter) {
+		while (!hit) {
 			enum POS target = prev_target + offsets[i];
 
 			if (!is_valid_pos(target))
@@ -237,25 +234,23 @@ generate_moves_helper(struct PIECE board[], enum POS pos, int range,
 			 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 			 * be the last check!
 			 */
-			struct move test_move = { pos, target, hit, EMPTY };
+			struct move test_move = { pos, target, hit, false, empty_piece };
 			if (!check_checkless || is_checkless_move(board, &test_move)) {
 				// Move passed all tests
 
 				struct move* move = malloc(sizeof(*move));
-				// TODO(Aurel): Should we cleanup the list moves?
-				assert(move);
-
-				move->start       = pos;
-				move->target      = target;
-				move->hit         = hit;
-				move->promotes_to = empty_piece;
+				if (!move)
+					return NULL;
+				memcpy(move, &test_move, sizeof(*move));
 
 				moves = list_push(moves, move);
-				assert(moves);
 			}
 
 			prev_target     = target;
 			prev_target_col = target_col;
+
+			if (!endless)
+				break;
 		}
 	}
 	return moves;
@@ -294,10 +289,7 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 		bool occupied          = is_occupied(board, target);
 		bool occupied_by_enemy = is_occupied_by_enemy(board, pos, target);
 
-		// NOTE: We cannot use `i != occupied` to combine the two statements, as
-		// you could do in normal boolean algebra, as we have -1 as possible
-		// value that acts as true as well as 1
-		if (i && !occupied || !i && occupied)
+		if (!i == occupied)
 			// diagonally not occupied or vertically blocked
 			continue;
 
@@ -319,7 +311,7 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 		if (target < 8 || target > 55)
 			promotes_to.type = QUEEN;
 		while (promotes_to.type <= QUEEN && promotes_to.type != PAWN) {
-			struct move test = { pos, target, occupied_by_enemy && i,
+			struct move test = { pos, target, occupied_by_enemy && i, false,
 				                 promotes_to };
 			promotes_to.type--;
 
@@ -330,7 +322,7 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 			struct move* move = malloc(sizeof(*move));
 			if (!move)
 				return NULL;
-			memcpy(move, &test, sizeof(test));
+			memcpy(move, &test, sizeof(*move));
 
 			moves = list_push(moves, move);
 
@@ -371,17 +363,15 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos,
 	 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 	 * be the last check!
 	 */
-	struct move test_move = { pos, target, occupied_by_enemy, EMPTY };
+	struct move test_move = { pos, target, occupied_by_enemy, false,
+		                      empty_piece };
 	if (check_checkless && !is_checkless_move(board, &test_move))
 		return NULL;
 
 	struct move* move = malloc(sizeof(*move));
 	if (!move)
 		return NULL;
-	move->start       = pos;
-	move->target      = target;
-	move->hit         = occupied_by_enemy;
-	move->promotes_to = empty_piece;
+	memcpy(move, &test_move, sizeof(*move));
 
 	return move;
 }
@@ -391,7 +381,7 @@ generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless,
                     bool hit_allies)
 {
 	struct list* all_moves =
-			generate_moves_helper(board, pos, 1, BOTH, false, hit_allies);
+			generate_moves_helper(board, pos, false, BOTH, false, hit_allies);
 
 	if (!all_moves)
 		return NULL;
@@ -405,11 +395,12 @@ generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless,
 	};
 
 	struct list* possible_hit_moves = generate_moves(&game, false, true);
+
 	// TODO: use bitboard and & with king moves bitboard
 	bool targets[64] = { 0 };
 	are_attacked(possible_hit_moves, targets);
 
-	// Remove all hittable fields.
+	// Remove all moves targeting an hittable field.
 	struct list_elem* cur = list_get_first(all_moves);
 	while (cur) {
 		struct move* cur_move = (struct move*)cur->object;
@@ -466,15 +457,15 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless,
 	struct list* moves;
 	// clang-format off
 	switch (board[pos].type) {
-	case QUEEN:  moves = generate_moves_helper(board, pos, -1, BOTH, check_checkless, hit_allies); break;
+	case QUEEN:  moves = generate_moves_helper(board, pos, true, BOTH, check_checkless, hit_allies); break;
 	case KING:   moves = generate_moves_king  (board, pos, check_checkless, hit_allies); break;
-	case ROOK:   moves = generate_moves_helper(board, pos, -1, ORTHOGONAL, check_checkless, hit_allies); break;
+	case ROOK:   moves = generate_moves_helper(board, pos, true, ORTHOGONAL, check_checkless, hit_allies); break;
 	case KNIGHT: moves = generate_moves_knight(board, pos, check_checkless, hit_allies); break;
 	case PAWN:   moves = generate_moves_pawn_helper(board, pos, check_checkless, hit_allies); break;
-	case BISHOP: moves = generate_moves_helper(board, pos, -1, DIAGONAL, check_checkless, hit_allies); break;
+	case BISHOP: moves = generate_moves_helper(board, pos, true, DIAGONAL, check_checkless, hit_allies); break;
 	default:
 		printf("Invalid piece at %i: %i\n", pos, board[pos].type);
-		assert(false); return NULL;
+		assert(false && "Invalid piece"); return NULL;
 	}
 	// clang-format on
 
@@ -501,13 +492,8 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless,
 		bool opens_king       = false;
 
 		// Backup piece for undo
-		struct PIECE old = board[cur_move->target];
-		do_move(game.board, cur_move);
+		struct PIECE old = do_move(game.board, cur_move);
 
-		// TODO: use bitboard
-		bool targets[64] = { 0 };
-
-		// Populate targets array
 		struct list* possible_hit_moves = generate_moves(&game, false, false);
 
 		// Undo move
