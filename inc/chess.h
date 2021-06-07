@@ -58,12 +58,6 @@ struct chess {
 	int max_moves, move_count;
 };
 
-struct move {
-	enum POS start, target;
-	bool hit, is_checkmate;
-	struct PIECE promotes_to;
-};
-
 int get_piece_value(enum PIECE_E piece);
 struct move* opponent_move(struct move*);
 struct chess init_chess();

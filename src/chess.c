@@ -1,4 +1,3 @@
-#include "types.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +8,7 @@
 #include "bot.h"
 #include "chess.h"
 #include "generator.h"
+#include "move.h"
 #include "timer.h"
 
 #define MAX_FEN_STR_LEN 128
@@ -129,7 +129,7 @@ run_chess()
 
 		do_move(game.board, move);
 #ifdef DEBUG_BOARD_WHEN_PLAYING
-		struct list* list = list_push(NULL, move);
+		struct move_list* list = move_list_push(NULL, move);
 		print_board(game.board, list);
 #else
 		free(move);

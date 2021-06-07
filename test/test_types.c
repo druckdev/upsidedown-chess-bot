@@ -1,31 +1,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "types.h"
+#include "move.h"
 #include "unity.h"
 // #include "devel_types.h"
 
 void
-test_list_sort()
+test_move_list_sort()
 {
-	printf("TEST: list_sort\t");
+	printf("TEST: move_list_sort\t");
 
 	int prios_unsorted[] = { 10, 3, 4, 23, 234, -1 };
 	int prios_sorted[]   = { -1, 3, 4, 10, 23, 234 };
 	size_t len           = sizeof(prios_unsorted) / sizeof(*prios_unsorted);
 
-	struct list* list = NULL;
-	int obj           = 0;
+	struct move_list* list = NULL;
+	int obj                = 0;
 	for (size_t i = 0; i < len; ++i) {
-		list             = list_push(list, &obj);
+		list             = move_list_push(list, &obj);
 		list->last->prio = prios_unsorted[i];
 	}
 
-	list_sort(list);
+	move_list_sort(list);
 
-	struct list_elem* cur = list->first;
-	struct list_elem* old = NULL;
-	struct list_elem *before, *after;
+	struct move_list_elem* cur = list->first;
+	struct move_list_elem* old = NULL;
+	struct move_list_elem *before, *after;
 	for (size_t i = 0; i < len; ++i) {
 		TEST_ASSERT_NOT_NULL(cur);
 
@@ -62,5 +62,5 @@ test_list_sort()
 void
 test_types()
 {
-	RUN_TEST(test_list_sort);
+	RUN_TEST(test_move_list_sort);
 }
