@@ -62,25 +62,6 @@ gs_print_move(struct move* move)
 	fflush(stdout);
 }
 
-void
-fprint_move(FILE* stream, struct move* move)
-{
-	char start[3], target[3];
-	pos_to_str(move->start, start);
-	pos_to_str(move->target, target);
-
-	fprintf(stream, "%s,%s,", start, target);
-
-	char promotes_to_char = piece_to_chr(move->promotes_to);
-	fprintf(stream, "%c", promotes_to_char);
-	fprintf(stream, "%i", move->rating);
-
-	fprintf(stream, "%s", move->hit ? " hits" : "");
-	fprintf(stream, "%s", move->is_checkmate ? " checkmates" : "");
-	fprintf(stream, "\n");
-	//fflush(stream);
-}
-
 struct chess
 init_chess()
 {
