@@ -4,7 +4,7 @@
 #include "move.h"
 
 struct move_list*
-move_list_push(struct move_list* list, void* move)
+move_list_push(struct move_list* list, struct move* move)
 {
 	// NOTE: generator.c depends on this break condition!
 	if (!move)
@@ -40,14 +40,14 @@ move_list_push(struct move_list* list, void* move)
 	return list;
 }
 
-void*
+struct move*
 move_list_pop(struct move_list* list)
 {
 	if (!list || !list->last)
 		return NULL;
 
 	struct move_list_elem* list_elem = list->last;
-	void* move                       = list_elem->move;
+	struct move* move                = list_elem->move;
 
 	list->last = list_elem->prev;
 	if (list->last)

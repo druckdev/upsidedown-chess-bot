@@ -37,7 +37,7 @@ struct move_list {
  *
  * Runtime: O(1)
  */
-struct move_list* move_list_push(struct move_list* list, void* object);
+struct move_list* move_list_push(struct move_list* list, struct move* move);
 
 /**
  * Pops the last element off of `list`, returning its element and updating the
@@ -47,7 +47,7 @@ struct move_list* move_list_push(struct move_list* list, void* object);
  *
  * Runtime: O(1)
  */
-void* move_list_pop(struct move_list* list);
+struct move* move_list_pop(struct move_list* list);
 
 /*
  * Removes `elem` from `list` and returns its successor.
