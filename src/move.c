@@ -179,7 +179,7 @@ move_list_sort(struct move_list* list)
 	struct move_list_elem *before, *next;
 	while (cur) {
 		before = cur->prev;
-		while (before && before->prio > cur->prio)
+		while (before && before->move->rating > cur->move->rating)
 			before = before->prev;
 
 		if (before == cur->prev) {

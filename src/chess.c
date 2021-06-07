@@ -73,6 +73,7 @@ fprint_move(FILE* stream, struct move* move)
 
 	char promotes_to_char = piece_to_chr(move->promotes_to);
 	fprintf(stream, "%c", promotes_to_char);
+	fprintf(stream, "%i", move->rating);
 
 	fprintf(stream, "%s", move->hit ? " hits" : "");
 	fprintf(stream, "%s", move->is_checkmate ? " checkmates" : "");
