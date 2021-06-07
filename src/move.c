@@ -4,6 +4,25 @@
 #include "board.h"
 #include "move.h"
 
+void
+fprint_move(FILE* stream, struct move* move)
+{
+	char start[3], target[3];
+	pos_to_str(move->start, start);
+	pos_to_str(move->target, target);
+
+	fprintf(stream, "%s,%s,", start, target);
+
+	char promotes_to_char = piece_to_chr(move->promotes_to);
+	fprintf(stream, "%c", promotes_to_char);
+	fprintf(stream, "\t%i", move->rating);
+
+	fprintf(stream, " %s", move->hit ? "hits" : "");
+	fprintf(stream, " %s", move->is_checkmate ? "checkmates" : "");
+	fprintf(stream, "\n");
+	//fflush(stream);
+}
+
 struct move_list*
 move_list_push(struct move_list* list, struct move* move)
 {
@@ -219,25 +238,6 @@ move_list_sort(struct move_list* list)
 
 		cur = next;
 	}
-}
-
-void
-fprint_move(FILE* stream, struct move* move)
-{
-	char start[3], target[3];
-	pos_to_str(move->start, start);
-	pos_to_str(move->target, target);
-
-	fprintf(stream, "%s,%s,", start, target);
-
-	char promotes_to_char = piece_to_chr(move->promotes_to);
-	fprintf(stream, "%c\t", promotes_to_char);
-	fprintf(stream, "%i", move->rating);
-
-	fprintf(stream, " %s", move->hit ? "hits" : "");
-	fprintf(stream, " %s", move->is_checkmate ? "checkmates" : "");
-	fprintf(stream, "\n");
-	//fflush(stream);
 }
 
 void
