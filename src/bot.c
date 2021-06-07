@@ -12,6 +12,7 @@
 #include "generator.h"
 #include "timer.h"
 #include "types.h"
+#include "pst.h"
 
 size_t MAX_NEGAMAX_DEPTH = 3;
 
@@ -23,6 +24,26 @@ struct negamax_return {
 	struct move* move;
 #endif /* DEBUG_NEGAMAX_USE_LIST */
 };
+
+int
+get_position_value(enum POS pos, enum PIECE_E type)
+{
+	switch(type)
+	{
+		// clang-format off
+
+		case EMPTY : return 0; 
+		case PAWN  : return eg_pawn_pst[pos] ;
+		case BISHOP: return eg_bishop_pst[pos]; 
+		case KNIGHT: return eg_knight_pst[pos]; 
+		case ROOK  : return eg_rook_pst[pos]; 
+		case QUEEN : return eg_queen_pst[pos];
+		case KING  : return eg_king_pst[pos];
+		default    : return 0;
+
+		// clang-format on
+	}
+}
 
 int
 rate_board(struct chess* chess)
