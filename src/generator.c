@@ -47,8 +47,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 	counter_moves     = generate_moves(&game, false, false);
 	bool is_checkmate = true;
 	while (move_list_count(counter_moves)) {
-		struct move* cur_counter_move =
-				(struct move*)move_list_pop(counter_moves);
+		struct move* cur_counter_move = move_list_pop(counter_moves);
 
 		if (cur_counter_move->start == mate_move->target) {
 			// Already checked the king moves as they need check_checkless
