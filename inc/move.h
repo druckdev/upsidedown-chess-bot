@@ -11,6 +11,7 @@ struct move {
 	enum POS start, target;
 	bool hit, is_checkmate;
 	struct PIECE promotes_to;
+	int rating;
 };
 
 int rate_move(struct PIECE* board, struct move* move);
@@ -21,7 +22,6 @@ int rate_move(struct PIECE* board, struct move* move);
 struct move_list_elem {
 	struct move_list_elem *prev, *next;
 	struct move* move;
-	int prio;
 };
 
 struct move_list {

@@ -234,7 +234,7 @@ generate_moves_helper(struct PIECE board[], enum POS pos, bool endless,
 			 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 			 * be the last check!
 			 */
-			struct move test_move = { pos, target, hit, false, empty_piece };
+			struct move test_move = { pos, target, hit, false, empty_piece, 0 };
 			if (!check_checkless || is_checkless_move(board, &test_move)) {
 				// Move passed all tests
 
@@ -311,8 +311,8 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 		if (target < 8 || target > 55)
 			promotes_to.type = QUEEN;
 		while (promotes_to.type <= QUEEN && promotes_to.type != PAWN) {
-			struct move test = { pos, target, occupied_by_enemy && i, false,
-				                 promotes_to };
+			struct move test = { pos,   target,      occupied_by_enemy && i,
+				                 false, promotes_to, 0 };
 			promotes_to.type--;
 
 			if (check_checkless && !is_checkless_move(board, &test))
@@ -363,8 +363,8 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos,
 	 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 	 * be the last check!
 	 */
-	struct move test_move = { pos, target, occupied_by_enemy, false,
-		                      empty_piece };
+	struct move test_move = { pos,   target,      occupied_by_enemy,
+		                      false, empty_piece, 0 };
 	if (check_checkless && !is_checkless_move(board, &test_move))
 		return NULL;
 

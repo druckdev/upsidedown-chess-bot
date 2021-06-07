@@ -71,7 +71,7 @@ rate_move(struct PIECE* board, struct move* move)
 }
 
 void
-register_prio(struct PIECE* board, struct move_list* list)
+rate_move_list(struct PIECE* board, struct move_list* list)
 {
 	if (!list)
 		return;
@@ -79,7 +79,7 @@ register_prio(struct PIECE* board, struct move_list* list)
 	struct move_list_elem* cur = move_list_get_first(list);
 	while (cur) {
 		struct move* move = cur->move;
-		cur->prio         = rate_move(board, move);
+		move->rating      = rate_move(board, move);
 
 		cur = move_list_get_next(cur);
 	}
@@ -105,7 +105,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	}
 
 #ifdef ENABLE_ALPHA_BETA_CUTOFFS
-	register_prio(game->board, moves);
+	rate_move_list(game->board, moves);
 	move_list_sort(moves);
 #endif
 
