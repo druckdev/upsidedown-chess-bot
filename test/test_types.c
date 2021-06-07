@@ -10,15 +10,14 @@ test_move_list_sort()
 {
 	printf("TEST: move_list_sort\t");
 
-	int prios_unsorted[] = { 10, 3, 4, 23, 234, -1 };
-	int prios_sorted[]   = { -1, 3, 4, 10, 23, 234 };
-	size_t len           = sizeof(prios_unsorted) / sizeof(*prios_unsorted);
-
+#define len 6
+	int prios_unsorted[]   = { 10, 3, 4, 23, 234, -1 };
+	int prios_sorted[]     = { -1, 3, 4, 10, 23, 234 };
+	struct move moves[len] = { 0 };
 	struct move_list* list = NULL;
-	int obj                = 0;
-	for (size_t i = 0; i < len; ++i) {
-		list             = move_list_push(list, &obj);
-		list->last->prio = prios_unsorted[i];
+	for (int i = 0; i < len; ++i) {
+		moves[i].rating = prios_unsorted[i];
+		list            = move_list_push(list, &moves[i]);
 	}
 
 	move_list_sort(list);
@@ -35,14 +34,14 @@ test_move_list_sort()
 			TEST_ASSERT_NOT_NULL(before);
 		else
 			TEST_ASSERT_NULL(before);
+
 		if (i < len - 1)
 			TEST_ASSERT_NOT_NULL(after);
 		else
 			TEST_ASSERT_NULL(after);
 
 		TEST_ASSERT_EQUAL_PTR(old, cur->prev);
-
-		TEST_ASSERT_EQUAL_INT(prios_sorted[i], cur->prio);
+		TEST_ASSERT_EQUAL_INT(prios_sorted[i], cur->move->rating);
 
 		free(old);
 
