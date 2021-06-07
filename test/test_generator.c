@@ -20,12 +20,12 @@ test_checkmate()
 	chess.board = calloc(64, sizeof(*chess.board));
 	fen_to_chess(fen, &chess);
 
-	struct list* moves = generate_moves(&chess, true, false);
+	struct move_list* moves = generate_moves(&chess, true, false);
 
-	TEST_ASSERT_EQUAL_INT(3, list_count(moves));
+	TEST_ASSERT_EQUAL_INT(3, move_list_count(moves));
 
-	while (list_count(moves)) {
-		struct move* move = list_pop(moves);
+	while (move_list_count(moves)) {
+		struct move* move = move_list_pop(moves);
 
 		if (move->start != H2 || move->target != F3) {
 			free(move);
@@ -36,7 +36,7 @@ test_checkmate()
 		                    "Move should be a checkmate move.");
 		free(move);
 	}
-	list_free(moves);
+	move_list_free(moves);
 	free(chess.board);
 }
 
@@ -52,18 +52,18 @@ test_generate_moves_piece()
 	fen_to_chess(test_boards[0].fen, &chess);
 
 	// verify generator
-	struct list* list = generate_moves_piece(chess.board, D3, true, false);
-	int list_length   = list_count(list);
+	struct move_list* list = generate_moves_piece(chess.board, D3, true, false);
+	int list_len           = move_list_count(list);
 
-	if (list_length != test_boards[0].move_cnt) {
+	if (list_len != test_boards[0].move_cnt) {
 		printf("\n");
 		print_board(chess.board, list);
 	} else {
-		list_free(list);
+		move_list_free(list);
 	}
 
 	free(chess.board);
-	TEST_ASSERT_EQUAL_INT(test_boards[0].move_cnt, list_length);
+	TEST_ASSERT_EQUAL_INT(test_boards[0].move_cnt, list_len);
 }
 
 static size_t test_idx = 0;
@@ -82,18 +82,18 @@ test_game_samples()
 	fen_to_chess(test_boards[test_idx].fen, &chess);
 
 	// verify generator
-	struct list* list;
+	struct move_list* list;
 	int old_len = 0;
 	for (size_t i = 0; i < TEST_SAMPLES_ITERATIONS; i++) {
 		list = generate_moves(&chess, true, false);
 
-		int list_len = list_count(list);
+		int list_len = move_list_count(list);
 		if ((i && list_len != old_len) ||
 		    list_len != test_boards[test_idx].move_cnt) {
 			printf("\n");
 			print_board(chess.board, list);
 		} else {
-			list_free(list);
+			move_list_free(list);
 		}
 
 		if (i)

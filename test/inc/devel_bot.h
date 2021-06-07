@@ -2,13 +2,13 @@
 #define BOT_H
 
 #include "chess.h"
+#include "move.h"
 #include "timer.h"
-#include "types.h"
 
 struct negamax_return {
 	int val;
 #ifdef DEBUG_NEGAMAX_USE_LIST
-	struct list* moves;
+	struct move_list* moves;
 #else
 	struct move* move;
 #endif

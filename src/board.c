@@ -1,4 +1,3 @@
-#include "types.h"
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -7,6 +6,7 @@
 #include <string.h>
 
 #include "board.h"
+#include "move.h"
 
 #define ANSI_RED "\033[91m"
 #define ANSI_RESET "\033[0m"
@@ -158,17 +158,17 @@ fen_to_chess(char* fen, struct chess* game)
 
 // returns true if the position is attacked by one of the given moves
 bool
-is_attacked(struct list* moves, enum POS pos)
+is_attacked(struct move_list* moves, enum POS pos)
 {
 	if (!moves)
 		return false;
 
-	struct list_elem* cur = list_get_first(moves);
+	struct move_list_elem* cur = move_list_get_first(moves);
 	while (cur) {
-		struct move* move = (struct move*)cur->object;
+		struct move* move = (struct move*)cur->move;
 		if (move->target == pos)
 			return true;
-		cur = list_get_next(cur);
+		cur = move_list_get_next(cur);
 	}
 	return false;
 }
@@ -178,7 +178,7 @@ is_attacked(struct list* moves, enum POS pos)
 // `moves` is consumed and freed.
 // Allocates memory if the passed pointer equals to NULL.
 bool*
-are_attacked(struct list* moves, bool* targets)
+are_attacked(struct move_list* moves, bool* targets)
 {
 	if (!targets) {
 		targets = calloc(sizeof(bool), 64);
@@ -189,12 +189,12 @@ are_attacked(struct list* moves, bool* targets)
 	if (!moves)
 		return targets;
 
-	while (list_count(moves)) {
-		struct move* move     = list_pop(moves);
+	while (move_list_count(moves)) {
+		struct move* move     = move_list_pop(moves);
 		targets[move->target] = true;
 		free(move);
 	}
-	list_free(moves);
+	move_list_free(moves);
 
 	return targets;
 }
@@ -204,7 +204,7 @@ are_attacked(struct list* moves, bool* targets)
  *             Because of efficiency reasons, moves is 'consumed' and freed.
  */
 void
-print_board(struct PIECE board[], struct list* moves)
+print_board(struct PIECE board[], struct move_list* moves)
 {
 	bool* targets = are_attacked(moves, NULL);
 	char* padding = "     ";

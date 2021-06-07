@@ -2,8 +2,8 @@
 #define BOT_H
 
 #include "chess.h"
+#include "move.h"
 #include "timer.h"
-#include "types.h"
 
 extern size_t MAX_NEGAMAX_DEPTH;
 
