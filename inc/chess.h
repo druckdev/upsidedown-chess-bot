@@ -63,6 +63,4 @@ struct move* opponent_move(struct move*);
 struct chess init_chess();
 void run_chess();
 
-void fprint_move(FILE* stream, struct move* move);
-
 #endif /* CHESS_H */

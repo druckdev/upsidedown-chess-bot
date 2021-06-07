@@ -16,6 +16,8 @@ struct move {
 
 int rate_move(struct PIECE* board, struct move* move);
 
+void fprint_move(FILE* stream, struct move* move);
+
 /**
  * A doubly linked list.
  */
