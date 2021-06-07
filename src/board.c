@@ -165,7 +165,7 @@ is_attacked(struct move_list* moves, enum POS pos)
 
 	struct move_list_elem* cur = move_list_get_first(moves);
 	while (cur) {
-		struct move* move = (struct move*)cur->move;
+		struct move* move = cur->move;
 		if (move->target == pos)
 			return true;
 		cur = move_list_get_next(cur);
