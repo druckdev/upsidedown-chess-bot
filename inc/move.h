@@ -13,6 +13,8 @@ struct move {
 	struct PIECE promotes_to;
 };
 
+int rate_move(struct PIECE* board, struct move* move);
+
 /**
  * A doubly linked list.
  */
