@@ -13,7 +13,7 @@
 
 #define DEFAULT_BOARD "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
-enum PIECE_E {
+enum piece_type {
 	EMPTY  = 0,
 	PAWN   = 1,
 	BISHOP = 2,
@@ -28,9 +28,9 @@ extern int PIECE_VALUES[];
  * TODO: These are just stubs to get a general idea of what we need.
  * Change and move them as u wish.
  */
-enum COLOR { BLACK = -1, UNDEFINED = 0, WHITE = +1 };
+enum color { BLACK = -1, UNDEFINED = 0, WHITE = +1 };
 // clang-format off
-enum POS {
+enum pos {
     A8, B8, C8, D8, E8, F8, G8, H8,
     A7, B7, C7, D7, E7, F7, G7, H7,
     A6, B6, C6, D6, E6, F6, G6, H6,
@@ -43,22 +43,22 @@ enum POS {
 };
 // clang-format on
 
-struct PIECE {
-	enum PIECE_E type;
-	enum COLOR color;
+struct piece {
+	enum piece_type type;
+	enum color color;
 };
-extern struct PIECE empty_piece;
+extern struct piece empty_piece;
 
 struct chess {
-	struct PIECE* board;
-	enum COLOR moving;
+	struct piece* board;
+	enum color moving;
 	uint32_t checkmate;
 	int rating;
 	long t_remaining_s;
 	int max_moves, move_count;
 };
 
-int get_piece_value(enum PIECE_E piece);
+int get_piece_value(enum piece_type piece);
 struct move* opponent_move(struct move*);
 struct chess init_chess();
 void run_chess();

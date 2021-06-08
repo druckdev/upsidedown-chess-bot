@@ -13,11 +13,11 @@
 
 #define MAX_FEN_STR_LEN 128
 
-struct PIECE empty_piece = { EMPTY, WHITE };
+struct piece empty_piece = { EMPTY, WHITE };
 int PIECE_VALUES[]       = { 0, 100, 400, 400, 500, 900, 1000000 };
 
 int
-get_piece_value(enum PIECE_E piece)
+get_piece_value(enum piece_type piece)
 {
 	return PIECE_VALUES[piece];
 }

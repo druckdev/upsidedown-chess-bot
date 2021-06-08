@@ -11,15 +11,15 @@
 #define ANSI_RED "\033[91m"
 #define ANSI_RESET "\033[0m"
 
-struct PIECE
-do_move(struct PIECE* board, struct move* move)
+struct piece
+do_move(struct piece* board, struct move* move)
 {
 	if (!board || !move)
-		return (struct PIECE){};
+		return (struct piece){};
 
 	assert(move->target != move->start);
 
-	struct PIECE old = board[move->target];
+	struct piece old = board[move->target];
 	board[move->target] =
 			move->promotes_to.type ? move->promotes_to : board[move->start];
 	board[move->start].type = EMPTY;
@@ -28,7 +28,7 @@ do_move(struct PIECE* board, struct move* move)
 }
 
 void
-undo_move(struct PIECE* board, struct move* move, struct PIECE old)
+undo_move(struct piece* board, struct move* move, struct piece old)
 {
 	if (!board || !move)
 		return;
@@ -48,7 +48,7 @@ undo_move(struct PIECE* board, struct move* move, struct PIECE old)
  * Returns: `str`
  */
 char*
-pos_to_str(enum POS pos, char* str)
+pos_to_str(enum pos pos, char* str)
 {
 	str[0] = 'A' + pos % 8;
 	str[1] = '8' - pos / 8;
@@ -60,7 +60,7 @@ pos_to_str(enum POS pos, char* str)
 // Return a character representing the piece.
 // Returns ' ' on unknown or empty piece.
 char
-piece_e_to_chr(enum PIECE_E piece)
+piece_e_to_chr(enum piece_type piece)
 {
 	switch (piece) {
 	case PAWN:
@@ -83,7 +83,7 @@ piece_e_to_chr(enum PIECE_E piece)
 // Return a character representing the piece and its color.
 // Returns ' ' on unknown or empty piece.
 char
-piece_to_chr(struct PIECE piece)
+piece_to_chr(struct piece piece)
 {
 	char c = piece_e_to_chr(piece.type);
 	if (c != ' ' && piece.color == BLACK)
@@ -91,10 +91,10 @@ piece_to_chr(struct PIECE piece)
 	return c;
 }
 
-struct PIECE
+struct piece
 chr_to_piece(char fen_piece)
 {
-	struct PIECE piece = { EMPTY, WHITE };
+	struct piece piece = { EMPTY, WHITE };
 
 	switch (fen_piece) {
 	case 'p':
@@ -135,7 +135,7 @@ chr_to_piece(char fen_piece)
 void
 fen_to_chess(char* fen, struct chess* game)
 {
-	memset(game->board, 0, sizeof(struct PIECE) * 64);
+	memset(game->board, 0, sizeof(struct piece) * 64);
 
 	size_t c = -1, i = 0;
 	while (fen[++c] && i < 64) {
@@ -158,7 +158,7 @@ fen_to_chess(char* fen, struct chess* game)
 
 // returns true if the position is attacked by one of the given moves
 bool
-is_attacked(struct move_list* moves, enum POS pos)
+is_attacked(struct move_list* moves, enum pos pos)
 {
 	if (!moves)
 		return false;
@@ -204,7 +204,7 @@ are_attacked(struct move_list* moves, bool* targets)
  *             Because of efficiency reasons, moves is 'consumed' and freed.
  */
 void
-print_board(struct PIECE board[], struct move_list* moves)
+print_board(struct piece board[], struct move_list* moves)
 {
 	bool* targets = are_attacked(moves, NULL);
 	char* padding = "     ";
@@ -215,7 +215,7 @@ print_board(struct PIECE board[], struct move_list* moves)
 	fprintf(DEBUG_PRINT_STREAM, "\n");
 
 	size_t row = 8;
-	for (enum POS pos = 0; pos < MAX; ++pos) {
+	for (enum pos pos = 0; pos < MAX; ++pos) {
 		if (pos % 8 == 0)
 			fprintf(DEBUG_PRINT_STREAM, "%02i %li ", pos, row);
 

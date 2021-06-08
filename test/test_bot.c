@@ -22,8 +22,8 @@ test_rate_board()
 	TEST_ASSERT_MESSAGE(game.rating == rating, "Rating not properly set.");
 
 	char fen[] = " 7/8/8/8/8/8/8/8";
-	for (enum COLOR c = BLACK; c <= WHITE; c += 2) {
-		for (struct PIECE p = { PAWN, c }; p.type <= KING; ++(p.type)) {
+	for (enum color c = BLACK; c <= WHITE; c += 2) {
+		for (struct piece p = { PAWN, c }; p.type <= KING; ++(p.type)) {
 			fen[0] = piece_to_chr(p);
 
 			fen_to_chess(fen, &game);
