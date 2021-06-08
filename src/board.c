@@ -45,6 +45,29 @@ undo_move(struct chess* game, struct move* move, struct PIECE old)
 		game->piece_count++;
 }
 
+enum game_phase
+get_game_phase(struct chess* game)
+{
+	/*
+	 * TODO(Aurel): How do we determine when the early/mid game ends? What is a
+	 * good heuristic besides just move and piece count.
+	 */
+
+	enum game_phase phase = game->phase;
+
+	if (phase == EARLY_GAME &&
+			(game->move_count > EG_MOVE_COUNT_MAX ||
+			 game->piece_count < EG_PIECE_COUNT_MIN))
+		phase = MID_GAME;
+
+	if (phase == MID_GAME &&
+			(game->move_count > MG_MOVE_COUNT_MAX ||
+			 game->piece_count < MG_PIECE_COUNT_MIN))
+		phase = LATE_GAME;
+
+	return phase;
+}
+
 /*
  * Fills `str` with the corresponding human-readable string (null-terminated)
  * describing the field encoded in `pos`.

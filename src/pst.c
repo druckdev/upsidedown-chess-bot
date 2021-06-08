@@ -245,35 +245,6 @@ int lg_psts[6][64] = {
 };
 // clang-format on
 
-enum game_phase { EARLY_GAME, MID_GAME, LATE_GAME };
-
-#define EG_MOVE_COUNT_MAX 20
-#define MG_MOVE_COUNT_MAX 40
-
-#define EG_PIECE_COUNT_MIN 30
-#define MG_PIECE_COUNT_MIN 11
-
-enum game_phase
-get_game_phase(struct chess* game)
-{
-	/*
-	 * TODO(Aurel): How do we determine when the early/mid game ends? What is a
-	 * good heuristic besides just move and piece count.
-	 */
-
-	enum game_phase phase = EARLY_GAME;
-
-	if (game->move_count > EG_MOVE_COUNT_MAX ||
-		game->piece_count < EG_PIECE_COUNT_MIN)
-		phase = MID_GAME;
-
-	if (game->move_count > MG_MOVE_COUNT_MAX ||
-			game->piece_count < MG_PIECE_COUNT_MIN)
-		phase = LATE_GAME;
-
-	return phase;
-}
-
 int
 get_pst_diff(struct chess* game, struct move* move, enum PIECE_E piece_type)
 {

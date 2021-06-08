@@ -11,6 +11,12 @@
 // TODO(Aurel): Is this right? What does the game-server team say?
 #define MAX_MOVE_COUNT 50
 
+#define EG_MOVE_COUNT_MAX 20
+#define MG_MOVE_COUNT_MAX 40
+
+#define EG_PIECE_COUNT_MIN 30
+#define MG_PIECE_COUNT_MIN 11
+
 #define DEFAULT_BOARD "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
 enum PIECE_E {
@@ -49,9 +55,12 @@ struct PIECE {
 };
 extern struct PIECE empty_piece;
 
+enum game_phase { EARLY_GAME, MID_GAME, LATE_GAME };
+
 struct chess {
 	struct PIECE* board;
 	enum COLOR moving;
+	enum game_phase phase;
 	uint32_t checkmate;
 	int rating;
 	long t_remaining_s;
@@ -65,6 +74,7 @@ struct move {
 	struct PIECE promotes_to;
 };
 
+enum game_phase get_game_phase(struct chess* game);
 int get_piece_value(enum PIECE_E piece);
 struct move* opponent_move(struct move*);
 struct chess init_chess();
