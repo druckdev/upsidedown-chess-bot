@@ -6,6 +6,7 @@
 #include "chess.h"
 #include "unity.h"
 
+#include "devel_chess.h"
 #include "devel_generator.h"
 
 #include "helper.h"
@@ -15,8 +16,8 @@ test_checkmate()
 {
 	printf("TEST: is_checkmate field of moves\t");
 
-	char* fen = "8/8/8/8/8/5n2/pppppppN/rnbqkbr1 w";
-	struct chess chess;
+	char* fen          = "8/8/8/8/8/5n2/pppppppN/rnbqkbr1 w";
+	struct chess chess = init_chess();
 	fen_to_chess(fen, &chess);
 
 	struct move_list* moves = generate_moves(&chess, true, false);
