@@ -19,9 +19,10 @@ do_move(struct chess* game, struct move* move)
 
 	assert(move->target != move->start);
 
-	struct PIECE old = game->board[move->target];
-	game->board[move->target] =
-			move->promotes_to.type ? move->promotes_to : game->board[move->start];
+	struct PIECE old              = game->board[move->target];
+	game->board[move->target]     = move->promotes_to.type ?
+                                            move->promotes_to :
+                                            game->board[move->start];
 	game->board[move->start].type = EMPTY;
 
 	if (move->hit)
@@ -55,14 +56,12 @@ get_game_phase(struct chess* game)
 
 	enum game_phase phase = game->phase;
 
-	if (phase == EARLY_GAME &&
-			(game->move_count > EG_MOVE_COUNT_MAX ||
-			 game->piece_count < EG_PIECE_COUNT_MIN))
+	if (phase == EARLY_GAME && (game->move_count > EG_MOVE_COUNT_MAX ||
+	                            game->piece_count < EG_PIECE_COUNT_MIN))
 		phase = MID_GAME;
 
-	if (phase == MID_GAME &&
-			(game->move_count > MG_MOVE_COUNT_MAX ||
-			 game->piece_count < MG_PIECE_COUNT_MIN))
+	if (phase == MID_GAME && (game->move_count > MG_MOVE_COUNT_MAX ||
+	                          game->piece_count < MG_PIECE_COUNT_MIN))
 		phase = LATE_GAME;
 
 	return phase;

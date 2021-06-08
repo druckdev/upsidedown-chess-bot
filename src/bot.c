@@ -13,7 +13,6 @@
 #include "pst.h"
 #include "timer.h"
 #include "types.h"
-#include "pst.h"
 
 size_t MAX_NEGAMAX_DEPTH = 3;
 

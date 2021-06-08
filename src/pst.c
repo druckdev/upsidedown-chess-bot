@@ -1,8 +1,8 @@
 #include <assert.h>
 
-#include "pst.h"
 #include "board.h"
 #include "chess.h"
+#include "pst.h"
 
 /**
  * Piece square table definitions
@@ -248,8 +248,7 @@ int lg_psts[6][64] = {
 int
 get_pst_diff(struct chess* game, struct move* move, enum PIECE_E piece_type)
 {
-
-	int *pst = NULL;
+	int* pst = NULL;
 
 	// retrieve correct pst
 	// clang-format off
