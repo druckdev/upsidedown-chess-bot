@@ -47,8 +47,7 @@ test_generate_moves_piece()
 	printf("TEST: %s\n", test_boards[0].fen);
 
 	// init game
-	struct chess chess;
-	chess.board = calloc(64, sizeof(*chess.board));
+	struct chess chess = init_chess();
 	fen_to_chess(test_boards[0].fen, &chess);
 
 	// verify generator

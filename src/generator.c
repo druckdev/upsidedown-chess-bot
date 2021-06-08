@@ -527,7 +527,7 @@ generate_moves_piece(struct chess* game, enum POS pos, bool check_checkless,
 struct list*
 generate_moves(struct chess* game, bool check_checkless, bool hit_allies)
 {
-	struct list* moves = calloc(1, sizeof(*moves));
+	struct list* moves = NULL;
 
 	struct PIECE* board = game->board;
 	for (enum POS pos = 0; pos < 64; ++pos) {
