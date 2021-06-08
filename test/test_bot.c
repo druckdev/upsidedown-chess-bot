@@ -22,8 +22,8 @@ test_rate_board()
 	TEST_ASSERT_MESSAGE(game.rating == rating, "Rating not properly set.");
 
 	char fen[] = " 7/8/8/8/8/8/8/8";
-	for (enum COLOR c = BLACK; c <= WHITE; c += 2) {
-		for (struct PIECE p = { PAWN, c }; p.type <= KING; ++(p.type)) {
+	for (enum color c = BLACK; c <= WHITE; c += 2) {
+		for (struct piece p = { PAWN, c }; p.type <= KING; ++(p.type)) {
 			fen[0] = piece_to_chr(p);
 
 			fen_to_chess(fen, &game);
@@ -53,8 +53,8 @@ test_negamax()
 	struct negamax_return ret = negamax(&game, 1, INT_MIN + 1, INT_MAX);
 	struct move* best;
 #ifdef DEBUG_NEGAMAX_USE_LIST
-	best = list_pop(ret.moves);
-	list_free(ret.moves);
+	best = move_list_pop(ret.moves);
+	move_list_free(ret.moves);
 #else
 	best = ret.move;
 #endif

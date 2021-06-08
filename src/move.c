@@ -1,23 +1,78 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "chess.h"
-#include "types.h"
+#include "board.h"
+#include "move.h"
+#include "pst.h"
 
-struct list*
-list_push(struct list* list, void* object)
+/**
+ * Rates a move from the point of view of the moving player.
+ *
+ * NOTE(Aurel): Currently it only calculates the difference in piece-value on
+ * the board the move would make.
+ */
+int
+rate_move(struct chess* game, struct move* move)
+{
+	int rating = 0;
+
+	if (move->hit) {
+		// add the value of the hit piece to the rating
+		struct piece to = game->board[move->target];
+		rating += PIECE_VALUES[to.type];
+	}
+
+	if (move->is_checkmate)
+		// checkmate is like hitting the king, so add the kings value to the
+		// rating
+		rating += PIECE_VALUES[KING];
+
+	struct piece promotes_to = move->promotes_to;
+	if (promotes_to.type) {
+		// add the difference in value between the old and new piece to the
+		// rating
+		struct piece from = game->board[move->start];
+		rating += PIECE_VALUES[promotes_to.type] - PIECE_VALUES[from.type];
+	}
+
+	rating += get_pst_diff(game, move, game->board[move->start].type);
+
+	return rating;
+}
+
+void
+fprint_move(FILE* stream, struct move* move)
+{
+	char start[3], target[3];
+	pos_to_str(move->start, start);
+	pos_to_str(move->target, target);
+
+	fprintf(stream, "%s,%s,", start, target);
+
+	char promotes_to_char = piece_to_chr(move->promotes_to);
+	fprintf(stream, "%c", promotes_to_char);
+	fprintf(stream, "\t%i", move->rating);
+
+	fprintf(stream, " %s", move->hit ? "hits" : "");
+	fprintf(stream, " %s", move->is_checkmate ? "checkmates" : "");
+	fprintf(stream, "\n");
+	//fflush(stream);
+}
+
+struct move_list*
+move_list_push(struct move_list* list, struct move* move)
 {
 	// NOTE: generator.c depends on this break condition!
-	if (!object)
+	if (!move)
 		return list;
 
 	if (!list) {
-		list = calloc(1, sizeof(struct list));
+		list = calloc(1, sizeof(struct move_list));
 		if (!list)
 			return NULL;
 	}
 
-	struct list_elem* list_elem = calloc(1, sizeof(struct list_elem));
+	struct move_list_elem* list_elem = calloc(1, sizeof(struct move_list_elem));
 	if (!list_elem) {
 		if (!list->last)
 			// list is empty so we free it as we probably have created it
@@ -27,7 +82,7 @@ list_push(struct list* list, void* object)
 
 	list->count++;
 
-	list_elem->object = object;
+	list_elem->move = move;
 
 	if (!list->last) {
 		list->first = list_elem;
@@ -41,14 +96,14 @@ list_push(struct list* list, void* object)
 	return list;
 }
 
-void*
-list_pop(struct list* list)
+struct move*
+move_list_pop(struct move_list* list)
 {
 	if (!list || !list->last)
 		return NULL;
 
-	struct list_elem* list_elem = list->last;
-	void* object                = list_elem->object;
+	struct move_list_elem* list_elem = list->last;
+	struct move* move                = list_elem->move;
 
 	list->last = list_elem->prev;
 	if (list->last)
@@ -59,11 +114,11 @@ list_pop(struct list* list)
 
 	list->count--;
 	free(list_elem);
-	return object;
+	return move;
 }
 
-struct list_elem*
-list_remove(struct list* list, struct list_elem* elem)
+struct move_list_elem*
+move_list_remove(struct move_list* list, struct move_list_elem* elem)
 {
 	if (elem->prev)
 		elem->prev->next = elem->next;
@@ -77,16 +132,16 @@ list_remove(struct list* list, struct list_elem* elem)
 
 	list->count--;
 
-	struct list_elem* next = elem->next;
-	free(elem->object);
+	struct move_list_elem* next = elem->next;
+	free(elem->move);
 	free(elem);
 
 	return next;
 }
 
 void
-list_insert(struct list* list, struct list_elem* new_elem,
-            struct list_elem* before)
+move_list_insert(struct move_list* list, struct move_list_elem* new_elem,
+                 struct move_list_elem* before)
 {
 	if (!list || !new_elem)
 		return;
@@ -107,8 +162,8 @@ list_insert(struct list* list, struct list_elem* new_elem,
 	list->count++;
 }
 
-struct list*
-list_append_list(struct list* first, struct list* second)
+struct move_list*
+move_list_append_move_list(struct move_list* first, struct move_list* second)
 {
 	// if null or empty return other list
 	if (!first || !first->first) {
@@ -134,35 +189,35 @@ list_append_list(struct list* first, struct list* second)
 }
 
 size_t
-list_count(struct list* list)
+move_list_count(struct move_list* list)
 {
 	return list ? list->count : 0;
 }
 
 void
-list_free(struct list* list)
+move_list_free(struct move_list* list)
 {
 	if (!list)
 		return;
 
-	struct list_elem* cur = list->first;
+	struct move_list_elem* cur = list->first;
 	while (cur) {
-		struct list_elem* tmp = cur->next;
-		free(cur->object);
+		struct move_list_elem* tmp = cur->next;
+		free(cur->move);
 		free(cur);
 		cur = tmp;
 	}
 	free(list);
 }
 
-struct list_elem*
-list_get_first(struct list* list)
+struct move_list_elem*
+move_list_get_first(struct move_list* list)
 {
 	return list ? list->first : NULL;
 }
 
-struct list_elem*
-list_get_next(struct list_elem* elem)
+struct move_list_elem*
+move_list_get_next(struct move_list_elem* elem)
 {
 	return elem ? elem->next : NULL;
 }
@@ -171,16 +226,16 @@ list_get_next(struct list_elem* elem)
 // This uses insertion sort as the lists that we typically use are rather small
 // in length.
 void
-list_sort(struct list* list)
+move_list_sort(struct move_list* list)
 {
 	if (!list || !list->count)
 		return;
 
-	struct list_elem* cur = list->first->next;
-	struct list_elem *before, *next;
+	struct move_list_elem* cur = list->first->next;
+	struct move_list_elem *before, *next;
 	while (cur) {
 		before = cur->prev;
-		while (before && before->prio > cur->prio)
+		while (before && before->move->rating > cur->move->rating)
 			before = before->prev;
 
 		if (before == cur->prev) {
@@ -193,7 +248,7 @@ list_sort(struct list* list)
 		next = cur->next;
 
 		// Move `cur` from current position behind `before`
-		// This is a hybrid form of `list_remove` and `list_insert` but without
+		// This is a hybrid form of `list_remove` and `move_list_insert` but without
 		// unnecessary instructions.
 
 		// Remove --------------------------------------------------------------
@@ -222,15 +277,15 @@ list_sort(struct list* list)
 }
 
 void
-fprint_move_list(FILE* stream, struct list* list)
+fprint_move_list(FILE* stream, struct move_list* list)
 {
 	if (!list)
 		return;
 
-	struct list_elem* cur_elem = list->last;
-	int i                      = 0;
+	struct move_list_elem* cur_elem = list->last;
+	int i                           = 0;
 	while (cur_elem) {
-		struct move* cur_move = cur_elem->object;
+		struct move* cur_move = cur_elem->move;
 		fprintf(stream, "%i ", i++);
 		fprint_move(stream, cur_move);
 		cur_elem = cur_elem->prev;

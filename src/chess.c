@@ -1,4 +1,3 @@
-#include "types.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,15 +8,16 @@
 #include "bot.h"
 #include "chess.h"
 #include "generator.h"
+#include "move.h"
 #include "timer.h"
 
 #define MAX_FEN_STR_LEN 128
 
-struct PIECE empty_piece = { EMPTY, WHITE };
+struct piece empty_piece = { EMPTY, WHITE };
 int PIECE_VALUES[]       = { 0, 100, 400, 400, 500, 900, 1000000 };
 
 int
-get_piece_value(enum PIECE_E piece)
+get_piece_value(enum piece_type piece)
 {
 	return PIECE_VALUES[piece];
 }
@@ -60,24 +60,6 @@ gs_print_move(struct move* move)
 
 	printf("\n");
 	fflush(stdout);
-}
-
-void
-fprint_move(FILE* stream, struct move* move)
-{
-	char start[3], target[3];
-	pos_to_str(move->start, start);
-	pos_to_str(move->target, target);
-
-	fprintf(stream, "%s,%s,", start, target);
-
-	char promotes_to_char = piece_to_chr(move->promotes_to);
-	fprintf(stream, "%c", promotes_to_char);
-
-	fprintf(stream, "%s", move->hit ? " hits" : "");
-	fprintf(stream, "%s", move->is_checkmate ? " checkmates" : "");
-	fprintf(stream, "\n");
-	//fflush(stream);
 }
 
 struct chess
@@ -131,7 +113,7 @@ run_chess()
 
 		do_move(&game, move);
 #ifdef DEBUG_BOARD_WHEN_PLAYING
-		struct list* list = list_push(NULL, move);
+		struct move_list* list = move_list_push(NULL, move);
 		print_board(game.board, list);
 #else
 		free(move);

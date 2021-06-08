@@ -246,7 +246,7 @@ int lg_psts[6][64] = {
 // clang-format on
 
 int
-get_pst_diff(struct chess* game, struct move* move, enum PIECE_E piece_type)
+get_pst_diff(struct chess* game, struct move* move, enum piece_type piece_type)
 {
 	int* pst = NULL;
 

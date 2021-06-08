@@ -1,20 +1,33 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
+
+#include "chess.h"
+
+struct move {
+	enum pos start, target;
+	bool hit, is_checkmate;
+	struct piece promotes_to;
+	int rating;
+};
+
+int rate_move(struct chess* game, struct move* move);
+
+void fprint_move(FILE* stream, struct move* move);
 
 /**
  * A doubly linked list.
  */
-struct list_elem {
-	struct list_elem *prev, *next;
-	void* object;
-	int prio;
+struct move_list_elem {
+	struct move_list_elem *prev, *next;
+	struct move* move;
 };
 
-struct list {
-	struct list_elem *first, *last;
+struct move_list {
+	struct move_list_elem *first, *last;
 	size_t count;
 };
 
@@ -28,7 +41,7 @@ struct list {
  *
  * Runtime: O(1)
  */
-struct list* list_push(struct list* list, void* object);
+struct move_list* move_list_push(struct move_list* list, struct move* move);
 
 /**
  * Pops the last element off of `list`, returning its element and updating the
@@ -38,7 +51,7 @@ struct list* list_push(struct list* list, void* object);
  *
  * Runtime: O(1)
  */
-void* list_pop(struct list* list);
+struct move* move_list_pop(struct move_list* list);
 
 /*
  * Removes `elem` from `list` and returns its successor.
@@ -46,7 +59,8 @@ void* list_pop(struct list* list);
  *
  * Runtime: O(1)
  */
-struct list_elem* list_remove(struct list* list, struct list_elem* elem);
+struct move_list_elem* move_list_remove(struct move_list* list,
+                                        struct move_list_elem* elem);
 
 /*
  * Insert `new_elem` after `before` in `list`.
@@ -54,44 +68,45 @@ struct list_elem* list_remove(struct list* list, struct list_elem* elem);
  *
  * Runtime: O(1)
  */
-void list_insert(struct list* list, struct list_elem* new_elem,
-                 struct list_elem* before);
+void move_list_insert(struct move_list* list, struct move_list_elem* new_elem,
+                      struct move_list_elem* before);
 
 /**
  * Appends `second` to `first`.
  *
  * Runtime: O(1)
  */
-struct list* list_append_list(struct list* first, struct list* second);
+struct move_list* move_list_append_move_list(struct move_list* first,
+                                             struct move_list* second);
 
 /**
  * counts elements in `list`.
  *
  * Runtime: O(n)
  */
-size_t list_count(struct list* list);
+size_t move_list_count(struct move_list* list);
 
 /**
  * Frees all elements, their objects and the list itself.
  *
  * Runtime: O(n)
  */
-void list_free(struct list* list);
+void move_list_free(struct move_list* list);
 
-struct list_elem* list_get_first(struct list* list);
-struct list_elem* list_get_next(struct list_elem* elem);
+struct move_list_elem* move_list_get_first(struct move_list* list);
+struct move_list_elem* move_list_get_next(struct move_list_elem* elem);
 
 /**
  * Sorts the list using insertion sort based on `list_elem.prio`.
  *
  * Runtime: O(n^2)
  */
-void list_sort(struct list* list);
+void move_list_sort(struct move_list* list);
 
 /**
  * Prints a move list to stream.
  *
  * NOTE(Aurel): This only iterates over the list and does not free anything.
  */
-void fprint_move_list(FILE* stream, struct list* list);
+void fprint_move_list(FILE* stream, struct move_list* list);
 #endif /* TYPES_H */

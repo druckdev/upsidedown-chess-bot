@@ -10,16 +10,16 @@
 #include "bot.h"
 #include "chess.h"
 #include "generator.h"
+#include "move.h"
 #include "pst.h"
 #include "timer.h"
-#include "types.h"
 
 size_t MAX_NEGAMAX_DEPTH = 3;
 
 struct negamax_return {
 	int val;
 #ifdef DEBUG_NEGAMAX_USE_LIST
-	struct list* moves;
+	struct move_list* moves;
 #else  /* DEBUG_NEGAMAX_USE_LIST */
 	struct move* move;
 #endif /* DEBUG_NEGAMAX_USE_LIST */
@@ -30,7 +30,7 @@ rate_board(struct chess* chess)
 {
 	int rating = 0;
 	for (size_t i = 0; i < 64; ++i) {
-		struct PIECE p = chess->board[i];
+		struct piece p = chess->board[i];
 		rating += p.color * PIECE_VALUES[p.type];
 	}
 	chess->rating = rating;
@@ -38,53 +38,18 @@ rate_board(struct chess* chess)
 	return rating;
 }
 
-/**
- * Rates a move from the point of view of the moving player.
- *
- * NOTE(Aurel): Currently it only calculates the difference in piece-value on
- * the board the move would make.
- */
-int
-rate_move(struct chess* game, struct move* move)
-{
-	int rating = 0;
-
-	if (move->hit) {
-		// add the value of the hit piece to the rating
-		struct PIECE to = game->board[move->target];
-		rating += PIECE_VALUES[to.type];
-	}
-
-	if (move->is_checkmate)
-		// checkmate is like hitting the king, so add the kings value to the
-		// rating
-		rating += PIECE_VALUES[KING];
-
-	struct PIECE promotes_to = move->promotes_to;
-	if (promotes_to.type) {
-		// add the difference in value between the old and new piece to the
-		// rating
-		struct PIECE from = game->board[move->start];
-		rating += PIECE_VALUES[promotes_to.type] - PIECE_VALUES[from.type];
-	}
-
-	rating += get_pst_diff(game, move, game->board[move->start].type);
-
-	return rating;
-}
-
 void
-register_prio(struct chess* game, struct list* list)
+rate_move_list(struct chess* game, struct move_list* list)
 {
 	if (!list)
 		return;
 
-	struct list_elem* cur = list_get_first(list);
+	struct move_list_elem* cur = move_list_get_first(list);
 	while (cur) {
-		struct move* move = cur->object;
-		cur->prio         = rate_move(game, move);
+		struct move* move = cur->move;
+		move->rating      = rate_move(game, move);
 
-		cur = list_get_next(cur);
+		cur = move_list_get_next(cur);
 	}
 }
 
@@ -95,21 +60,21 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	if (!depth)
 		return (struct negamax_return){ 0, NULL };
 
-	struct list* moves = generate_moves(game, true, false);
+	struct move_list* moves = generate_moves(game, true, false);
 
 	// draw by stalemate - terminal node in tree
 	// NOTE: If the list is empty because of a checkmate move, we will recognize
 	//       that by checking move->is_checkmate later and overwrite
 	//       ret.mate_for there.
 	//       TODO(Aurel): This is not true anymore.
-	if (!list_count(moves)) {
-		list_free(moves);
+	if (!move_list_count(moves)) {
+		move_list_free(moves);
 		return (struct negamax_return){ 0, NULL };
 	}
 
 #ifdef ENABLE_ALPHA_BETA_CUTOFFS
-	register_prio(game, moves);
-	list_sort(moves);
+	rate_move_list(game, moves);
+	move_list_sort(moves);
 #endif
 
 	game->moving *= -1;
@@ -130,8 +95,8 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	 */
 	size_t val_depth_factor = ((depth * depth) >> 3) + 1;
 
-	while (list_count(moves)) {
-		struct move* move = list_pop(moves);
+	while (move_list_count(moves)) {
+		struct move* move = move_list_pop(moves);
 
 		struct negamax_return ret;
 		if (move->is_checkmate)
@@ -141,7 +106,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 			ret = (struct negamax_return){ 0, NULL };
 		else {
 			// execute move and see what happens down the tree - dfs
-			struct PIECE old = do_move(game, move);
+			struct piece old = do_move(game, move);
 			ret              = negamax(game, depth - 1, -b, -a);
 			undo_move(game, move, old);
 		}
@@ -149,20 +114,22 @@ negamax(struct chess* game, size_t depth, int a, int b)
 #ifdef ENABLE_ALPHA_BETA_CUTOFFS
 		// without ab-pruning this happens at the end of the function
 		ret.val = -ret.val;
+#else
+		// the move has not yet been rated
+		move->rating = rate_move(game, move);
 #endif /* ENABLE_ALPHA_BETA_CUTOFFS */
 
 		// include this moves rating in the score
-		int rating = val_depth_factor * rate_move(game, move);
-		ret.val += rating;
+		ret.val += val_depth_factor * move->rating;
 
 		// replace the current best move, if move guarantees a better score.
 		if (ret.val > best.val) {
 #ifdef DEBUG_NEGAMAX_USE_LIST
-			list_free(best.moves);
+			move_list_free(best.moves);
 			best       = ret;
-			best.moves = list_push(best.moves, move);
+			best.moves = move_list_push(best.moves, move);
 		} else {
-			list_free(ret.moves);
+			move_list_free(ret.moves);
 #else  /* DEBUG_NEGAMAX_USE_LIST */
 			free(best.move);
 			best      = ret;
@@ -181,7 +148,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 			break;
 #endif /* ENABLE_ALPHA_BETA_CUTOFFS */
 	}
-	list_free(moves);
+	move_list_free(moves);
 
 	game->moving *= -1;
 #ifndef ENABLE_ALPHA_BETA_CUTOFFS
@@ -227,8 +194,8 @@ choose_move(struct chess* game, struct chess_timer* timer)
 #ifdef DEBUG_PRINTS
 		fprint_move_list(DEBUG_PRINT_STREAM, ret.moves);
 #endif
-		best = list_pop(ret.moves);
-		list_free(ret.moves);
+		best = move_list_pop(ret.moves);
+		move_list_free(ret.moves);
 #else  /* DEBUG_NEGAMAX_USE_LIST */
 		best = ret.move;
 #endif /* DEBUG_NEGAMAX_USE_LIST */
