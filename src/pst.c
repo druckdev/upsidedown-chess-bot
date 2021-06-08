@@ -245,10 +245,10 @@ int lg_psts[6][64] = {
 };
 // clang-format on
 
-enum game_state { EARLY_GAME, MID_GAME, LATE_GAME };
+enum game_phase { EARLY_GAME, MID_GAME, LATE_GAME };
 
-enum game_state
-get_game_state(struct chess* game)
+enum game_phase
+get_game_phase(struct chess* game)
 {
 	/*
 	 * TODO(Aurel): How do we determine when the early/mid game ends? What is a
@@ -265,7 +265,7 @@ get_pst_diff(struct chess* game, struct move* move, enum PIECE_E piece_type)
 
 	// retrieve correct pst
 	// clang-format off
-	switch (get_game_state(game)) {
+	switch (get_game_phase(game)) {
 	case EARLY_GAME: pst = eg_psts[piece_type]; break;
 	case MID_GAME: pst = mg_psts[piece_type]; break;
 	case LATE_GAME: pst = lg_psts[piece_type]; break;
