@@ -116,6 +116,6 @@ int eg_rook_pst[64] = {
  * Calculates the difference in value the piece square table suggests for a
  * given move.
  */
-int get_pst_diff(struct PIECE* board, struct move* move, enum PIECE_E piece_type);
+int get_pst_diff(struct chess* game, struct move* move, enum PIECE_E piece_type);
 
 #endif /* PST_H */

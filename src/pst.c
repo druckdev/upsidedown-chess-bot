@@ -4,15 +4,33 @@
 #include "board.h"
 #include "chess.h"
 
-int
-get_pst_diff(struct PIECE* board, struct move* move, enum PIECE_E piece_type)
-{
+enum game_state { EARLY_GAME, MID_GAME, LATE_GAME };
 
+enum game_state
+get_game_state(struct chess* game)
+{
 	/*
 	 * TODO(Aurel): How do we determine when the early/mid game ends? What is a
 	 * good heuristic besides just move and piece count.
 	 */
-	bool is_early_game = true;
+	return EARLY_GAME;
+}
+
+int
+get_pst_diff(struct chess* game, struct move* move, enum PIECE_E piece_type)
+{
+
+	bool is_early_game = false,
+	is_mid_game = false,
+	is_late_game = false;
+
+	// clang-format off
+	switch (get_game_state(game)) {
+	case EARLY_GAME: is_early_game = true; break;
+	case MID_GAME: is_mid_game = true; break;
+	case LATE_GAME: is_late_game = true; break;
+	}
+	// clang-format on
 
 	if(is_early_game) {
 		switch (piece_type) {
@@ -27,7 +45,6 @@ get_pst_diff(struct PIECE* board, struct move* move, enum PIECE_E piece_type)
 	}
 
 #if 0
-	bool is_mid_game = true;
 	if (is_mid_game) {
 		switch (piece_type) {
 		case PAWN: return mg_pawn_pst[move->target] - mg_pawn_pst[move->start];
@@ -40,7 +57,6 @@ get_pst_diff(struct PIECE* board, struct move* move, enum PIECE_E piece_type)
 		}
 	}
 
-	bool is_late_game = true;
 	if (is_late_game) {
 		switch (piece_type) {
 		case PAWN: return lg_pawn_pst[move->target] - lg_pawn_pst[move->start];
