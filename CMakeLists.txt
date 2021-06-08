@@ -24,7 +24,8 @@ set(TEST_INC_DIR test/inc)
 
 # sources
 set(SOURCES ${SRC_DIR}/board.c ${SRC_DIR}/chess.c ${SRC_DIR}/bot.c
-	${SRC_DIR}/generator.c ${SRC_DIR}/types.c ${SRC_DIR}/timer.c)
+    ${SRC_DIR}/generator.c ${SRC_DIR}/types.c ${SRC_DIR}/timer.c
+    ${SRC_DIR}/pst.c)
 
 # sources specific to the bot itself - cotaining bot main
 set(BOT_SOURCES ${SRC_DIR}/main.c ${SOURCES})
