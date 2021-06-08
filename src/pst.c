@@ -4,6 +4,247 @@
 #include "board.h"
 #include "chess.h"
 
+/**
+ * Piece square table definitions
+ * NOTE(Aurel): Naming convention
+ *	pst - piece square table
+ *
+ *	eg - early game
+ *	mg - mid game
+ *	lg - late game
+ */
+
+#if 0
+// clang-format off
+int template_pst[64] = {
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+};
+// clang-format on
+#endif
+
+// clang-format off
+int eg_psts[6][64] = {
+{ // pawn
+	+20,+20,+20,+20,+20,+20,+20,+20,
+    -20,-20,-20,-20,-20,-20,-20,-20,
+      0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,
+    -20,-20,-20,-20,-20,-20,-20,-20,
+	+20,+20,+20,+20,+20,+20,+20,+20,
+},
+{ // bishop
+    0,0,-20,0,0,-20,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,-20,0,0,-20,0,0,
+},
+{ // knight
+    0,-20,  0,0,0,  0,-20,0,
+    0,  0,  0,0,0,  0,  0,0,
+    0,  0,+30,0,0,+20,  0,0, // +30 as this move might lead to a quick checkmate
+    0,  0,  0,0,0,  0,  0,0,
+    0,  0,  0,0,0,  0,  0,0,
+    0,  0,+20,0,0,+20,  0,0,
+    0,  0,  0,0,0,  0,  0,0,
+    0,-20,  0,0,0,  0,-20,0,
+},
+{ // rook
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+},
+
+// The king is encouraged to get some space, since we
+// don't need to worry about checks that much and
+// it lessens the risk of a checkmate.
+{
+    -50, -30, -30, -30, -30, -30, -30, -50,
+    -30, -30,  20,  20,  20,  20, -30, -30,
+    -30, -10,  20,  30,  30,  20, -10, -30,
+    -30, -10,  30,   0,   0,  30, -10, -30,
+    -30, -10,  30,   0,   0,  30, -10, -30,
+    -30, -10,  20,  30,  30,  20, -10, -30,
+    -30, -30,  20,  20,  20,  20, -30, -30,
+    -50, -30, -30, -30, -30, -30, -30, -50
+},
+// The queen is encouraged to move somewhere she's active.
+// Hence corners and edges are ratet worse than more or less
+// central fields
+{
+    -30, -20, -10, -10, -10, -10, -20, -30,
+    -20,   0,  20,  20,  20,  20,   0, -20,
+    -10,  10,  20,  30,  30,  20,  10, -10,
+    -10,  10,  30,  40,  40,  30,  10, -10,
+    -10,  10,  30,  40,  40,  30,  10, -10,
+    -10,  10,  20,  30,  30,  20,  10, -10,
+    -20,   0,  20,  20,  20,  20,   0, -20,
+    -30, -20, -10, -10, -10, -10, -20, -30
+},
+};
+
+// TODO(Aurel): Change these values. They have just been copied over from the
+// early game.
+int mg_psts[6][64] = {
+{ // pawn
+	+20,+20,+20,+20,+20,+20,+20,+20,
+    -20,-20,-20,-20,-20,-20,-20,-20,
+      0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,
+    -20,-20,-20,-20,-20,-20,-20,-20,
+	+20,+20,+20,+20,+20,+20,+20,+20,
+},
+{ // bishop
+    0,0,-20,0,0,-20,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,-20,0,0,-20,0,0,
+},
+{ // knight
+    0,-20,  0,0,0,  0,-20,0,
+    0,  0,  0,0,0,  0,  0,0,
+    0,  0,+30,0,0,+20,  0,0, // +30 as this move might lead to a quick checkmate
+    0,  0,  0,0,0,  0,  0,0,
+    0,  0,  0,0,0,  0,  0,0,
+    0,  0,+20,0,0,+20,  0,0,
+    0,  0,  0,0,0,  0,  0,0,
+    0,-20,  0,0,0,  0,-20,0,
+},
+{ // rook
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+},
+
+// The king is encouraged to get some space, since we
+// don't need to worry about checks that much and
+// it lessens the risk of a checkmate.
+{
+    -50, -30, -30, -30, -30, -30, -30, -50,
+    -30, -30,  20,  20,  20,  20, -30, -30,
+    -30, -10,  20,  30,  30,  20, -10, -30,
+    -30, -10,  30,   0,   0,  30, -10, -30,
+    -30, -10,  30,   0,   0,  30, -10, -30,
+    -30, -10,  20,  30,  30,  20, -10, -30,
+    -30, -30,  20,  20,  20,  20, -30, -30,
+    -50, -30, -30, -30, -30, -30, -30, -50
+},
+// The queen is encouraged to move somewhere she's active.
+// Hence corners and edges are ratet worse than more or less
+// central fields
+{
+    -30, -20, -10, -10, -10, -10, -20, -30,
+    -20,   0,  20,  20,  20,  20,   0, -20,
+    -10,  10,  20,  30,  30,  20,  10, -10,
+    -10,  10,  30,  40,  40,  30,  10, -10,
+    -10,  10,  30,  40,  40,  30,  10, -10,
+    -10,  10,  20,  30,  30,  20,  10, -10,
+    -20,   0,  20,  20,  20,  20,   0, -20,
+    -30, -20, -10, -10, -10, -10, -20, -30
+},
+};
+
+// TODO(Aurel): Change these values. They have just been copied over from the
+// early game.
+int lg_psts[6][64] = {
+{ // pawn
+	+20,+20,+20,+20,+20,+20,+20,+20,
+    -20,-20,-20,-20,-20,-20,-20,-20,
+      0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,
+    -20,-20,-20,-20,-20,-20,-20,-20,
+	+20,+20,+20,+20,+20,+20,+20,+20,
+},
+{ // bishop
+    0,0,-20,0,0,-20,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,  0,0,0,  0,0,0,
+    0,0,-20,0,0,-20,0,0,
+},
+{ // knight
+    0,-20,  0,0,0,  0,-20,0,
+    0,  0,  0,0,0,  0,  0,0,
+    0,  0,+30,0,0,+20,  0,0, // +30 as this move might lead to a quick checkmate
+    0,  0,  0,0,0,  0,  0,0,
+    0,  0,  0,0,0,  0,  0,0,
+    0,  0,+20,0,0,+20,  0,0,
+    0,  0,  0,0,0,  0,  0,0,
+    0,-20,  0,0,0,  0,-20,0,
+},
+{ // rook
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+},
+
+// The king is encouraged to get some space, since we
+// don't need to worry about checks that much and
+// it lessens the risk of a checkmate.
+{
+    -50, -30, -30, -30, -30, -30, -30, -50,
+    -30, -30,  20,  20,  20,  20, -30, -30,
+    -30, -10,  20,  30,  30,  20, -10, -30,
+    -30, -10,  30,   0,   0,  30, -10, -30,
+    -30, -10,  30,   0,   0,  30, -10, -30,
+    -30, -10,  20,  30,  30,  20, -10, -30,
+    -30, -30,  20,  20,  20,  20, -30, -30,
+    -50, -30, -30, -30, -30, -30, -30, -50
+},
+// The queen is encouraged to move somewhere she's active.
+// Hence corners and edges are ratet worse than more or less
+// central fields
+{
+    -30, -20, -10, -10, -10, -10, -20, -30,
+    -20,   0,  20,  20,  20,  20,   0, -20,
+    -10,  10,  20,  30,  30,  20,  10, -10,
+    -10,  10,  30,  40,  40,  30,  10, -10,
+    -10,  10,  30,  40,  40,  30,  10, -10,
+    -10,  10,  20,  30,  30,  20,  10, -10,
+    -20,   0,  20,  20,  20,  20,   0, -20,
+    -30, -20, -10, -10, -10, -10, -20, -30
+},
+};
+// clang-format on
+
 enum game_state { EARLY_GAME, MID_GAME, LATE_GAME };
 
 enum game_state
@@ -20,55 +261,19 @@ int
 get_pst_diff(struct chess* game, struct move* move, enum PIECE_E piece_type)
 {
 
-	bool is_early_game = false,
-	is_mid_game = false,
-	is_late_game = false;
+	int *pst = NULL;
 
+	// retrieve correct pst
 	// clang-format off
 	switch (get_game_state(game)) {
-	case EARLY_GAME: is_early_game = true; break;
-	case MID_GAME: is_mid_game = true; break;
-	case LATE_GAME: is_late_game = true; break;
+	case EARLY_GAME: pst = eg_psts[piece_type]; break;
+	case MID_GAME: pst = mg_psts[piece_type]; break;
+	case LATE_GAME: pst = lg_psts[piece_type]; break;
 	}
 	// clang-format on
 
-	if(is_early_game) {
-		switch (piece_type) {
-		case PAWN: return eg_pawn_pst[move->target] - eg_pawn_pst[move->start];
-		case KNIGHT: return eg_knight_pst[move->target] - eg_knight_pst[move->start];
-		case BISHOP: return eg_bishop_pst[move->target] - eg_bishop_pst[move->start];
-		case KING: return eg_king_pst[move->target] - eg_king_pst[move->start];
-		case QUEEN: return eg_queen_pst[move->target] - eg_queen_pst[move->start];
-		case ROOK: return eg_rook_pst[move->target] - eg_rook_pst[move->start];
-		default: assert((false, "invalid code path"));
-		}
+	if (!pst) {
+		return 0;
 	}
-
-#if 0
-	if (is_mid_game) {
-		switch (piece_type) {
-		case PAWN: return mg_pawn_pst[move->target] - mg_pawn_pst[move->start];
-		case KNIGHT: return mg_knight_pst[move->target] - mg_knight_pst[move->start];
-		case BISHOP: return mg_bishop_pst[move->target] - mg_bishop_pst[move->start];
-		case KING: return mg_king_pst[move->target] - mg_king_pst[move->start];
-		case QUEEN: return mg_queen_pst[move->target] - mg_queen_pst[move->start];
-		case ROOK: return mg_rook_pst[move->target] - mg_rook_pst[move->start];
-		default: assert((false, "invalid code path"));
-		}
-	}
-
-	if (is_late_game) {
-		switch (piece_type) {
-		case PAWN: return lg_pawn_pst[move->target] - lg_pawn_pst[move->start];
-		case KNIGHT: return lg_knight_pst[move->target] - lg_knight_pst[move->start];
-		case BISHOP: return lg_bishop_pst[move->target] - lg_bishop_pst[move->start];
-		case KING: return lg_king_pst[move->target] - lg_king_pst[move->start];
-		case QUEEN: return lg_queen_pst[move->target] - lg_queen_pst[move->start];
-		case ROOK: return lg_rook_pst[move->target] - lg_rook_pst[move->start];
-		default: assert((false, "invalid code path"));
-		}
-	}
-#endif
-
-	return 0;
+	return pst[move->target] - pst[move->start];
 }
