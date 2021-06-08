@@ -8,6 +8,10 @@ int
 get_pst_diff(struct PIECE* board, struct move* move, enum PIECE_E piece_type)
 {
 
+	/*
+	 * TODO(Aurel): How do we determine when the early/mid game ends? What is a
+	 * good heuristic besides just move and piece count.
+	 */
 	bool is_early_game = true;
 
 	if(is_early_game) {
