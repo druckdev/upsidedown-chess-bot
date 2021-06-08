@@ -84,11 +84,12 @@ struct chess
 init_chess()
 {
 	struct chess chess;
-	chess.checkmate  = false;
-	chess.moving     = UNDEFINED;
-	chess.board      = calloc(64, sizeof(*(chess.board)));
-	chess.move_count = 0;
-	chess.max_moves  = MAX_MOVE_COUNT;
+	chess.checkmate   = false;
+	chess.moving      = UNDEFINED;
+	chess.phase       = EARLY_GAME;
+	chess.board       = calloc(64, sizeof(*(chess.board)));
+	chess.move_count  = 0;
+	chess.max_moves   = MAX_MOVE_COUNT;
 	chess.piece_count = 0;
 
 	// TODO(Aurel): Once the server implements it, this will need to change.
