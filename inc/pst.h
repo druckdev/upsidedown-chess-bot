@@ -5,7 +5,7 @@
  * NOTE(Aurel): Naming convention
  *	pst - piece square table
  *
- *	eq - early game
+ *	eg - early game
  *	mg - mid game
  *	lg - late game
  */
