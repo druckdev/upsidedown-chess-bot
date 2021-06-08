@@ -13,6 +13,7 @@
 #include "pst.h"
 #include "timer.h"
 #include "types.h"
+#include "pst.h"
 
 size_t MAX_NEGAMAX_DEPTH = 3;
 
@@ -62,13 +63,13 @@ rate_board(struct chess* chess)
  * the board the move would make.
  */
 int
-rate_move(struct PIECE* board, struct move* move)
+rate_move(struct chess* game, struct move* move)
 {
 	int rating = 0;
 
 	if (move->hit) {
 		// add the value of the hit piece to the rating
-		struct PIECE to = board[move->target];
+		struct PIECE to = game->board[move->target];
 		rating += PIECE_VALUES[to.type];
 	}
 
@@ -81,15 +82,17 @@ rate_move(struct PIECE* board, struct move* move)
 	if (promotes_to.type) {
 		// add the difference in value between the old and new piece to the
 		// rating
-		struct PIECE from = board[move->start];
+		struct PIECE from = game->board[move->start];
 		rating += PIECE_VALUES[promotes_to.type] - PIECE_VALUES[from.type];
 	}
+
+	rating += get_pst_diff(game, move, game->board[move->start].type);
 
 	return rating;
 }
 
 void
-register_prio(struct PIECE* board, struct list* list)
+register_prio(struct chess* game, struct list* list)
 {
 	if (!list)
 		return;
@@ -97,7 +100,7 @@ register_prio(struct PIECE* board, struct list* list)
 	struct list_elem* cur = list_get_first(list);
 	while (cur) {
 		struct move* move = cur->object;
-		cur->prio         = rate_move(board, move);
+		cur->prio         = rate_move(game, move);
 
 		cur = list_get_next(cur);
 	}
@@ -123,7 +126,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	}
 
 #ifdef ENABLE_ALPHA_BETA_CUTOFFS
-	register_prio(game->board, moves);
+	register_prio(game, moves);
 	list_sort(moves);
 #endif
 
@@ -167,7 +170,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 #endif /* ENABLE_ALPHA_BETA_CUTOFFS */
 
 		// include this moves rating in the score
-		int rating = val_depth_factor * rate_move(game->board, move);
+		int rating = val_depth_factor * rate_move(game, move);
 		ret.val += rating;
 
 		// replace the current best move, if move guarantees a better score.
