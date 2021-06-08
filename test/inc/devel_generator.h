@@ -10,7 +10,7 @@
 struct list* generate_moves(struct chess* game, int check_checkless,
                             bool hit_allies);
 
-struct list* generate_moves_piece(struct PIECE board[], enum POS pos,
+struct list* generate_moves_piece(struct chess* game, enum POS pos,
                                   int check_checkless, bool hit_allies);
 
 #endif /* GENERATOR_H */

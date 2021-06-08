@@ -56,6 +56,7 @@ struct chess {
 	int rating;
 	long t_remaining_s;
 	int max_moves, move_count;
+	int piece_count;
 };
 
 struct move {

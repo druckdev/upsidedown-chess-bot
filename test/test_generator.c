@@ -52,7 +52,7 @@ test_generate_moves_piece()
 	fen_to_chess(test_boards[0].fen, &chess);
 
 	// verify generator
-	struct list* list = generate_moves_piece(chess.board, D3, true, false);
+	struct list* list = generate_moves_piece(&chess, D3, true, false);
 	int list_length   = list_count(list);
 
 	if (list_length != test_boards[0].move_cnt) {

@@ -89,6 +89,7 @@ init_chess()
 	chess.board      = calloc(64, sizeof(*(chess.board)));
 	chess.move_count = 0;
 	chess.max_moves  = MAX_MOVE_COUNT;
+	chess.piece_count = 0;
 
 	// TODO(Aurel): Once the server implements it, this will need to change.
 	//chess.t_remaining_s = -1;
@@ -127,7 +128,7 @@ run_chess()
 
 		gs_print_move(move);
 
-		do_move(game.board, move);
+		do_move(&game, move);
 #ifdef DEBUG_BOARD_WHEN_PLAYING
 		struct list* list = list_push(NULL, move);
 		print_board(game.board, list);

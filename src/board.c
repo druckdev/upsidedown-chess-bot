@@ -12,32 +12,37 @@
 #define ANSI_RESET "\033[0m"
 
 struct PIECE
-do_move(struct PIECE* board, struct move* move)
+do_move(struct chess* game, struct move* move)
 {
-	if (!board || !move)
+	if (!game || !game->board || !move)
 		return (struct PIECE){};
 
 	assert(move->target != move->start);
 
-	struct PIECE old = board[move->target];
-	board[move->target] =
-			move->promotes_to.type ? move->promotes_to : board[move->start];
-	board[move->start].type = EMPTY;
+	struct PIECE old = game->board[move->target];
+	game->board[move->target] =
+			move->promotes_to.type ? move->promotes_to : game->board[move->start];
+	game->board[move->start].type = EMPTY;
+
+	if (move->hit)
+		game->piece_count--;
 
 	return old;
 }
 
 void
-undo_move(struct PIECE* board, struct move* move, struct PIECE old)
+undo_move(struct chess* game, struct move* move, struct PIECE old)
 {
-	if (!board || !move)
+	if (!game || !game->board || !move)
 		return;
 
-	board[move->start] = board[move->target];
+	game->board[move->start] = game->board[move->target];
 	if (move->promotes_to.type)
-		board[move->start].type = PAWN;
+		game->board[move->start].type = PAWN;
 
-	board[move->target] = old;
+	game->board[move->target] = old;
+	if (move->hit)
+		game->piece_count++;
 }
 
 /*
@@ -144,6 +149,7 @@ fen_to_chess(char* fen, struct chess* game)
 			i += atoi(fen + c);
 		} else if (fen[c] != '/') {
 			game->board[i++] = chr_to_piece(fen[c]);
+			game->piece_count++;
 		}
 	}
 	--c;
