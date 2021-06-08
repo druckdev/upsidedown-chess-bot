@@ -29,7 +29,7 @@ rate_board(struct chess* chess)
 {
 	int rating = 0;
 	for (size_t i = 0; i < 64; ++i) {
-		struct PIECE p = chess->board[i];
+		struct piece p = chess->board[i];
 		rating += p.color * PIECE_VALUES[p.type];
 	}
 	chess->rating = rating;
@@ -44,13 +44,13 @@ rate_board(struct chess* chess)
  * the board the move would make.
  */
 int
-rate_move(struct PIECE* board, struct move* move)
+rate_move(struct piece* board, struct move* move)
 {
 	int rating = 0;
 
 	if (move->hit) {
 		// add the value of the hit piece to the rating
-		struct PIECE to = board[move->target];
+		struct piece to = board[move->target];
 		rating += PIECE_VALUES[to.type];
 	}
 
@@ -59,11 +59,11 @@ rate_move(struct PIECE* board, struct move* move)
 		// rating
 		rating += PIECE_VALUES[KING];
 
-	struct PIECE promotes_to = move->promotes_to;
+	struct piece promotes_to = move->promotes_to;
 	if (promotes_to.type) {
 		// add the difference in value between the old and new piece to the
 		// rating
-		struct PIECE from = board[move->start];
+		struct piece from = board[move->start];
 		rating += PIECE_VALUES[promotes_to.type] - PIECE_VALUES[from.type];
 	}
 
@@ -71,7 +71,7 @@ rate_move(struct PIECE* board, struct move* move)
 }
 
 void
-rate_move_list(struct PIECE* board, struct move_list* list)
+rate_move_list(struct piece* board, struct move_list* list)
 {
 	if (!list)
 		return;
@@ -138,7 +138,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 			ret = (struct negamax_return){ 0, NULL };
 		else {
 			// execute move and see what happens down the tree - dfs
-			struct PIECE old = do_move(game->board, move);
+			struct piece old = do_move(game->board, move);
 			ret              = negamax(game, depth - 1, -b, -a);
 			undo_move(game->board, move, old);
 		}

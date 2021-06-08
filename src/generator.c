@@ -10,7 +10,7 @@
 #include "generator.h"
 #include "move.h"
 
-struct move_list* generate_moves_piece(struct PIECE board[], enum POS pos,
+struct move_list* generate_moves_piece(struct piece board[], enum pos pos,
                                        bool check_checkless, bool hit_allies);
 
 /**
@@ -20,7 +20,7 @@ struct move_list* generate_moves_piece(struct PIECE board[], enum POS pos,
  *         can still get out of check.
  */
 bool
-is_checkmate(struct PIECE board[], struct move* mate_move)
+is_checkmate(struct piece board[], struct move* mate_move)
 {
 	if (board[mate_move->target].type != KING &&
 	    board[mate_move->start].color != board[mate_move->target].color) {
@@ -63,7 +63,7 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
 		}
 
 		// Backup piece for undo
-		struct PIECE old = do_move(game.board, cur_counter_move);
+		struct piece old = do_move(game.board, cur_counter_move);
 
 		// Check if mate_move is still doable or was declined
 		struct move_list* moves = generate_moves_piece(
@@ -103,9 +103,9 @@ is_checkmate(struct PIECE board[], struct move* mate_move)
  * Also updates move->is_checkmate if true.
  */
 bool
-is_checkless_move(struct PIECE board[], struct move* move)
+is_checkless_move(struct piece board[], struct move* move)
 {
-	struct PIECE old = do_move(board, move);
+	struct piece old = do_move(board, move);
 
 	struct move_list* new_moves;
 
@@ -139,13 +139,13 @@ is_checkless_move(struct PIECE board[], struct move* move)
 }
 
 bool
-is_valid_pos(enum POS pos)
+is_valid_pos(enum pos pos)
 {
 	return (pos >= 0 && pos < 64);
 }
 
 bool
-is_occupied(struct PIECE board[], enum POS target)
+is_occupied(struct piece board[], enum pos target)
 {
 	return board[target].type != EMPTY;
 }
@@ -156,7 +156,7 @@ is_occupied(struct PIECE board[], enum POS target)
  * occupied at all or that it's occupied by an ally.
  */
 bool
-is_occupied_by_enemy(struct PIECE board[], enum POS pos, enum POS target)
+is_occupied_by_enemy(struct piece board[], enum pos pos, enum pos target)
 {
 	return is_occupied(board, target) &&
 		   board[pos].color != board[target].color;
@@ -178,7 +178,7 @@ static int offsets_both[8] = { +1, +9, +8, +7, -1, -9, -8, -7 };
  * "unlimited" range, meaning until the end of the board is reached.
  */
 struct move_list*
-generate_moves_helper(struct PIECE board[], enum POS pos, bool endless,
+generate_moves_helper(struct piece board[], enum pos pos, bool endless,
                       enum MOVES_TYPE type, bool check_checkless,
                       bool hit_allies)
 {
@@ -205,14 +205,14 @@ generate_moves_helper(struct PIECE board[], enum POS pos, bool endless,
 
 	bool hit;
 	for (size_t i = 0; i < len; ++i) {
-		enum POS prev_target = pos;
+		enum pos prev_target = pos;
 		int prev_target_col  = pos % 8;
 		bool diagonal        = !(offsets[i] % 7) || !(offsets[i] % 9);
 		hit                  = false;
 
 		// Continue as long as we are in range and did not hit something
 		while (!hit) {
-			enum POS target = prev_target + offsets[i];
+			enum pos target = prev_target + offsets[i];
 
 			if (!is_valid_pos(target))
 				break;
@@ -261,7 +261,7 @@ generate_moves_helper(struct PIECE board[], enum POS pos, bool endless,
  * ----------------------------*/
 
 struct move_list*
-generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
+generate_moves_pawn_helper(struct piece board[], enum pos pos,
                            bool check_checkless, bool hit_allies)
 {
 	struct move_list* moves = calloc(1, sizeof(*moves));
@@ -307,7 +307,7 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 		 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 		 * be the last check!
 		 */
-		struct PIECE promotes_to = { EMPTY, board[pos].color };
+		struct piece promotes_to = { EMPTY, board[pos].color };
 		if (target < 8 || target > 55)
 			promotes_to.type = QUEEN;
 		while (promotes_to.type <= QUEEN && promotes_to.type != PAWN) {
@@ -338,8 +338,8 @@ generate_moves_pawn_helper(struct PIECE board[], enum POS pos,
 }
 
 struct move*
-generate_moves_knight_helper(struct PIECE board[], enum POS pos,
-                             enum POS target, bool check_checkless,
+generate_moves_knight_helper(struct piece board[], enum pos pos,
+                             enum pos target, bool check_checkless,
                              bool hit_allies)
 {
 	if (!is_valid_pos(target))
@@ -377,7 +377,7 @@ generate_moves_knight_helper(struct PIECE board[], enum POS pos,
 }
 
 struct move_list*
-generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless,
+generate_moves_king(struct piece board[], enum pos pos, bool check_checkless,
                     bool hit_allies)
 {
 	struct move_list* all_moves =
@@ -416,7 +416,7 @@ generate_moves_king(struct PIECE board[], enum POS pos, bool check_checkless,
 }
 
 struct move_list*
-generate_moves_knight(struct PIECE board[], enum POS pos, bool check_checkless,
+generate_moves_knight(struct piece board[], enum pos pos, bool check_checkless,
                       bool hit_allies)
 {
 	struct move_list* moves = calloc(1, sizeof(*moves));
@@ -435,10 +435,10 @@ generate_moves_knight(struct PIECE board[], enum POS pos, bool check_checkless,
 	return moves;
 }
 
-enum POS
-get_king_pos(struct PIECE board[], enum COLOR c)
+enum pos
+get_king_pos(struct piece board[], enum color c)
 {
-	for (enum POS i = 0; i < 64; i++) {
+	for (enum pos i = 0; i < 64; i++) {
 		if (board[i].type == KING && board[i].color == c)
 			return i;
 	}
@@ -451,7 +451,7 @@ get_king_pos(struct PIECE board[], enum COLOR c)
  * ------------------*/
 
 struct move_list*
-generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless,
+generate_moves_piece(struct piece board[], enum pos pos, bool check_checkless,
                      bool hit_allies)
 {
 	struct move_list* moves;
@@ -475,7 +475,7 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless,
 	if (!check_checkless)
 		return moves;
 
-	enum POS king_pos = get_king_pos(board, board[pos].color);
+	enum pos king_pos = get_king_pos(board, board[pos].color);
 	if (king_pos == 64 || king_pos == pos)
 		// No king, or not needed as we moved the king itself.
 		return moves;
@@ -492,7 +492,7 @@ generate_moves_piece(struct PIECE board[], enum POS pos, bool check_checkless,
 		bool opens_king       = false;
 
 		// Backup piece for undo
-		struct PIECE old = do_move(game.board, cur_move);
+		struct piece old = do_move(game.board, cur_move);
 
 		struct move_list* possible_hit_moves =
 				generate_moves(&game, false, false);
@@ -528,8 +528,8 @@ generate_moves(struct chess* game, bool check_checkless, bool hit_allies)
 {
 	struct move_list* moves = calloc(1, sizeof(*moves));
 
-	struct PIECE* board = game->board;
-	for (enum POS pos = 0; pos < 64; ++pos) {
+	struct piece* board = game->board;
+	for (enum pos pos = 0; pos < 64; ++pos) {
 		// if the `pos` is not occupied there are no moves to generate
 		if (!is_occupied(board, pos))
 			continue;
