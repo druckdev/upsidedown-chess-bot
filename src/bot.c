@@ -149,8 +149,10 @@ negamax(struct chess* game, size_t depth, int a, int b)
 #endif /* ENABLE_ALPHA_BETA_CUTOFFS */
 
 		// include this moves rating in the score
-		int rating = val_depth_factor * rate_move(game->board, move);
-		ret.val += rating;
+#ifndef ENABLE_ALPHA_BETA_CUTOFFS // the moves have not been rated yet.
+		move->rating = rate_move(game->board, move);
+#endif
+		ret.val += val_depth_factor * move->rating;
 
 		// replace the current best move, if move guarantees a better score.
 		if (ret.val > best.val) {
