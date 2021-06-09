@@ -2,9 +2,9 @@
 #define BOT_H
 
 #include "chess.h"
+#include "hashtable.h"
 #include "move.h"
 #include "timer.h"
-#include "hashtable.h"
 
 struct negamax_return {
 	int val;
@@ -16,7 +16,8 @@ struct negamax_return {
 };
 
 int rate_board(struct chess* chess);
-struct negamax_return negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b);
+struct negamax_return negamax(struct chess* game, struct ht* ht, size_t depth,
+                              int a, int b);
 struct move* choose_move(struct chess* game, struct chess_timer* timer);
 
 #endif /* BOT_H */

@@ -48,7 +48,6 @@ test_negamax()
 	struct ht ht = { 0 };
 	TEST_ASSERT_NOT_NULL_MESSAGE(init_ht(&ht, 256), "init_ht() failed.");
 
-
 	struct chess game = { .board  = calloc(64, sizeof(*game.board)),
 		                  .moving = WHITE };
 	fen_to_chess("R1BQKBNR/PPPPPPPP/N7/8/8/8/pppppppp/rnbqkbnr", &game);

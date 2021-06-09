@@ -10,9 +10,9 @@
 #include "bot.h"
 #include "chess.h"
 #include "generator.h"
+#include "hashtable.h"
 #include "move.h"
 #include "timer.h"
-#include "hashtable.h"
 
 size_t MAX_NEGAMAX_DEPTH = 3;
 
@@ -100,9 +100,9 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 		printf("Found transposition entry.\n");
 		if (entry->depth >= depth) {
 #ifdef DEBUG_NEGAMAX_USE_LIST
-			return (struct negamax_return) { entry->rating, entry->moves };
+			return (struct negamax_return){ entry->rating, entry->moves };
 #else
-			return (struct negamax_return) { entry->rating, entry->move };
+			return (struct negamax_return){ entry->rating, entry->move };
 #endif
 		}
 	}
@@ -164,7 +164,7 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 		ret.val = -ret.val;
 #else
 		// the move has not yet been rated
-		move->rating =  rate_move(game->board, move);
+		move->rating = rate_move(game->board, move);
 #endif /* ENABLE_ALPHA_BETA_CUTOFFS */
 
 		// include this moves rating in the score
@@ -212,13 +212,13 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 	return best;
 }
 
-struct move* choose_move(struct chess* game, struct chess_timer* timer)
+struct move*
+choose_move(struct chess* game, struct chess_timer* timer)
 {
 	struct timespec t_prev_move = { 0 };
-	struct ht ht = { 0 };
-	if(!init_ht(&ht, 1024))
+	struct ht ht                = { 0 };
+	if (!init_ht(&ht, 1024))
 		return NULL;
-
 
 	struct move* best = NULL;
 

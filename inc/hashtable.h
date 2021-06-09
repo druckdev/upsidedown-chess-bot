@@ -1,8 +1,8 @@
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
 
-#include <stddef.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 #include "move.h"
 
@@ -15,7 +15,7 @@ struct ht_entry {
 	bool used;
 #ifdef DEBUG_NEGAMAX_USE_LIST
 	struct move_list* moves;
-#else /* DEBUG_NEGAMAX_USE_LIST */
+#else  /* DEBUG_NEGAMAX_USE_LIST */
 	struct move* move;
 #endif /* DEBUG_NEGAMAX_USE_LIST */
 	size_t rating;
@@ -25,14 +25,14 @@ struct ht_entry {
 
 struct ht* init_ht(struct ht* ht, size_t size);
 
-struct ht_entry*
-ht_update_entry(struct ht* ht, struct piece* board,
+struct ht_entry* ht_update_entry(struct ht* ht, struct piece* board,
 #ifdef DEBUG_NEGAMAX_USE_LIST
-		struct move_list* moves
-#else /* DEBUG_NEGAMAX_USE_LIST */
-		struct move* move
+                                 struct move_list* moves
+#else  /* DEBUG_NEGAMAX_USE_LIST */
+                                 struct move* move
 #endif /* DEBUG_NEGAMAX_USE_LIST */
-		, size_t  rating, int depth);
+                                 ,
+                                 size_t rating, int depth);
 
 struct ht_entry* ht_get_entry(struct ht* ht, struct piece* board);
 
