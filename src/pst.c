@@ -29,6 +29,8 @@ int template_pst[64] = {
 // clang-format on
 #endif
 
+// NOTE: When describing asymmetric psts, use the pst for the color that plays
+// on the rows 1 & 2. (black in upsidedown)
 // clang-format off
 int eg_psts[6][64] = {
 	{ // pawn
@@ -129,5 +131,14 @@ get_pst_diff(struct chess* game, struct move* move, enum piece_type piece_type)
 		return 0;
 	}
 
-	return pst[move->target] - pst[move->start];
+	enum pos start  = move->start;
+	enum pos target = move->target;
+
+	// Flip pst if playing top down
+	if (game->moving == WHITE) {
+		start  = MAX - 1 - start;
+		target = MAX - 1 - target;
+	}
+
+	return pst[target] - pst[start];
 }
