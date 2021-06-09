@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <assert.h>
+#include <stdlib.h>
 
 #include "hashtable.h"
 
@@ -15,20 +16,38 @@ hash_board(size_t size, struct piece* board)
 	    int val = get_piece_value(board[i++].type);
 		hash += i * val;
 	}
-	return hash % size;
+	// NOTE(Aurel): size needs to be a power of 2
+	//hash &= size - 1;
+	hash %= size;
+	assert(hash < size && "hash out of bounds.");
+	return hash;
+}
+
+struct ht*
+init_ht(struct ht* ht, size_t size)
+{
+	if(!ht || !size)
+		return NULL;
+
+	ht->table = calloc(size, sizeof(struct ht_entry));
+	if(!ht->table)
+		return NULL;
+
+	ht->size = size;
+	return ht;
 }
 
 
 struct ht_entry*
-ht_update_move(struct ht_entry* ht, size_t size, struct piece* board,
+ht_update_entry(struct ht* ht, struct piece* board,
 #ifdef DEBUG_NEGAMAX_USE_LIST
 		struct move_list* moves
 #else /* DEBUG_NEGAMAX_USE_LIST */
 		struct move* move
 #endif /* DEBUG_NEGAMAX_USE_LIST */
-		, int depth)
+		, size_t rating, int depth)
 {
-	if (!ht || ! size || !board ||
+	if (!ht || !board ||
 #ifdef DEBUG_NEGAMAX_USE_LIST
 			!moves
 #else /* DEBUG_NEGAMAX_USE_LIST */
@@ -37,13 +56,13 @@ ht_update_move(struct ht_entry* ht, size_t size, struct piece* board,
 	   )
 	    return NULL;
 
-	ssize_t hash = hash_board(size, board);
+	ssize_t hash = hash_board(ht->size, board);
 	if (hash > 0)
 		return NULL;
 
 	// TODO(Aurel): If this happens to often we need to find a better hash
 	// function.
-	assert((ht[hash].used, "Hash collision."));
+	//assert(ht->table[hash].used && "Hash collision.");
 
 	struct ht_entry entry = { 
 		.used = true,
@@ -53,30 +72,27 @@ ht_update_move(struct ht_entry* ht, size_t size, struct piece* board,
 		.move = move,
 #endif /* DEBUG_NEGAMAX_USE_LIST */
 		.depth = depth,
+		.rating = rating,
 		.board_hash = hash,
 	};
 
-	ht[hash] = entry;
-	return ht;
+	printf("Updatet entry\n");
+	ht->table[hash] = entry;
+	return &ht->table[hash];
 }
 
-#ifdef DEBUG_NEGAMAX_USE_LIST
-struct move_list*
-#else
-struct move*
-#endif
-ht_get_move(struct ht_entry* ht, size_t size, struct piece* board)
+struct ht_entry*
+ht_get_entry(struct ht* ht, struct piece* board)
 {
-	if (!ht || ! size || !board)
+	if (!ht || !board)
 	    return NULL;
 
-	ssize_t hash = hash_board(size, board);
+	ssize_t hash = hash_board(ht->size, board);
 	if (hash < 0)
 		return NULL;
 
-#ifdef DEBUG_NEGAMAX_USE_LIST
-	return ht[hash].moves;
-#else
-	return ht[hash].move;
-#endif
+	if (ht->table[hash].used)
+		return &(ht->table[hash]);
+
+	return NULL;
 }

@@ -6,6 +6,11 @@
 
 #include "move.h"
 
+struct ht {
+	struct ht_entry* table;
+	size_t size;
+};
+
 struct ht_entry {
 	bool used;
 #ifdef DEBUG_NEGAMAX_USE_LIST
@@ -13,24 +18,22 @@ struct ht_entry {
 #else /* DEBUG_NEGAMAX_USE_LIST */
 	struct move* move;
 #endif /* DEBUG_NEGAMAX_USE_LIST */
-	int depth;
-	int board_hash;
+	size_t rating;
+	size_t depth;
+	size_t board_hash;
 };
 
+struct ht* init_ht(struct ht* ht, size_t size);
+
 struct ht_entry*
-ht_update_move(struct ht_entry* ht, size_t size, struct piece* board,
+ht_update_entry(struct ht* ht, struct piece* board,
 #ifdef DEBUG_NEGAMAX_USE_LIST
 		struct move_list* moves
 #else /* DEBUG_NEGAMAX_USE_LIST */
 		struct move* move
 #endif /* DEBUG_NEGAMAX_USE_LIST */
-		, int depth);
+		, size_t  rating, int depth);
 
-#ifdef DEBUG_NEGAMAX_USE_LIST
-struct move_list*
-#else
-struct move*
-#endif
-ht_get_move(struct ht_entry* ht, size_t size, struct piece* board);
+struct ht_entry* ht_get_entry(struct ht* ht, struct piece* board);
 
 #endif /* HASHTABLE_H */
