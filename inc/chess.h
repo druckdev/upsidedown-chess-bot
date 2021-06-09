@@ -14,7 +14,7 @@
 #define EG_MOVE_COUNT_MAX 20
 #define MG_MOVE_COUNT_MAX 40
 
-#define EG_PIECE_COUNT_MIN 30
+#define EG_PIECE_COUNT_MIN 31
 #define MG_PIECE_COUNT_MIN 11
 
 #define DEFAULT_BOARD "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
