@@ -102,7 +102,8 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		if (move->is_checkmate)
 			// If we know it will checkmate, there are no more moves left for
 			// the enemy to do and thus we already know what ret should look
-			// like.
+			// like. This saves at least one iteration over the board looking
+			// for valid moves.
 			ret = (struct negamax_return){ 0, NULL };
 		else {
 			// execute move and see what happens down the tree - dfs

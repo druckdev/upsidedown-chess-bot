@@ -35,6 +35,7 @@ rate_move(struct chess* game, struct move* move)
 		rating += PIECE_VALUES[promotes_to.type] - PIECE_VALUES[from.type];
 	}
 
+	// piece square tables
 	rating += get_pst_diff(game, move, game->board[move->start].type);
 
 	return rating;

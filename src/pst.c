@@ -71,10 +71,8 @@ int eg_psts[6][64] = {
     0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0,
 },
-
-// The king is encouraged to get some space, since we
-// don't need to worry about checks that much and
-// it lessens the risk of a checkmate.
+// The king is encouraged to get some space, since we don't need to worry about
+// checks that much and it lessens the risk of a checkmate.
 {
     -50, -30, -30, -30, -30, -30, -30, -50,
     -30, -30,  20,  20,  20,  20, -30, -30,
@@ -85,9 +83,8 @@ int eg_psts[6][64] = {
     -30, -30,  20,  20,  20,  20, -30, -30,
     -50, -30, -30, -30, -30, -30, -30, -50
 },
-// The queen is encouraged to move somewhere she's active.
-// Hence corners and edges are ratet worse than more or less
-// central fields
+// The queen is encouraged to move somewhere she's active. Hence corners and
+// edges are rated worse than more central fields
 {
     -30, -20, -10, -10, -10, -10, -20, -30,
     -20,   0,  20,  20,  20,  20,   0, -20,
@@ -143,10 +140,8 @@ int mg_psts[6][64] = {
     0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0,
 },
-
-// The king is encouraged to get some space, since we
-// don't need to worry about checks that much and
-// it lessens the risk of a checkmate.
+// The king is encouraged to get some space, since we don't need to worry about
+// checks that much and it lessens the risk of a checkmate.
 {
     -50, -30, -30, -30, -30, -30, -30, -50,
     -30, -30,  20,  20,  20,  20, -30, -30,
@@ -157,9 +152,8 @@ int mg_psts[6][64] = {
     -30, -30,  20,  20,  20,  20, -30, -30,
     -50, -30, -30, -30, -30, -30, -30, -50
 },
-// The queen is encouraged to move somewhere she's active.
-// Hence corners and edges are ratet worse than more or less
-// central fields
+// The queen is encouraged to move somewhere she's active. Hence corners and
+// edges are rated worse than more central fields
 {
     -30, -20, -10, -10, -10, -10, -20, -30,
     -20,   0,  20,  20,  20,  20,   0, -20,
@@ -215,10 +209,8 @@ int lg_psts[6][64] = {
     0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0,
 },
-
-// The king is encouraged to get some space, since we
-// don't need to worry about checks that much and
-// it lessens the risk of a checkmate.
+// The king is encouraged to get some space, since we don't need to worry about
+// checks that much and it lessens the risk of a checkmate.
 {
     -50, -30, -30, -30, -30, -30, -30, -50,
     -30, -30,  20,  20,  20,  20, -30, -30,
@@ -229,9 +221,8 @@ int lg_psts[6][64] = {
     -30, -30,  20,  20,  20,  20, -30, -30,
     -50, -30, -30, -30, -30, -30, -30, -50
 },
-// The queen is encouraged to move somewhere she's active.
-// Hence corners and edges are ratet worse than more or less
-// central fields
+// The queen is encouraged to move somewhere she's active. Hence corners and
+// edges are rated worse than more central fields
 {
     -30, -20, -10, -10, -10, -10, -20, -30,
     -20,   0,  20,  20,  20,  20,   0, -20,
@@ -262,5 +253,6 @@ get_pst_diff(struct chess* game, struct move* move, enum piece_type piece_type)
 	if (!pst) {
 		return 0;
 	}
+
 	return pst[move->target] - pst[move->start];
 }
