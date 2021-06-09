@@ -12,6 +12,7 @@
 #include "generator.h"
 #include "move.h"
 #include "timer.h"
+#include "hashtable.h"
 
 size_t MAX_NEGAMAX_DEPTH = 3;
 
@@ -86,11 +87,26 @@ rate_move_list(struct piece* board, struct move_list* list)
 }
 
 struct negamax_return
-negamax(struct chess* game, size_t depth, int a, int b)
+negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 {
 	// max depth reached
 	if (!depth)
 		return (struct negamax_return){ 0, NULL };
+
+#ifdef ENABLE_TRANSPOSITION_TABLE
+	// TODO(Aurel): check hash map if best move has already been calculated
+	struct ht_entry* entry = ht_get_entry(ht, game->board);
+	if (entry) {
+		printf("Found transposition entry.\n");
+		if (entry->depth >= depth) {
+#ifdef DEBUG_NEGAMAX_USE_LIST
+			return (struct negamax_return) { entry->rating, entry->moves };
+#else
+			return (struct negamax_return) { entry->rating, entry->move };
+#endif
+		}
+	}
+#endif /* ENABLE_TRANSPOSITION_TABLE */
 
 	struct move_list* moves = generate_moves(game, true, false);
 
@@ -139,7 +155,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		else {
 			// execute move and see what happens down the tree - dfs
 			struct piece old = do_move(game->board, move);
-			ret              = negamax(game, depth - 1, -b, -a);
+			ret              = negamax(game, ht, depth - 1, -b, -a);
 			undo_move(game->board, move, old);
 		}
 
@@ -188,15 +204,23 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	best.val *= -1;
 #endif /* ENABLE_ALPHA_BETA_CUTOFFS */
 
+#ifdef ENABLE_TRANSPOSITION_TABLE
+	// if this fails no entry is created - ignore that case
+	ht_update_entry(ht, game->board, best.moves, best.val, depth);
+#endif /* ENABLE_TRANSPOSITION_TABLE */
+
 	return best;
 }
 
-struct move*
-choose_move(struct chess* game, struct chess_timer* timer)
+struct move* choose_move(struct chess* game, struct chess_timer* timer)
 {
-	struct move* best = NULL;
-
 	struct timespec t_prev_move = { 0 };
+	struct ht ht = { 0 };
+	if(!init_ht(&ht, 1024))
+		return NULL;
+
+
+	struct move* best = NULL;
 
 	/*
 	 * TODO(Aurel): Think about the calculation for the time a little more.
@@ -217,7 +241,7 @@ choose_move(struct chess* game, struct chess_timer* timer)
 
 		free(best);
 
-		struct negamax_return ret = negamax(game, i, INT_MIN + 1, INT_MAX);
+		struct negamax_return ret = negamax(game, &ht, i, INT_MIN + 1, INT_MAX);
 
 #ifdef DEBUG_NEGAMAX_USE_LIST
 		if (!ret.moves)

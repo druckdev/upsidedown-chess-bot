@@ -60,6 +60,7 @@ add_compile_definitions(DEBUG_NEGAMAX_USE_LIST)
 add_compile_definitions(DEBUG_BOARD_WHEN_PLAYING)
 
 add_compile_definitions(ENABLE_ALPHA_BETA_CUTOFFS)
+add_compile_definitions(ENABLE_TRANSPOSITION_TABLE)
 
 # tests
 include(CTest)
