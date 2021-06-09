@@ -71,18 +71,6 @@ int eg_psts[6][64] = {
 	 0, 0, 0, 0, 0, 0, 0, 0,
 	 0, 0, 0, 0, 0, 0, 0, 0,
 },
-// The king is encouraged to get some space, since we don't need to worry about
-// checks that much and it lessens the risk of a checkmate.
-{
-    -50, -30, -30, -30, -30, -30, -30, -50,
-    -30, -30,  20,  20,  20,  20, -30, -30,
-    -30, -10,  20,  30,  30,  20, -10, -30,
-    -30, -10,  30,   0,   0,  30, -10, -30,
-    -30, -10,  30,   0,   0,  30, -10, -30,
-    -30, -10,  20,  30,  30,  20, -10, -30,
-    -30, -30,  20,  20,  20,  20, -30, -30,
-    -50, -30, -30, -30, -30, -30, -30, -50
-},
 // The queen is encouraged to move somewhere she's active. Hence corners and
 // edges are rated worse than more central fields
 {
@@ -94,6 +82,18 @@ int eg_psts[6][64] = {
     -10,  10,  20,  30,  30,  20,  10, -10,
     -20,   0,  20,  20,  20,  20,   0, -20,
     -30, -20, -10, -10, -10, -10, -20, -30
+},
+// The king is encouraged to get some space, since we don't need to worry about
+// checks that much and it lessens the risk of a checkmate.
+{
+    -50, -30, -30, -30, -30, -30, -30, -50,
+    -30, -30,  20,  20,  20,  20, -30, -30,
+    -30, -10,  20,  30,  30,  20, -10, -30,
+    -30, -10,  30,   0,   0,  30, -10, -30,
+    -30, -10,  30,   0,   0,  30, -10, -30,
+    -30, -10,  20,  30,  30,  20, -10, -30,
+    -30, -30,  20,  20,  20,  20, -30, -30,
+    -50, -30, -30, -30, -30, -30, -30, -50
 },
 };
 // clang-format on
