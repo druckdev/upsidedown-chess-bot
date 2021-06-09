@@ -241,6 +241,9 @@ get_pst_diff(struct chess* game, struct move* move, enum piece_type piece_type)
 {
 	int* pst = NULL;
 
+	// indexing into the pst's starts at 0
+	piece_type--;
+
 	// retrieve correct pst
 	// clang-format off
 	switch (get_game_phase(game)) {
