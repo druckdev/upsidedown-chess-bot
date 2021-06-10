@@ -106,7 +106,7 @@ int eg_psts[6][64] = {
 // clang-format on
 
 int
-get_pst_diff(struct chess* game, struct move* move, enum piece_type piece_type)
+get_pst_val(struct chess* game, enum pos pos, enum piece_type piece_type)
 {
 	int* pst = NULL;
 
@@ -131,14 +131,8 @@ get_pst_diff(struct chess* game, struct move* move, enum piece_type piece_type)
 		return 0;
 	}
 
-	enum pos start  = move->start;
-	enum pos target = move->target;
-
 	// Flip pst if playing top down
-	if (game->moving == WHITE) {
-		start  = MAX - 1 - start;
-		target = MAX - 1 - target;
-	}
+	pos = game->moving == WHITE ? MAX - 1 - pos : pos;
 
-	return pst[target] - pst[start];
+	return pst[pos];
 }

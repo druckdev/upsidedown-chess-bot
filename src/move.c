@@ -27,16 +27,19 @@ rate_move(struct chess* game, struct move* move)
 		// rating
 		rating += PIECE_VALUES[KING];
 
-	struct piece promotes_to = move->promotes_to;
-	if (promotes_to.type) {
+	struct piece from        = game->board[move->start];
+	enum piece_type promo_to = move->promotes_to.type;
+	if (promo_to) {
 		// add the difference in value between the old and new piece to the
 		// rating
-		struct piece from = game->board[move->start];
-		rating += PIECE_VALUES[promotes_to.type] - PIECE_VALUES[from.type];
+		rating += PIECE_VALUES[promo_to] - PIECE_VALUES[from.type];
 	}
 
 	// piece square tables
-	rating += get_pst_diff(game, move, game->board[move->start].type);
+	// Add difference between position weights. Use promotes_to on target when
+	// promoting.
+	rating += get_pst_val(game, move->target, promo_to ? promo_to : from.type);
+	rating -= get_pst_val(game, move->start, from.type);
 
 	return rating;
 }
