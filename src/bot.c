@@ -104,13 +104,16 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		return (struct negamax_return){ 0, NULL };
 	}
 
-#ifdef ENABLE_ALPHA_BETA_CUTOFFS
+#ifndef VANILLA_MINIMAX
 	rate_move_list(game->board, moves);
 	move_list_sort(moves);
 #endif
 
 	game->moving *= -1;
 	struct negamax_return best = { INT_MIN + 1, NULL };
+#ifdef USE_PRINCIPAL_VARIATION_SEARCH
+	bool b_search_pv = true;
+#endif
 
 	/*
 	 * NOTE(Aurel): This factor should increase the rating of moves higher up
@@ -139,16 +142,28 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		else {
 			// execute move and see what happens down the tree - dfs
 			struct piece old = do_move(game->board, move);
-			ret              = negamax(game, depth - 1, -b, -a);
+
+#ifdef USE_PRINCIPAL_VARIATION_SEARCH
+			if (b_search_pv) {
+				ret = negamax(game, depth - 1, -b, -a);
+			} else {
+				ret = negamax(game, depth - 1, -a - 1, -a);
+				if (-ret.val > a)
+					ret = negamax(game, depth - 1, -b, -a); // re-search
+			}
+#else
+			ret = negamax(game, depth - 1, -b, -a);
+#endif
+
 			undo_move(game->board, move, old);
 		}
 
-#ifdef ENABLE_ALPHA_BETA_CUTOFFS
+#ifndef VANILLA_MINIMAX
 		// without ab-pruning this happens at the end of the function
 		ret.val = -ret.val;
 #else
 		// the move has not yet been rated
-		move->rating =  rate_move(game->board, move);
+		move->rating = rate_move(game->board, move);
 #endif /* ENABLE_ALPHA_BETA_CUTOFFS */
 
 		// include this moves rating in the score
@@ -173,7 +188,14 @@ negamax(struct chess* game, size_t depth, int a, int b)
 			free(move);
 		}
 
-#ifdef ENABLE_ALPHA_BETA_CUTOFFS
+#if defined(USE_PRINCIPAL_VARIATION_SEARCH)
+		if (best.val >= b)
+			break;
+		if (best.val > a) {
+			a           = best.val;
+			b_search_pv = false;
+		}
+#elif defined(ENABLE_ALPHA_BETA_CUTOFFS)
 		if (best.val > a)
 			a = best.val;
 		if (a >= b)
@@ -183,7 +205,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	move_list_free(moves);
 
 	game->moving *= -1;
-#ifndef ENABLE_ALPHA_BETA_CUTOFFS
+#ifdef VANILLA_MINIMAX
 	// using ab-pruning this needs to happen earlier
 	best.val *= -1;
 #endif /* ENABLE_ALPHA_BETA_CUTOFFS */
