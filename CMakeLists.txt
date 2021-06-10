@@ -58,7 +58,10 @@ add_compile_definitions(DEBUG_PRINTS)
 add_compile_definitions(DEBUG_NEGAMAX_USE_LIST)
 add_compile_definitions(DEBUG_BOARD_WHEN_PLAYING)
 
-add_compile_definitions(ENABLE_ALPHA_BETA_CUTOFFS)
+# Choose exactly one of the three
+#add_compile_definitions(VANILLA_MINIMAX)
+#add_compile_definitions(ENABLE_ALPHA_BETA_CUTOFFS)
+add_compile_definitions(USE_PRINCIPAL_VARIATION_SEARCH)
 
 # tests
 include(CTest)
