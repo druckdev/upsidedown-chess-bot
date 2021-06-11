@@ -62,7 +62,7 @@ test_negamax()
 
 	fen_to_chess("R1BQKBNR/PPPPPPPP/N7/8/8/8/pppppppp/rnbqkbnr", &game);
 
-	struct negamax_return ret = negamax(&game, 6, INT_MIN + 1, INT_MAX);
+	struct negamax_return ret = negamax(&game, 1, INT_MIN + 1, INT_MAX);
 	struct move* best;
 #ifdef DEBUG_NEGAMAX_USE_LIST
 	best = move_list_pop(ret.moves);
@@ -72,13 +72,26 @@ test_negamax()
 #endif
 
 	// clang-format off
-	struct move expected = { .start        = B7,
-	                         .target       = B8,
-	                         .hit          = false,
-	                         .is_checkmate = false,
-	                         .promotes_to.type = QUEEN,
-	                         .promotes_to.color = WHITE
+	struct move expected = {
+		.start        = B7,
+		.target       = B8,
+		.hit          = false,
+		.is_checkmate = false,
+		.promotes_to.type = QUEEN,
+		.promotes_to.color = WHITE
 	};
+#if 0 // TODO(Aurel): only here because of the bug description - (re)move it
+	struct move expected = {
+		.start        = A6,
+		.target       = B4,
+		.hit          = false,
+		.is_checkmate = false,
+		.promotes_to.type = EMPTY,
+		// TODO(Aurel): is 1 for some reason. Should be UNDEFINED (0).
+		// Check this out on another branch.
+		.promotes_to.color = 1
+	};
+#endif
 
 	// Only works in combination with `__attribute__((packed))` as there will be
 	// random (when allocated with malloc or on stack) padding bytes if the
