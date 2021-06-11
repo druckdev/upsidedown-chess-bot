@@ -119,6 +119,7 @@ run_chess()
 		free(move);
 #endif
 		game.move_count++;
+		game.phase = get_game_phase(&game);
 	}
 
 	free(game.board);

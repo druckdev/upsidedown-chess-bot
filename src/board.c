@@ -182,8 +182,6 @@ fen_to_chess(char* fen, struct chess* game)
 		else if (fen[c] == 'b')
 			game->moving = BLACK;
 	}
-
-	game->phase = get_game_phase(game);
 }
 
 // returns true if the position is attacked by one of the given moves
