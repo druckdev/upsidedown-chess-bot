@@ -123,7 +123,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 #ifdef ENABLE_ALPHA_BETA_CUTOFFS
 	rate_move_list(game->board, moves);
 	move_list_sort(moves);
-#endif
+#endif /* ENABLE_ALPHA_BETA_CUTOFFS */
 
 	game->moving *= -1;
 	struct negamax_return best = { INT_MIN + 1, NULL };
