@@ -23,6 +23,9 @@ struct ht_entry {
 	size_t board_hash;
 };
 
+/**
+ * @arg size should always be a power of 2!
+ */
 struct ht* init_ht(struct ht* ht, size_t size);
 void free_ht(struct ht* ht);
 

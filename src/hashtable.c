@@ -17,8 +17,8 @@ hash_board(size_t size, struct piece* board)
 		hash += i * val;
 	}
 	// NOTE(Aurel): size needs to be a power of 2
-	//hash &= size - 1;
-	hash %= size;
+	hash &= size - 1;
+	//hash %= size;
 	assert(hash < size && "hash out of bounds.");
 	return hash;
 }
