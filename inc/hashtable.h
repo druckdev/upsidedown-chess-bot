@@ -24,6 +24,7 @@ struct ht_entry {
 };
 
 struct ht* init_ht(struct ht* ht, size_t size);
+void free_ht(struct ht* ht);
 
 struct ht_entry* ht_update_entry(struct ht* ht, struct piece* board,
 #ifdef DEBUG_NEGAMAX_USE_LIST

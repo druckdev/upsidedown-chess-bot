@@ -37,6 +37,19 @@ init_ht(struct ht* ht, size_t size)
 	return ht;
 }
 
+void
+free_ht(struct ht* ht)
+{
+	for (size_t i = 0; i < ht->size; ++i) {
+#ifdef DEBUG_NEGAMAX_USE_LIST
+		move_list_free(ht->table[i].moves);
+#else /* DEBUG_NEGAMAX_USE_LIST */
+		free(ht->table[i].move);
+#endif /* DEBUG_NEGAMAX_USE_LIST */
+	}
+	free(ht->table);
+}
+
 struct ht_entry*
 ht_update_entry(struct ht* ht, struct piece* board,
 #ifdef DEBUG_NEGAMAX_USE_LIST
