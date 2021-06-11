@@ -99,11 +99,12 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	if (entry && entry->depth >= depth) {
 		printf("Using transposition entry.\n");
 #ifdef DEBUG_NEGAMAX_USE_LIST
-			return (struct negamax_return){ entry->rating, entry->moves };
-#else
-			return (struct negamax_return){ entry->rating, entry->move };
-#endif
-		}
+		struct move_list* ret_moves = malloc(sizeof(*ret_moves));
+		move_list_cpy(ret_moves, entry->moves);
+		return (struct negamax_return){ entry->rating, ret_moves };
+#else /* DEBUG_NEGAMAX_USE_LIST */
+		return (struct negamax_return){ entry->rating, entry->move };
+#endif /* DEBUG_NEGAMAX_USE_LIST */
 	}
 #endif /* ENABLE_TRANSPOSITION_TABLE */
 
@@ -205,7 +206,9 @@ negamax(struct chess* game, size_t depth, int a, int b)
 
 #ifdef ENABLE_TRANSPOSITION_TABLE
 	// if this fails no entry is created - ignore that case
-	ht_update_entry(&game->trans_table, game->board, best.moves, best.val, depth);
+	struct move_list* tp_moves = malloc(sizeof(*tp_moves));
+	move_list_cpy(tp_moves, best.moves);
+	ht_update_entry(&game->trans_table, game->board, tp_moves, best.val, depth);
 #endif /* ENABLE_TRANSPOSITION_TABLE */
 
 	return best;
