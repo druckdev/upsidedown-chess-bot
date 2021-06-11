@@ -57,8 +57,7 @@ ht_update_entry(struct ht* ht, struct piece* board,
 #else  /* DEBUG_NEGAMAX_USE_LIST */
                 struct move* move
 #endif /* DEBUG_NEGAMAX_USE_LIST */
-                ,
-                size_t rating, int depth)
+                , size_t rating, size_t depth)
 {
 	if (!ht || !board ||
 #ifdef DEBUG_NEGAMAX_USE_LIST

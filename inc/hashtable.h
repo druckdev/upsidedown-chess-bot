@@ -4,13 +4,13 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "move.h"
 
 struct ht {
 	struct ht_entry* table;
 	size_t size;
 };
 
+#include "move.h"
 struct ht_entry {
 	bool used;
 #ifdef DEBUG_NEGAMAX_USE_LIST
@@ -32,8 +32,7 @@ struct ht_entry* ht_update_entry(struct ht* ht, struct piece* board,
 #else  /* DEBUG_NEGAMAX_USE_LIST */
                                  struct move* move
 #endif /* DEBUG_NEGAMAX_USE_LIST */
-                                 ,
-                                 size_t rating, int depth);
+                                 , size_t rating, size_t depth);
 
 struct ht_entry* ht_get_entry(struct ht* ht, struct piece* board);
 
