@@ -7,11 +7,19 @@
 #include "devel_bot.h"
 #include "unity.h"
 
+#define TEST_ASSERT_EQUAL_MOVE(expected, move) \
+	TEST_ASSERT_EQUAL_INT((expected)->start, (best)->start); \
+	TEST_ASSERT_EQUAL_INT((expected)->target, (best)->target); \
+	TEST_ASSERT_EQUAL_CHAR((expected)->hit, (best)->hit); \
+	TEST_ASSERT_EQUAL_CHAR((expected)->is_checkmate, (best)->is_checkmate); \
+	TEST_ASSERT_EQUAL_INT((expected)->promotes_to.type, (best)->promotes_to.type); \
+	TEST_ASSERT_EQUAL_INT((expected)->promotes_to.color, (best)->promotes_to.color)
+
+
 void
 test_rate_board()
 {
 	printf("TEST: rate_board\t");
-
 	struct chess game = { .board  = calloc(64, sizeof(*game.board)),
 		                  .moving = WHITE };
 	int rating;
@@ -76,12 +84,7 @@ test_negamax()
 	// random (when allocated with malloc or on stack) padding bytes if the
 	// struct size is not dividable by 4.
 	// TEST_ASSERT_EQUAL_MEMORY(&expected, best, sizeof(expected));
-	TEST_ASSERT_EQUAL_INT(expected.start, best->start);
-	TEST_ASSERT_EQUAL_INT(expected.target, best->target);
-	TEST_ASSERT_EQUAL_CHAR(expected.hit, best->hit);
-	TEST_ASSERT_EQUAL_CHAR(expected.is_checkmate, best->is_checkmate);
-	TEST_ASSERT_EQUAL_INT(expected.promotes_to.type, best->promotes_to.type);
-	TEST_ASSERT_EQUAL_INT(expected.promotes_to.color, best->promotes_to.color);
+	TEST_ASSERT_EQUAL_MOVE(&expected, best);
 	// clang-format on
 
 	free(best);
