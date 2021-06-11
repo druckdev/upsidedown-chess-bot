@@ -6,7 +6,6 @@
 #include <stdio.h>
 
 #include "chess.h"
-
 struct move {
 	enum pos start, target;
 	bool hit, is_checkmate;
@@ -14,7 +13,7 @@ struct move {
 	int rating;
 };
 
-int rate_move(struct piece* board, struct move* move);
+int rate_move(struct chess* game, struct move* move);
 
 void fprint_move(FILE* stream, struct move* move);
 

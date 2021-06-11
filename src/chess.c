@@ -69,9 +69,11 @@ init_chess()
 	struct chess chess;
 	chess.checkmate  = false;
 	chess.moving     = UNDEFINED;
+	chess.phase      = EARLY_GAME;
 	chess.board      = calloc(64, sizeof(*(chess.board)));
 	chess.move_count = 0;
 	chess.max_moves  = MAX_MOVE_COUNT;
+	chess.piece_count = 0;
 	assert(init_ht(&chess.trans_table, TRANSPOSITION_TABLE_SIZE) &&
 	       "Transposition table could not be initialized.");
 
@@ -112,7 +114,7 @@ run_chess()
 
 		gs_print_move(move);
 
-		do_move(game.board, move);
+		do_move(&game, move);
 #ifdef DEBUG_BOARD_WHEN_PLAYING
 		struct move_list* list = move_list_push(NULL, move);
 		print_board(game.board, list);
@@ -120,6 +122,7 @@ run_chess()
 		free(move);
 #endif
 		game.move_count++;
+		game.phase = get_game_phase(&game);
 	}
 
 	free_ht(&game.trans_table);

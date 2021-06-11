@@ -9,9 +9,10 @@
 
 #define WHITE_TO_BLACK_OFF ('a' - 'A')
 
-struct piece do_move(struct piece* board, struct move* move);
-void undo_move(struct piece* board, struct move* move, struct piece old);
+struct piece do_move(struct chess* game, struct move* move);
+void undo_move(struct chess* game, struct move* move, struct piece old);
 
+enum game_phase get_game_phase(struct chess* game);
 char* pos_to_str(enum pos pos, char* str);
 char piece_e_to_chr(enum piece_type piece);
 char piece_to_chr(struct piece piece);

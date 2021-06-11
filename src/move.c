@@ -4,6 +4,48 @@
 
 #include "board.h"
 #include "move.h"
+#include "pst.h"
+
+/**
+ * Rates a move from the point of view of the moving player.
+ *
+ * NOTE(Aurel): Currently it only calculates the difference in piece-value on
+ * the board the move would make.
+ */
+int
+rate_move(struct chess* game, struct move* move)
+{
+	int rating = 0;
+
+	if (move->hit) {
+		// add the value of the hit piece to the rating
+		struct piece to = game->board[move->target];
+		rating += PIECE_VALUES[to.type];
+	}
+
+	if (move->is_checkmate)
+		// checkmate is like hitting the king, so add the kings value to the
+		// rating
+		rating += PIECE_VALUES[KING];
+
+	struct piece from        = game->board[move->start];
+	enum piece_type promo_to = move->promotes_to.type;
+	if (promo_to) {
+		// add the difference in value between the old and new piece to the
+		// rating
+		rating += PIECE_VALUES[promo_to] - PIECE_VALUES[from.type];
+	}
+
+	// piece square tables
+#ifdef PIECE_SQUARE_TABLES
+	// Add difference between position weights. Use promotes_to on target when
+	// promoting.
+	rating += get_pst_val(game, move->target, promo_to ? promo_to : from.type);
+	rating -= get_pst_val(game, move->start, from.type);
+#endif /* PIECE_SQUARE_TABLES */
+
+	return rating;
+}
 
 void
 fprint_move(FILE* stream, struct move* move)
