@@ -6,6 +6,7 @@
 #include "chess.h"
 #include "generator.h"
 #include "helper.h"
+#include "move.h"
 
 #define N_FOR_AVG 3
 #define ITERATIONS 10000
@@ -14,6 +15,9 @@
 int
 main(int argc, char* argv[])
 {
+	(void)argc;
+	(void)argv;
+
 	printf("Benchmarking function generate_moves()...\n");
 
 	size_t len = sizeof(test_boards) / sizeof(*test_boards);
@@ -33,11 +37,12 @@ main(int argc, char* argv[])
 
 		// Init game
 		struct chess chess;
+		chess.board = calloc(64, sizeof(*chess.board));
 		fen_to_chess(test_boards[i].fen, &chess);
 
 		print_board(chess.board, NULL);
 
-		struct list* moves;
+		struct move_list* moves;
 		struct timespec t_start_cpu, t_end_cpu, t_start_wall, t_end_wall;
 
 		for (size_t j = 0; j < N_FOR_AVG; ++j) {
@@ -48,6 +53,8 @@ main(int argc, char* argv[])
 				/* functions to benchmark */
 
 				moves = generate_moves(&chess, true, false);
+				if (k != ITERATIONS - 1)
+					move_list_free(moves);
 
 				/* \functions to benchmark */
 			}
@@ -92,6 +99,8 @@ main(int argc, char* argv[])
 		       wall_secs[i][N_FOR_AVG], wall_nsecs[i][N_FOR_AVG]);
 
 		printf("\n-------------------------------------------\n\n");
+
+		free(chess.board);
 	}
 
 	printf("Summary:\n");

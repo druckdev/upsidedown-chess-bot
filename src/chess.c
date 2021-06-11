@@ -8,9 +8,16 @@
 #include "bot.h"
 #include "chess.h"
 #include "generator.h"
+#include "move.h"
+#include "timer.h"
+
+#define MAX_FEN_STR_LEN 128
+
+struct piece empty_piece = { EMPTY, WHITE };
+int PIECE_VALUES[]       = { 0, 100, 400, 400, 500, 900, 1000000 };
 
 int
-get_piece_value(enum PIECE_E piece)
+get_piece_value(enum piece_type piece)
 {
 	return PIECE_VALUES[piece];
 }
@@ -23,6 +30,10 @@ opponent_move(struct move* move)
 	ssize_t bytes_read = read(STDIN_FILENO, move_str, sizeof(move_str) - 1);
 	if (bytes_read < 0) {
 		perror("Error reading");
+		exit(1);
+	}
+	if (bytes_read < 5) {
+		fprintf(stderr, "Could not read move.\n");
 		exit(1);
 	}
 
@@ -39,7 +50,7 @@ opponent_move(struct move* move)
 }
 
 void
-print_move(struct move* move)
+gs_print_move(struct move* move)
 {
 	printf("%i,%i,", move->start, move->target);
 
@@ -52,39 +63,62 @@ print_move(struct move* move)
 }
 
 struct chess
-init_chess(enum COLOR c)
+init_chess()
 {
-	struct chess chess = { 0 };
-	fen_to_chess(DEFAULT_BOARD, &chess);
-	chess.moving = c;
-	chess.max_moves = MAX_MOVE_COUNT;
+	struct chess chess;
+	chess.checkmate  = false;
+	chess.moving     = UNDEFINED;
+	chess.board      = calloc(64, sizeof(*(chess.board)));
+	chess.move_count = 0;
+	chess.max_moves  = MAX_MOVE_COUNT;
+
+	// TODO(Aurel): Once the server implements it, this will need to change.
+	//chess.t_remaining_s = -1;
+	chess.t_remaining_s = 1000; // Always update timer to have 1000s left
+
 	return chess;
 }
 
 void
-run_chess(struct chess* game)
+run_chess()
 {
-	// print_board(game->board, NULL);
+	struct chess game         = init_chess();
+	char fen[MAX_FEN_STR_LEN] = { 0 };
+	struct chess_timer* timer = start_timer(10 * 60);
 
-	if (game->moving == BLACK) {
-		// Let opponent make the first move
-		struct move move;
-		assert(execute_move(game->board, opponent_move(&move)));
-		// print_board(game->board, NULL);
+	while (!game.checkmate) {
+		ssize_t bytes_read = read(STDIN_FILENO, fen, sizeof(fen) - 1);
+		if (bytes_read < 0) {
+			perror("Error reading");
+			free(game.board);
+			exit(1);
+		}
+		fen[bytes_read] = '\0';
+
+		update_timer(timer, &game);
+
+		fen_to_chess(fen, &game);
+
+#ifdef DEBUG_BOARD_WHEN_PLAYING
+		print_board(game.board, NULL);
+#endif
+
+		struct move* move = choose_move(&game, timer);
+		if (!move)
+			break;
+
+		gs_print_move(move);
+
+		do_move(game.board, move);
+#ifdef DEBUG_BOARD_WHEN_PLAYING
+		struct move_list* list = move_list_push(NULL, move);
+		print_board(game.board, list);
+#else
+		free(move);
+#endif
+		game.move_count++;
 	}
 
-	while (!game->checkmate) {
-		// sleep(1);
-		struct list* moves = generate_moves(game, true, false);
-		struct move* move  = choose_move(game, moves);
-		print_move(move);
-
-		assert(execute_move(game->board, move));
-		list_free(moves);
-
-		struct move oppo_move;
-		assert(execute_move(game->board, opponent_move(&oppo_move)));
-		// print_board(game->board, NULL);
-		game->move_count++;
-	}
+	free(game.board);
+	free(timer);
 }

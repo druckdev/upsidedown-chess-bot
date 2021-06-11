@@ -3,8 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-
-#include "timer.h"
+#include <stdio.h>
 
 #define WIDTH 8
 #define HEIGHT 8
@@ -14,7 +13,7 @@
 
 #define DEFAULT_BOARD "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
-enum PIECE_E {
+enum piece_type {
 	EMPTY  = 0,
 	PAWN   = 1,
 	BISHOP = 2,
@@ -23,15 +22,15 @@ enum PIECE_E {
 	QUEEN  = 5,
 	KING   = 6
 };
-static int PIECE_VALUES[] = { 0, 1, 4, 4, 5, 9, 1000000 };
+extern int PIECE_VALUES[];
 
 /*
  * TODO: These are just stubs to get a general idea of what we need.
  * Change and move them as u wish.
  */
-enum COLOR { WHITE, BLACK };
+enum color { BLACK = -1, UNDEFINED = 0, WHITE = +1 };
 // clang-format off
-enum POS {
+enum pos {
     A8, B8, C8, D8, E8, F8, G8, H8,
     A7, B7, C7, D7, E7, F7, G7, H7,
     A6, B6, C6, D6, E6, F6, G6, H6,
@@ -44,33 +43,24 @@ enum POS {
 };
 // clang-format on
 
-struct PIECE {
-	enum PIECE_E type;
-	enum COLOR color;
+struct piece {
+	enum piece_type type;
+	enum color color;
 };
-static struct PIECE empty_piece = { EMPTY, WHITE };
+extern struct piece empty_piece;
 
 struct chess {
-	// TODO: We memcpy a lot (when creating new game objects)
-	// This should probably become a real pointer.
-	struct PIECE board[64];
-	enum COLOR moving;
+	struct piece* board;
+	enum color moving;
 	uint32_t checkmate;
 	int rating;
-	struct chess_timer timer;
-	long t_remaining_ns;
+	long t_remaining_s;
 	int max_moves, move_count;
 };
 
-struct move {
-	enum POS start, target;
-	bool hit;
-	struct PIECE promotes_to;
-};
-
-int get_piece_value(enum PIECE_E piece);
+int get_piece_value(enum piece_type piece);
 struct move* opponent_move(struct move*);
-struct chess init_chess(enum COLOR c);
-void run_chess(struct chess* game);
+struct chess init_chess();
+void run_chess();
 
 #endif /* CHESS_H */
