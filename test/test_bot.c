@@ -44,15 +44,17 @@ test_rate_board()
 void
 test_negamax()
 {
-	printf("TEST: negamax\t");
-	struct ht ht = { 0 };
-	TEST_ASSERT_NOT_NULL_MESSAGE(init_ht(&ht, 256), "init_ht() failed.");
 
+	printf("TEST: negamax\t");
 	struct chess game = { .board  = calloc(64, sizeof(*game.board)),
-		                  .moving = WHITE };
+		.moving = WHITE,
+		.trans_table = { 0 },
+	};
+	TEST_ASSERT_NOT_NULL_MESSAGE(init_ht(&game.trans_table, TRANSPOSITION_TABLE_SIZE), "init_ht() failed.");
+
 	fen_to_chess("R1BQKBNR/PPPPPPPP/N7/8/8/8/pppppppp/rnbqkbnr", &game);
 
-	struct negamax_return ret = negamax(&game, &ht, 1, INT_MIN + 1, INT_MAX);
+	struct negamax_return ret = negamax(&game, 6, INT_MIN + 1, INT_MAX);
 	struct move* best;
 #ifdef DEBUG_NEGAMAX_USE_LIST
 	best = move_list_pop(ret.moves);
@@ -84,6 +86,7 @@ test_negamax()
 
 	free(best);
 	free(game.board);
+	free_ht(&game.trans_table);
 }
 
 void
