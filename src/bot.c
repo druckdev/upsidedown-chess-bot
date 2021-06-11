@@ -214,7 +214,8 @@ choose_move(struct chess* game, struct chess_timer* timer)
 	 * Currently the remaining move time must be larger than 3 times the time
 	 * the previous move's calculations took.
 	 */
-	for (size_t i = 1; i <= MAX_NEGAMAX_DEPTH; ++i) {
+	int curr_max_depth = 1;
+	while (true) {
 		double t_remaining = get_remaining_move_time(timer);
 		double min_t_remaining =
 				3 * (t_prev_move.tv_sec + t_prev_move.tv_nsec * 1e-9);
@@ -228,7 +229,7 @@ choose_move(struct chess* game, struct chess_timer* timer)
 
 		free(best);
 
-		struct negamax_return ret = negamax(game, i, INT_MIN + 1, INT_MAX);
+		struct negamax_return ret = negamax(game, curr_max_depth, INT_MIN + 1, INT_MAX);
 
 #ifdef DEBUG_NEGAMAX_USE_LIST
 		if (!ret.moves)
@@ -248,7 +249,7 @@ choose_move(struct chess* game, struct chess_timer* timer)
 #ifdef DEBUG_PRINTS
 		fprintf(DEBUG_PRINT_STREAM, "cur best move: ");
 		fprint_move(DEBUG_PRINT_STREAM, best);
-		fprintf(DEBUG_PRINT_STREAM, "depth: %lu\n", i);
+		fprintf(DEBUG_PRINT_STREAM, "depth: %lu\n", curr_max_depth);
 		fprintf(DEBUG_PRINT_STREAM, "value: %i\n", ret.val);
 		fprintf(DEBUG_PRINT_STREAM, "\n");
 #endif /* DEBUG_PRINTS */
@@ -267,6 +268,8 @@ choose_move(struct chess* game, struct chess_timer* timer)
 		t_prev_move = t_end;
 		t_prev_move.tv_sec -= t_beg.tv_sec;
 		t_prev_move.tv_nsec -= t_beg.tv_nsec;
+
+		curr_max_depth++;
 	}
 	return best;
 }
