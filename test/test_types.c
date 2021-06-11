@@ -3,7 +3,6 @@
 
 #include "move.h"
 #include "unity.h"
-// #include "devel_types.h"
 
 void
 test_move_list_sort()
