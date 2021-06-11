@@ -174,14 +174,34 @@ fen_to_chess(char* fen, struct chess* game)
 			game->piece_count++;
 		}
 	}
-	--c;
 
-	while (fen[++c]) {
-		if (fen[c] == 'w')
-			game->moving = WHITE;
-		else if (fen[c] == 'b')
-			game->moving = BLACK;
+	// get color parameter
+	if (fen[++c] == 'w')
+		game->moving = WHITE;
+	else if (fen[++c] == 'b')
+		game->moving = BLACK;
+
+	// get remaining time parameter
+	int j = 0;
+	c += 1; // skip space
+	while (fen[++c] != ' ') {
+		j++;
 	}
+	char* remaining_time = calloc(j, sizeof(char));
+	memcpy(remaining_time, &fen[c-j], j);
+	game->t_remaining_s = atof(remaining_time);
+
+	// get current move parameter
+	j = 0;
+	c += 1; // skip space
+	while (fen[++c] != '\0' && fen[++c] != ' ') {
+		j++;
+	}
+	char* current_move = calloc(j, sizeof(char));
+	memcpy(current_move, &fen[c-j], j);
+	game->move_count = atoi(current_move);
+
+	return;	
 }
 
 // returns true if the position is attacked by one of the given moves
