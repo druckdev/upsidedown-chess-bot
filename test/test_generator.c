@@ -6,6 +6,7 @@
 #include "chess.h"
 #include "unity.h"
 
+#include "devel_chess.h"
 #include "devel_generator.h"
 
 #include "helper.h"
@@ -15,9 +16,8 @@ test_checkmate()
 {
 	printf("TEST: is_checkmate field of moves\t");
 
-	char* fen = "8/8/8/8/8/5n2/pppppppN/rnbqkbr1 w";
-	struct chess chess;
-	chess.board = calloc(64, sizeof(*chess.board));
+	char* fen          = "8/8/8/8/8/5n2/pppppppN/rnbqkbr1 w";
+	struct chess chess = init_chess();
 	fen_to_chess(fen, &chess);
 
 	struct move_list* moves = generate_moves(&chess, true, false);
@@ -47,12 +47,11 @@ test_generate_moves_piece()
 	printf("TEST: %s\n", test_boards[0].fen);
 
 	// init game
-	struct chess chess;
-	chess.board = calloc(64, sizeof(*chess.board));
+	struct chess chess = init_chess();
 	fen_to_chess(test_boards[0].fen, &chess);
 
 	// verify generator
-	struct move_list* list = generate_moves_piece(chess.board, D3, true, false);
+	struct move_list* list = generate_moves_piece(&chess, D3, true, false);
 	int list_len           = move_list_count(list);
 
 	if (list_len != test_boards[0].move_cnt) {

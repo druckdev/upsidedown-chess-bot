@@ -24,8 +24,8 @@ set(TEST_INC_DIR test/inc)
 
 # sources
 set(SOURCES ${SRC_DIR}/board.c ${SRC_DIR}/chess.c ${SRC_DIR}/bot.c
-	${SRC_DIR}/generator.c ${SRC_DIR}/move.c ${SRC_DIR}/timer.c
-    ${SRC_DIR}/hashtable.c)
+    ${SRC_DIR}/generator.c ${SRC_DIR}/move.c ${SRC_DIR}/timer.c
+    ${SRC_DIR}/pst.c ${SRC_DIR}/hashtable.c)
 
 # sources specific to the bot itself - cotaining bot main
 set(BOT_SOURCES ${SRC_DIR}/main.c ${SOURCES})
@@ -59,8 +59,18 @@ add_compile_definitions(DEBUG_PRINTS)
 add_compile_definitions(DEBUG_NEGAMAX_USE_LIST)
 add_compile_definitions(DEBUG_BOARD_WHEN_PLAYING)
 
-add_compile_definitions(ENABLE_ALPHA_BETA_CUTOFFS)
+# Optimizations toggles for benchmarking #######################################
+
+# Choose exactly one of the three
+#add_compile_definitions(VANILLA_MINIMAX)
+#add_compile_definitions(ENABLE_ALPHA_BETA_CUTOFFS)
+add_compile_definitions(USE_PRINCIPAL_VARIATION_SEARCH)
+
+add_compile_definitions(PIECE_SQUARE_TABLES)
+
 add_compile_definitions(ENABLE_TRANSPOSITION_TABLE)
+
+################################################################################
 
 # tests
 include(CTest)

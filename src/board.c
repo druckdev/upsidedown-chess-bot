@@ -12,32 +12,59 @@
 #define ANSI_RESET "\033[0m"
 
 struct piece
-do_move(struct piece* board, struct move* move)
+do_move(struct chess* game, struct move* move)
 {
-	if (!board || !move)
+	if (!game || !game->board || !move)
 		return (struct piece){};
 
 	assert(move->target != move->start);
 
-	struct piece old = board[move->target];
-	board[move->target] =
-			move->promotes_to.type ? move->promotes_to : board[move->start];
-	board[move->start].type = EMPTY;
+	struct piece old              = game->board[move->target];
+	game->board[move->target]     = move->promotes_to.type ?
+                                            move->promotes_to :
+                                            game->board[move->start];
+	game->board[move->start].type = EMPTY;
+
+	if (move->hit)
+		game->piece_count--;
 
 	return old;
 }
 
 void
-undo_move(struct piece* board, struct move* move, struct piece old)
+undo_move(struct chess* game, struct move* move, struct piece old)
 {
-	if (!board || !move)
+	if (!game || !game->board || !move)
 		return;
 
-	board[move->start] = board[move->target];
+	game->board[move->start] = game->board[move->target];
 	if (move->promotes_to.type)
-		board[move->start].type = PAWN;
+		game->board[move->start].type = PAWN;
 
-	board[move->target] = old;
+	game->board[move->target] = old;
+	if (move->hit)
+		game->piece_count++;
+}
+
+enum game_phase
+get_game_phase(struct chess* game)
+{
+	/*
+	 * TODO(Aurel): How do we determine when the early/mid game ends? What is a
+	 * good heuristic besides just move and piece count.
+	 */
+
+	enum game_phase phase = game->phase;
+
+	if (phase == EARLY_GAME && (game->move_count > EG_MOVE_COUNT_MAX ||
+	                            game->piece_count < EG_PIECE_COUNT_MIN))
+		phase = MID_GAME;
+
+	if (phase == MID_GAME && (game->move_count > MG_MOVE_COUNT_MAX ||
+	                          game->piece_count < MG_PIECE_COUNT_MIN))
+		phase = LATE_GAME;
+
+	return phase;
 }
 
 /*
@@ -144,6 +171,7 @@ fen_to_chess(char* fen, struct chess* game)
 			i += atoi(fen + c);
 		} else if (fen[c] != '/') {
 			game->board[i++] = chr_to_piece(fen[c]);
+			game->piece_count++;
 		}
 	}
 	--c;

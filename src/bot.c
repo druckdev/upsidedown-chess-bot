@@ -12,6 +12,7 @@
 #include "generator.h"
 #include "hashtable.h"
 #include "move.h"
+#include "pst.h"
 #include "timer.h"
 
 size_t MAX_NEGAMAX_DEPTH = 3;
@@ -38,41 +39,8 @@ rate_board(struct chess* chess)
 	return rating;
 }
 
-/**
- * Rates a move from the point of view of the moving player.
- *
- * NOTE(Aurel): Currently it only calculates the difference in piece-value on
- * the board the move would make.
- */
-int
-rate_move(struct piece* board, struct move* move)
-{
-	int rating = 0;
-
-	if (move->hit) {
-		// add the value of the hit piece to the rating
-		struct piece to = board[move->target];
-		rating += PIECE_VALUES[to.type];
-	}
-
-	if (move->is_checkmate)
-		// checkmate is like hitting the king, so add the kings value to the
-		// rating
-		rating += PIECE_VALUES[KING];
-
-	struct piece promotes_to = move->promotes_to;
-	if (promotes_to.type) {
-		// add the difference in value between the old and new piece to the
-		// rating
-		struct piece from = board[move->start];
-		rating += PIECE_VALUES[promotes_to.type] - PIECE_VALUES[from.type];
-	}
-
-	return rating;
-}
-
 void
-rate_move_list(struct piece* board, struct move_list* list)
+rate_move_list(struct chess* game, struct move_list* list)
 {
 	if (!list)
 		return;
@@ -80,7 +48,7 @@ rate_move_list(struct piece* board, struct move_list* list)
 	struct move_list_elem* cur = move_list_get_first(list);
 	while (cur) {
 		struct move* move = cur->move;
-		move->rating      = rate_move(board, move);
+		move->rating      = rate_move(game, move);
 
 		cur = move_list_get_next(cur);
 	}
@@ -120,13 +88,16 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 		return (struct negamax_return){ 0, NULL };
 	}
 
-#ifdef ENABLE_ALPHA_BETA_CUTOFFS
-	rate_move_list(game->board, moves);
+#ifndef VANILLA_MINIMAX
+	rate_move_list(game, moves);
 	move_list_sort(moves);
 #endif
 
 	game->moving *= -1;
 	struct negamax_return best = { INT_MIN + 1, NULL };
+#ifdef USE_PRINCIPAL_VARIATION_SEARCH
+	bool b_search_pv = true;
+#endif
 
 	/*
 	 * NOTE(Aurel): This factor should increase the rating of moves higher up
@@ -150,21 +121,34 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 		if (move->is_checkmate)
 			// If we know it will checkmate, there are no more moves left for
 			// the enemy to do and thus we already know what ret should look
-			// like.
+			// like. This saves at least one iteration over the board looking
+			// for valid moves.
 			ret = (struct negamax_return){ 0, NULL };
 		else {
 			// execute move and see what happens down the tree - dfs
-			struct piece old = do_move(game->board, move);
-			ret              = negamax(game, ht, depth - 1, -b, -a);
-			undo_move(game->board, move, old);
+			struct piece old = do_move(game, move);
+
+#ifdef USE_PRINCIPAL_VARIATION_SEARCH
+			if (b_search_pv) {
+				ret = negamax(game, ht, depth - 1, -b, -a);
+			} else {
+				ret = negamax(game, ht, depth - 1, -a - 1, -a);
+				if (-ret.val > a)
+					ret = negamax(game, ht, depth - 1, -b, -a); // re-search
+			}
+#else
+			ret = negamax(game, ht, depth - 1, -b, -a);
+#endif
+
+			undo_move(game, move, old);
 		}
 
-#ifdef ENABLE_ALPHA_BETA_CUTOFFS
+#ifndef VANILLA_MINIMAX
 		// without ab-pruning this happens at the end of the function
 		ret.val = -ret.val;
 #else
 		// the move has not yet been rated
-		move->rating = rate_move(game->board, move);
+		move->rating = rate_move(game, move);
 #endif /* ENABLE_ALPHA_BETA_CUTOFFS */
 
 		// include this moves rating in the score
@@ -189,7 +173,14 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 			free(move);
 		}
 
-#ifdef ENABLE_ALPHA_BETA_CUTOFFS
+#if defined(USE_PRINCIPAL_VARIATION_SEARCH)
+		if (best.val >= b)
+			break;
+		if (best.val > a) {
+			a           = best.val;
+			b_search_pv = false;
+		}
+#elif defined(ENABLE_ALPHA_BETA_CUTOFFS)
 		if (best.val > a)
 			a = best.val;
 		if (a >= b)
@@ -199,7 +190,7 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 	move_list_free(moves);
 
 	game->moving *= -1;
-#ifndef ENABLE_ALPHA_BETA_CUTOFFS
+#ifdef VANILLA_MINIMAX
 	// using ab-pruning this needs to happen earlier
 	best.val *= -1;
 #endif /* ENABLE_ALPHA_BETA_CUTOFFS */
