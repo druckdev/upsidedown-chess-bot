@@ -121,8 +121,8 @@ pyramid_distribution(struct chess_timer* timer, struct chess* game)
 
 	// clang-format off
 	struct timespec t_move = {
-		uniform_sec,
-		uniform_nsec
+		sec,
+		nsec
 	};
 	// clang-format on
 
