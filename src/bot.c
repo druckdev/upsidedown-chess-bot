@@ -11,6 +11,7 @@
 #include "chess.h"
 #include "generator.h"
 #include "move.h"
+#include "pst.h"
 #include "timer.h"
 
 size_t MAX_NEGAMAX_DEPTH = 3;
@@ -37,41 +38,8 @@ rate_board(struct chess* chess)
 	return rating;
 }
 
-/**
- * Rates a move from the point of view of the moving player.
- *
- * NOTE(Aurel): Currently it only calculates the difference in piece-value on
- * the board the move would make.
- */
-int
-rate_move(struct piece* board, struct move* move)
-{
-	int rating = 0;
-
-	if (move->hit) {
-		// add the value of the hit piece to the rating
-		struct piece to = board[move->target];
-		rating += PIECE_VALUES[to.type];
-	}
-
-	if (move->is_checkmate)
-		// checkmate is like hitting the king, so add the kings value to the
-		// rating
-		rating += PIECE_VALUES[KING];
-
-	struct piece promotes_to = move->promotes_to;
-	if (promotes_to.type) {
-		// add the difference in value between the old and new piece to the
-		// rating
-		struct piece from = board[move->start];
-		rating += PIECE_VALUES[promotes_to.type] - PIECE_VALUES[from.type];
-	}
-
-	return rating;
-}
-
 void
-rate_move_list(struct piece* board, struct move_list* list)
+rate_move_list(struct chess* game, struct move_list* list)
 {
 	if (!list)
 		return;
@@ -79,7 +47,7 @@ rate_move_list(struct piece* board, struct move_list* list)
 	struct move_list_elem* cur = move_list_get_first(list);
 	while (cur) {
 		struct move* move = cur->move;
-		move->rating      = rate_move(board, move);
+		move->rating      = rate_move(game, move);
 
 		cur = move_list_get_next(cur);
 	}
@@ -105,7 +73,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	}
 
 #ifndef VANILLA_MINIMAX
-	rate_move_list(game->board, moves);
+	rate_move_list(game, moves);
 	move_list_sort(moves);
 #endif
 
@@ -137,11 +105,12 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		if (move->is_checkmate)
 			// If we know it will checkmate, there are no more moves left for
 			// the enemy to do and thus we already know what ret should look
-			// like.
+			// like. This saves at least one iteration over the board looking
+			// for valid moves.
 			ret = (struct negamax_return){ 0, NULL };
 		else {
 			// execute move and see what happens down the tree - dfs
-			struct piece old = do_move(game->board, move);
+			struct piece old = do_move(game, move);
 
 #ifdef USE_PRINCIPAL_VARIATION_SEARCH
 			if (b_search_pv) {
@@ -155,7 +124,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 			ret = negamax(game, depth - 1, -b, -a);
 #endif
 
-			undo_move(game->board, move, old);
+			undo_move(game, move, old);
 		}
 
 #ifndef VANILLA_MINIMAX
@@ -163,7 +132,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		ret.val = -ret.val;
 #else
 		// the move has not yet been rated
-		move->rating = rate_move(game->board, move);
+		move->rating = rate_move(game, move);
 #endif /* ENABLE_ALPHA_BETA_CUTOFFS */
 
 		// include this moves rating in the score

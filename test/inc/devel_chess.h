@@ -14,12 +14,12 @@
 #define EG_MOVE_COUNT_MAX 20
 #define MG_MOVE_COUNT_MAX 40
 
-#define EG_PIECE_COUNT_MIN 31
+#define EG_PIECE_COUNT_MIN 30
 #define MG_PIECE_COUNT_MIN 11
 
 #define DEFAULT_BOARD "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
-enum piece_type {
+enum PIECE_E {
 	EMPTY  = 0,
 	PAWN   = 1,
 	BISHOP = 2,
@@ -34,9 +34,9 @@ extern int PIECE_VALUES[];
  * TODO: These are just stubs to get a general idea of what we need.
  * Change and move them as u wish.
  */
-enum color { BLACK = -1, UNDEFINED = 0, WHITE = +1 };
+enum COLOR { BLACK = -1, UNDEFINED = 0, WHITE = +1 };
 // clang-format off
-enum pos {
+enum POS {
     A8, B8, C8, D8, E8, F8, G8, H8,
     A7, B7, C7, D7, E7, F7, G7, H7,
     A6, B6, C6, D6, E6, F6, G6, H6,
@@ -49,17 +49,17 @@ enum pos {
 };
 // clang-format on
 
-struct piece {
-	enum piece_type type;
-	enum color color;
+struct PIECE {
+	enum PIECE_E type;
+	enum COLOR color;
 };
-extern struct piece empty_piece;
+extern struct PIECE empty_piece;
 
 enum game_phase { EARLY_GAME, MID_GAME, LATE_GAME };
 
 struct chess {
-	struct piece* board;
-	enum color moving;
+	struct PIECE* board;
+	enum COLOR moving;
 	enum game_phase phase;
 	uint32_t checkmate;
 	int rating;
@@ -68,10 +68,19 @@ struct chess {
 	int piece_count;
 };
 
+struct move {
+	enum POS start, target;
+	bool hit, is_checkmate;
+	struct PIECE promotes_to;
+};
+
+struct chess init_chess();
 enum game_phase get_game_phase(struct chess* game);
-int get_piece_value(enum piece_type piece);
+int get_piece_value(enum PIECE_E piece);
 struct move* opponent_move(struct move*);
 struct chess init_chess();
 void run_chess();
+
+void fprint_move(FILE* stream, struct move* move);
 
 #endif /* CHESS_H */
