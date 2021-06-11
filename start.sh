@@ -1,7 +1,6 @@
 #!/bin/sh
 
 cd "$(dirname "$0")" || exit
-ls
 
 # $1 player is w or b
 # $2 totalTime as double
