@@ -63,12 +63,12 @@ add_compile_definitions(DEBUG_BOARD_WHEN_PLAYING)
 
 # Choose exactly one of the three
 #add_compile_definitions(VANILLA_MINIMAX)
-#add_compile_definitions(ENABLE_ALPHA_BETA_CUTOFFS)
-add_compile_definitions(USE_PRINCIPAL_VARIATION_SEARCH)
+#add_compile_definitions(ALPHA_BETA_CUTOFFS)
+add_compile_definitions(PRINCIPAL_VARIATION_SEARCH)
 
 add_compile_definitions(PIECE_SQUARE_TABLES)
 
-add_compile_definitions(ENABLE_TRANSPOSITION_TABLE)
+add_compile_definitions(TRANSPOSITION_TABLES)
 
 ################################################################################
 

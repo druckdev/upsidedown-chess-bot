@@ -61,7 +61,7 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 	if (!depth)
 		return (struct negamax_return){ 0, NULL };
 
-#ifdef ENABLE_TRANSPOSITION_TABLE
+#ifdef TRANSPOSITION_TABLES
 	// TODO(Aurel): check hash map if best move has already been calculated
 	struct ht_entry* entry = ht_get_entry(ht, game->board);
 	if (entry) {
@@ -74,7 +74,7 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 #endif
 		}
 	}
-#endif /* ENABLE_TRANSPOSITION_TABLE */
+#endif /* TRANSPOSITION_TABLES */
 
 	struct move_list* moves = generate_moves(game, true, false);
 
@@ -95,7 +95,7 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 
 	game->moving *= -1;
 	struct negamax_return best = { INT_MIN + 1, NULL };
-#ifdef USE_PRINCIPAL_VARIATION_SEARCH
+#ifdef PRINCIPAL_VARIATION_SEARCH
 	bool b_search_pv = true;
 #endif
 
@@ -128,7 +128,7 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 			// execute move and see what happens down the tree - dfs
 			struct piece old = do_move(game, move);
 
-#ifdef USE_PRINCIPAL_VARIATION_SEARCH
+#ifdef PRINCIPAL_VARIATION_SEARCH
 			if (b_search_pv) {
 				ret = negamax(game, ht, depth - 1, -b, -a);
 			} else {
@@ -149,7 +149,7 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 #else
 		// the move has not yet been rated
 		move->rating = rate_move(game, move);
-#endif /* ENABLE_ALPHA_BETA_CUTOFFS */
+#endif /* ALPHA_BETA_CUTOFFS */
 
 		// include this moves rating in the score
 		ret.val += val_depth_factor * move->rating;
@@ -173,19 +173,19 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 			free(move);
 		}
 
-#if defined(USE_PRINCIPAL_VARIATION_SEARCH)
+#if defined(PRINCIPAL_VARIATION_SEARCH)
 		if (best.val >= b)
 			break;
 		if (best.val > a) {
 			a           = best.val;
 			b_search_pv = false;
 		}
-#elif defined(ENABLE_ALPHA_BETA_CUTOFFS)
+#elif defined(ALPHA_BETA_CUTOFFS)
 		if (best.val > a)
 			a = best.val;
 		if (a >= b)
 			break;
-#endif /* ENABLE_ALPHA_BETA_CUTOFFS */
+#endif /* ALPHA_BETA_CUTOFFS */
 	}
 	move_list_free(moves);
 
@@ -193,12 +193,12 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 #ifdef VANILLA_MINIMAX
 	// using ab-pruning this needs to happen earlier
 	best.val *= -1;
-#endif /* ENABLE_ALPHA_BETA_CUTOFFS */
+#endif /* ALPHA_BETA_CUTOFFS */
 
-#ifdef ENABLE_TRANSPOSITION_TABLE
+#ifdef TRANSPOSITION_TABLES
 	// if this fails no entry is created - ignore that case
 	ht_update_entry(ht, game->board, best.moves, best.val, depth);
-#endif /* ENABLE_TRANSPOSITION_TABLE */
+#endif /* TRANSPOSITION_TABLES */
 
 	return best;
 }
