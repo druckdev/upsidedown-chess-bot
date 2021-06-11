@@ -4,11 +4,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-struct ht {
-	struct ht_entry* table;
-	size_t size;
-};
-
+#include "chess.h"
+#include "move.h"
 struct ht_entry {
 	bool used;
 #ifdef DEBUG_NEGAMAX_USE_LIST
@@ -20,8 +17,6 @@ struct ht_entry {
 	size_t depth;
 	size_t board_hash;
 };
-
-#include "move.h"
 
 /**
  * @arg size should always be a power of 2!

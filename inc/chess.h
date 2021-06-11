@@ -57,8 +57,11 @@ extern struct piece empty_piece;
 
 enum game_phase { EARLY_GAME, MID_GAME, LATE_GAME };
 
-// NOTE(Aurel): This needs to be the last definition
-#include "hashtable.h"
+// TODO(Aurel): Move this into hashtable.h
+struct ht {
+	struct ht_entry* table;
+	size_t size;
+};
 struct chess {
 	struct piece* board;
 	struct ht trans_table;
