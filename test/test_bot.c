@@ -7,14 +7,15 @@
 #include "devel_bot.h"
 #include "unity.h"
 
-#define TEST_ASSERT_EQUAL_MOVE(expected, move) \
-	TEST_ASSERT_EQUAL_INT((expected)->start, (best)->start); \
-	TEST_ASSERT_EQUAL_INT((expected)->target, (best)->target); \
-	TEST_ASSERT_EQUAL_CHAR((expected)->hit, (best)->hit); \
-	TEST_ASSERT_EQUAL_CHAR((expected)->is_checkmate, (best)->is_checkmate); \
-	TEST_ASSERT_EQUAL_INT((expected)->promotes_to.type, (best)->promotes_to.type); \
-	TEST_ASSERT_EQUAL_INT((expected)->promotes_to.color, (best)->promotes_to.color)
-
+#define TEST_ASSERT_EQUAL_MOVE(expected, move)                                 \
+	TEST_ASSERT_EQUAL_INT((expected)->start, (best)->start);                   \
+	TEST_ASSERT_EQUAL_INT((expected)->target, (best)->target);                 \
+	TEST_ASSERT_EQUAL_CHAR((expected)->hit, (best)->hit);                      \
+	TEST_ASSERT_EQUAL_CHAR((expected)->is_checkmate, (best)->is_checkmate);    \
+	TEST_ASSERT_EQUAL_INT((expected)->promotes_to.type,                        \
+	                      (best)->promotes_to.type);                           \
+	TEST_ASSERT_EQUAL_INT((expected)->promotes_to.color,                       \
+	                      (best)->promotes_to.color)
 
 void
 test_rate_board()
@@ -52,13 +53,15 @@ test_rate_board()
 void
 test_negamax()
 {
-
 	printf("TEST: negamax\t");
-	struct chess game = { .board  = calloc(64, sizeof(*game.board)),
-		.moving = WHITE,
+	struct chess game = {
+		.board       = calloc(64, sizeof(*game.board)),
+		.moving      = WHITE,
 		.trans_table = { 0 },
 	};
-	TEST_ASSERT_NOT_NULL_MESSAGE(init_ht(&game.trans_table, TRANSPOSITION_TABLE_SIZE), "init_ht() failed.");
+	TEST_ASSERT_NOT_NULL_MESSAGE(init_ht(&game.trans_table,
+	                                     TRANSPOSITION_TABLE_SIZE),
+	                             "init_ht() failed.");
 
 	fen_to_chess("R1BQKBNR/PPPPPPPP/N7/8/8/8/pppppppp/rnbqkbnr", &game);
 

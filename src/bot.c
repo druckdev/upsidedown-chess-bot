@@ -101,7 +101,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		struct move_list* ret_moves = malloc(sizeof(*ret_moves));
 		move_list_cpy(ret_moves, entry->moves);
 		return (struct negamax_return){ entry->rating, ret_moves };
-#else /* DEBUG_NEGAMAX_USE_LIST */
+#else  /* DEBUG_NEGAMAX_USE_LIST */
 		return (struct negamax_return){ entry->rating, entry->move };
 #endif /* DEBUG_NEGAMAX_USE_LIST */
 	}
@@ -217,7 +217,7 @@ struct move*
 choose_move(struct chess* game, struct chess_timer* timer)
 {
 	struct timespec t_prev_move = { 0 };
-	struct move* best = NULL;
+	struct move* best           = NULL;
 
 	/*
 	 * TODO(Aurel): Think about the calculation for the time a little more.

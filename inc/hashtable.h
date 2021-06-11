@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-
 struct ht {
 	struct ht_entry* table;
 	size_t size;
@@ -35,7 +34,8 @@ struct ht_entry* ht_update_entry(struct ht* ht, struct piece* board,
 #else  /* DEBUG_NEGAMAX_USE_LIST */
                                  struct move* move
 #endif /* DEBUG_NEGAMAX_USE_LIST */
-                                 , size_t rating, size_t depth);
+                                 ,
+                                 size_t rating, size_t depth);
 
 struct ht_entry* ht_get_entry(struct ht* ht, struct piece* board);
 

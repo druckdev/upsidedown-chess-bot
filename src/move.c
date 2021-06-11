@@ -1,6 +1,6 @@
+#include "string.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "string.h"
 
 #include "board.h"
 #include "move.h"
@@ -85,7 +85,7 @@ move_list_pop(struct move_list* list)
 struct move*
 move_list_peek(struct move_list* list)
 {
-	if(!list)
+	if (!list)
 		return NULL;
 	return list->first->move;
 }
@@ -189,19 +189,19 @@ move_list_cpy(struct move_list* dest, struct move_list* src)
 	if (!src)
 		return NULL;
 
-	if(!dest)
+	if (!dest)
 		dest = malloc(sizeof(*dest));
 
 	dest->count = src->count;
 	dest->first = NULL;
-	dest->last = NULL;
+	dest->last  = NULL;
 
 	struct move_list_elem* cur_elem = src->last;
-	struct move_list_elem* last = NULL;
-	while(cur_elem) {
-		struct move* move = malloc(sizeof(*move));
+	struct move_list_elem* last     = NULL;
+	while (cur_elem) {
+		struct move* move           = malloc(sizeof(*move));
 		struct move_list_elem* elem = malloc(sizeof(*elem));
-		if(!move || !elem)
+		if (!move || !elem)
 			return NULL;
 
 		memcpy(move, cur_elem->move, sizeof(*move));
@@ -209,7 +209,7 @@ move_list_cpy(struct move_list* dest, struct move_list* src)
 		elem->prev = NULL;
 		elem->next = last;
 		if (last)
-		    last->prev = elem;
+			last->prev = elem;
 
 		dest->first = elem;
 		if (!dest->last)

@@ -43,7 +43,7 @@ free_ht(struct ht* ht)
 	for (size_t i = 0; i < ht->size; ++i) {
 #ifdef DEBUG_NEGAMAX_USE_LIST
 		move_list_free(ht->table[i].moves);
-#else /* DEBUG_NEGAMAX_USE_LIST */
+#else  /* DEBUG_NEGAMAX_USE_LIST */
 		free(ht->table[i].move);
 #endif /* DEBUG_NEGAMAX_USE_LIST */
 	}
@@ -57,7 +57,8 @@ ht_update_entry(struct ht* ht, struct piece* board,
 #else  /* DEBUG_NEGAMAX_USE_LIST */
                 struct move* move
 #endif /* DEBUG_NEGAMAX_USE_LIST */
-                , size_t rating, size_t depth)
+                ,
+                size_t rating, size_t depth)
 {
 	if (!ht || !board ||
 #ifdef DEBUG_NEGAMAX_USE_LIST
@@ -78,7 +79,7 @@ ht_update_entry(struct ht* ht, struct piece* board,
 
 	// only update if depth is higher
 	struct ht_entry* entry = &ht->table[hash];
-	if(!entry->used || depth > entry->depth ) {
+	if (!entry->used || depth > entry->depth) {
 		struct ht_entry new_entry = {
 			.used = true,
 #ifdef DEBUG_NEGAMAX_USE_LIST
@@ -93,7 +94,7 @@ ht_update_entry(struct ht* ht, struct piece* board,
 
 #ifdef DEBUG_NEGAMAX_USE_LIST
 		move_list_free(entry->moves);
-#else /* DEBUG_NEGAMAX_USE_LIST */
+#else  /* DEBUG_NEGAMAX_USE_LIST */
 		free(entry->move);
 #endif /* DEBUG_NEGAMAX_USE_LIST */
 
