@@ -307,9 +307,12 @@ generate_moves_pawn_helper(struct piece board[], enum pos pos,
 		 * NOTE(Aurel): `is_checkless_move` is the slowest and should always
 		 * be the last check!
 		 */
-		struct piece promotes_to = { EMPTY, board[pos].color };
-		if (target < 8 || target > 55)
+		struct piece promotes_to = { EMPTY, UNDEFINED };
+		if (target < 8 || target > 55) {
 			promotes_to.type = QUEEN;
+			promotes_to.color = board[pos].color;
+		}
+
 		while (promotes_to.type <= QUEEN && promotes_to.type != PAWN) {
 			struct move test = { pos,   target,      occupied_by_enemy && i,
 				                 false, promotes_to, 0 };
