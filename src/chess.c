@@ -10,6 +10,7 @@
 #include "generator.h"
 #include "move.h"
 #include "timer.h"
+#include "hashtable.h"
 
 #define MAX_FEN_STR_LEN 128
 
@@ -71,6 +72,8 @@ init_chess()
 	chess.board      = calloc(64, sizeof(*(chess.board)));
 	chess.move_count = 0;
 	chess.max_moves  = MAX_MOVE_COUNT;
+	assert(init_ht(&chess.trans_table, TRANSPOSITION_TABLE_SIZE)
+			&& "Transposition table could not be initialized.");
 
 	// TODO(Aurel): Once the server implements it, this will need to change.
 	//chess.t_remaining_s = -1;
@@ -119,6 +122,7 @@ run_chess()
 		game.move_count++;
 	}
 
+	free_ht(&game.trans_table);
 	free(game.board);
 	free(timer);
 }

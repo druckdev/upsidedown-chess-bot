@@ -87,7 +87,7 @@ rate_move_list(struct piece* board, struct move_list* list)
 }
 
 struct negamax_return
-negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
+negamax(struct chess* game, size_t depth, int a, int b)
 {
 	// max depth reached
 	if (!depth)
@@ -95,10 +95,9 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 
 #ifdef ENABLE_TRANSPOSITION_TABLE
 	// TODO(Aurel): check hash map if best move has already been calculated
-	struct ht_entry* entry = ht_get_entry(ht, game->board);
-	if (entry) {
-		printf("Found transposition entry.\n");
-		if (entry->depth >= depth) {
+	struct ht_entry* entry = ht_get_entry(&game->trans_table, game->board);
+	if (entry && entry->depth >= depth) {
+		printf("Using transposition entry.\n");
 #ifdef DEBUG_NEGAMAX_USE_LIST
 			return (struct negamax_return){ entry->rating, entry->moves };
 #else
@@ -155,7 +154,7 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 		else {
 			// execute move and see what happens down the tree - dfs
 			struct piece old = do_move(game->board, move);
-			ret              = negamax(game, ht, depth - 1, -b, -a);
+			ret              = negamax(game, depth - 1, -b, -a);
 			undo_move(game->board, move, old);
 		}
 
@@ -206,7 +205,7 @@ negamax(struct chess* game, struct ht* ht, size_t depth, int a, int b)
 
 #ifdef ENABLE_TRANSPOSITION_TABLE
 	// if this fails no entry is created - ignore that case
-	ht_update_entry(ht, game->board, best.moves, best.val, depth);
+	ht_update_entry(&game->trans_table, game->board, best.moves, best.val, depth);
 #endif /* ENABLE_TRANSPOSITION_TABLE */
 
 	return best;
@@ -216,10 +215,6 @@ struct move*
 choose_move(struct chess* game, struct chess_timer* timer)
 {
 	struct timespec t_prev_move = { 0 };
-	struct ht ht                = { 0 };
-	if (!init_ht(&ht, 1024))
-		return NULL;
-
 	struct move* best = NULL;
 
 	/*
@@ -241,7 +236,7 @@ choose_move(struct chess* game, struct chess_timer* timer)
 
 		free(best);
 
-		struct negamax_return ret = negamax(game, &ht, i, INT_MIN + 1, INT_MAX);
+		struct negamax_return ret = negamax(game, i, INT_MIN + 1, INT_MAX);
 
 #ifdef DEBUG_NEGAMAX_USE_LIST
 		if (!ret.moves)

@@ -49,8 +49,11 @@ struct piece {
 };
 extern struct piece empty_piece;
 
+#include "hashtable.h"
+
 struct chess {
 	struct piece* board;
+	struct ht trans_table;
 	enum color moving;
 	uint32_t checkmate;
 	int rating;
