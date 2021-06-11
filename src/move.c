@@ -82,6 +82,14 @@ move_list_pop(struct move_list* list)
 	return move;
 }
 
+struct move*
+move_list_peek(struct move_list* list)
+{
+	if(!list)
+		return NULL;
+	return list->first->move;
+}
+
 struct move_list_elem*
 move_list_remove(struct move_list* list, struct move_list_elem* elem)
 {

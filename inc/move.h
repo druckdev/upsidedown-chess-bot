@@ -52,6 +52,7 @@ struct move_list* move_list_push(struct move_list* list, struct move* move);
  * Runtime: O(1)
  */
 struct move* move_list_pop(struct move_list* list);
+struct move* move_list_peek(struct move_list* list);
 
 /*
  * Removes `elem` from `list` and returns its successor.
