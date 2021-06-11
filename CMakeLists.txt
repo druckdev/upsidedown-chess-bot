@@ -60,7 +60,9 @@ add_compile_definitions(DEBUG_NEGAMAX_USE_LIST)
 add_compile_definitions(DEBUG_BOARD_WHEN_PLAYING)
 
 add_compile_definitions(ENABLE_ALPHA_BETA_CUTOFFS)
-add_compile_definitions(ENABLE_TRANSPOSITION_TABLE)
+#add_compile_definitions(ENABLE_TRANSPOSITION_TABLE)
+
+add_compile_definitions(TRANSPOSITION_TABLE_SIZE=2048) # use a power of two!
 
 # tests
 include(CTest)
