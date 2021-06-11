@@ -9,6 +9,7 @@ struct chess_timer {
 
 enum t_move_distribution_function {
 	UNIFORM_DISTRIBUTION,
+	PYRAMID_DISTRIBUTION
 };
 
 // NOTE(Aurel): This needs to included after the declaration of the struct.
