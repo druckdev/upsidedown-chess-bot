@@ -17,7 +17,7 @@ enum t_move_distribution_function {
 /**
  * Constructs the timer object for a chess game.
  */
-struct chess_timer* start_timer(long t_total);
+struct chess_timer* start_timer(float t_total);
 
 /**
  * Call this function once, when the game server tells us it's this bots time to

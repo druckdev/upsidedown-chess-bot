@@ -77,7 +77,7 @@ struct chess {
 enum game_phase get_game_phase(struct chess* game);
 int get_piece_value(enum piece_type piece);
 struct move* opponent_move(struct move*);
-struct chess init_chess();
-void run_chess();
+struct chess init_chess(char color, int max_moves);
+void run_chess(char color, float total_time, int max_moves);
 
 #endif /* CHESS_H */

@@ -64,15 +64,15 @@ gs_print_move(struct move* move)
 }
 
 struct chess
-init_chess()
+init_chess(char color, int max_moves)
 {
 	struct chess chess;
 	chess.checkmate  = false;
-	chess.moving     = UNDEFINED;
+	chess.moving     = color == 'w' ? WHITE : BLACK;
 	chess.phase      = EARLY_GAME;
 	chess.board      = calloc(64, sizeof(*(chess.board)));
 	chess.move_count = 0;
-	chess.max_moves  = MAX_MOVE_COUNT;
+	chess.max_moves  = max_moves;
 	chess.piece_count = 0;
 	assert(init_ht(&chess.trans_table, TRANSPOSITION_TABLE_SIZE) &&
 	       "Transposition table could not be initialized.");
@@ -85,11 +85,11 @@ init_chess()
 }
 
 void
-run_chess()
+run_chess(char color, float total_time, int max_moves)
 {
-	struct chess game         = init_chess();
+	struct chess game         = init_chess(color, max_moves);
 	char fen[MAX_FEN_STR_LEN] = { 0 };
-	struct chess_timer* timer = start_timer(10 * 60);
+	struct chess_timer* timer = start_timer(total_time);
 
 	while (!game.checkmate) {
 		ssize_t bytes_read = read(STDIN_FILENO, fen, sizeof(fen) - 1);

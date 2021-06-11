@@ -15,7 +15,7 @@
 // TODO(Aurel): All these functions assume the game server sends remaining time
 // in nano seconds.
 struct chess_timer*
-start_timer(long t_total_s)
+start_timer(float t_total_s)
 {
 	struct timespec t_cur;
 	if (clock_gettime(CLOCK, &t_cur))

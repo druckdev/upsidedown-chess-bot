@@ -19,8 +19,18 @@ debug_print_chess_features()
 int
 main(int argc, char* argv[])
 {
-	if (argc > 1)
-		MAX_NEGAMAX_DEPTH = atoi(argv[1]);
+	float total_time = 600.0;
+	int max_moves = 50;
+	char color = 'w';
 
-	run_chess();
+	if (argc == 2) {
+		MAX_NEGAMAX_DEPTH = atoi(argv[1]);
+	}
+	else if (argc == 4) {
+		color = *argv[1];
+		total_time = atof(argv[2]);
+		max_moves = atoi(argv[3]);
+	}
+
+	run_chess(color, total_time, max_moves);
 }
