@@ -97,7 +97,6 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	// TODO(Aurel): check hash map if best move has already been calculated
 	struct ht_entry* entry = ht_get_entry(&game->trans_table, game->board);
 	if (entry && entry->depth >= depth) {
-		printf("Using transposition entry.\n");
 #ifdef DEBUG_NEGAMAX_USE_LIST
 		struct move_list* ret_moves = malloc(sizeof(*ret_moves));
 		move_list_cpy(ret_moves, entry->moves);

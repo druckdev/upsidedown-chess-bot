@@ -98,9 +98,7 @@ ht_update_entry(struct ht* ht, struct piece* board,
 #endif /* DEBUG_NEGAMAX_USE_LIST */
 
 		ht->table[hash] = new_entry;
-		printf("Updated entry\n");
 	}
-
 	return &ht->table[hash];
 }
 
