@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "string.h"
 
 #include "board.h"
 #include "move.h"
@@ -172,6 +173,43 @@ move_list_free(struct move_list* list)
 		cur = tmp;
 	}
 	free(list);
+}
+
+struct move_list*
+move_list_cpy(struct move_list* dest, struct move_list* src)
+{
+	if (!src)
+		return NULL;
+
+	if(!dest)
+		dest = malloc(sizeof(*dest));
+
+	dest->count = src->count;
+	dest->first = NULL;
+	dest->last = NULL;
+
+	struct move_list_elem* cur_elem = src->last;
+	struct move_list_elem* last = NULL;
+	while(cur_elem) {
+		struct move* move = malloc(sizeof(*move));
+		struct move_list_elem* elem = malloc(sizeof(*elem));
+		if(!move || !elem)
+			return NULL;
+
+		memcpy(move, cur_elem->move, sizeof(*move));
+		elem->move = move;
+		elem->prev = NULL;
+		elem->next = last;
+		if (last)
+		    last->prev = elem;
+
+		dest->first = elem;
+		if (!dest->last)
+			dest->last = elem;
+
+		cur_elem = cur_elem->prev;
+	}
+	return dest;
 }
 
 struct move_list_elem*

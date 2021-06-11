@@ -93,6 +93,8 @@ size_t move_list_count(struct move_list* list);
  */
 void move_list_free(struct move_list* list);
 
+struct move_list* move_list_cpy(struct move_list* dest, struct move_list* src);
+
 struct move_list_elem* move_list_get_first(struct move_list* list);
 struct move_list_elem* move_list_get_next(struct move_list_elem* elem);
 
