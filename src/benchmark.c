@@ -12,12 +12,9 @@
 #define ITERATIONS 10000
 #define CSV_STREAM stderr
 
-int
-main(int argc, char* argv[])
+void
+benchmark_generate_moves()
 {
-	(void)argc;
-	(void)argv;
-
 	printf("Benchmarking function generate_moves()...\n");
 
 	size_t len = sizeof(test_boards) / sizeof(*test_boards);
@@ -115,4 +112,13 @@ main(int argc, char* argv[])
 		free(wall_secs[i]);
 		free(wall_nsecs[i]);
 	}
+}
+
+int
+main(int argc, char* argv[])
+{
+	(void)argc;
+	(void)argv;
+
+	benchmark_generate_moves();
 }
