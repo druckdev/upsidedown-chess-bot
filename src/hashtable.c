@@ -69,7 +69,7 @@ ht_update_entry(struct ht* ht, struct piece* board,
 		return NULL;
 
 	ssize_t hash = hash_board(ht->size, board);
-	if (hash > 0)
+	if (hash < 0)
 		return NULL;
 
 	// TODO(Aurel): If this happens to often we need to find a better hash
