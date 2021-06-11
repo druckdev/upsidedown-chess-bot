@@ -64,7 +64,7 @@ gs_print_move(struct move* move)
 }
 
 struct chess
-init_chess(char color, int max_moves)
+init_chess(char color, float total_time, int max_moves)
 {
 	struct chess chess;
 	chess.checkmate  = false;
@@ -79,7 +79,7 @@ init_chess(char color, int max_moves)
 
 	// TODO(Aurel): Once the server implements it, this will need to change.
 	//chess.t_remaining_s = -1;
-	chess.t_remaining_s = 1000; // Always update timer to have 1000s left
+	chess.t_remaining_s = total_time; // Always update timer to have 1000s left
 
 	return chess;
 }
@@ -87,7 +87,7 @@ init_chess(char color, int max_moves)
 void
 run_chess(char color, float total_time, int max_moves)
 {
-	struct chess game         = init_chess(color, max_moves);
+	struct chess game         = init_chess(color, total_time, max_moves);
 	char fen[MAX_FEN_STR_LEN] = { 0 };
 	struct chess_timer* timer = start_timer(total_time);
 
