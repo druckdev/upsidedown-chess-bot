@@ -9,6 +9,7 @@ struct chess_timer {
 
 enum t_move_distribution_function {
 	UNIFORM_DISTRIBUTION,
+	PYRAMID_DISTRIBUTION
 };
 
 // NOTE(Aurel): This needs to included after the declaration of the struct.
@@ -34,6 +35,6 @@ struct chess_timer* update_timer(struct chess_timer* timer, struct chess* game);
 /**
  * Returns the remaining time for a specific move.
  */
-long get_remaining_move_time(struct chess_timer* timer);
+double get_remaining_move_time(struct chess_timer* timer);
 
 #endif /* TIMER_H */
