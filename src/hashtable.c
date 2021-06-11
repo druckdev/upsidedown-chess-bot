@@ -77,20 +77,31 @@ ht_update_entry(struct ht* ht, struct piece* board,
 	// function.
 	//assert(ht->table[hash].used && "Hash collision.");
 
-	struct ht_entry entry = {
-		.used = true,
+	// only update if depth is higher
+	struct ht_entry* entry = &ht->table[hash];
+	if(!entry->used || depth > entry->depth ) {
+		struct ht_entry new_entry = {
+			.used = true,
 #ifdef DEBUG_NEGAMAX_USE_LIST
-		.moves = moves,
+			.moves = moves,
 #else  /* DEBUG_NEGAMAX_USE_LIST */
-		.move = move,
+			.move = move,
 #endif /* DEBUG_NEGAMAX_USE_LIST */
-		.depth      = depth,
-		.rating     = rating,
-		.board_hash = hash,
-	};
+			.depth      = depth,
+			.rating     = rating,
+			.board_hash = hash,
+		};
 
-	printf("Updatet entry\n");
-	ht->table[hash] = entry;
+#ifdef DEBUG_NEGAMAX_USE_LIST
+		move_list_free(entry->moves);
+#else /* DEBUG_NEGAMAX_USE_LIST */
+		free(entry->move);
+#endif /* DEBUG_NEGAMAX_USE_LIST */
+
+		ht->table[hash] = new_entry;
+		printf("Updated entry\n");
+	}
+
 	return &ht->table[hash];
 }
 
