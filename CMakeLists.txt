@@ -20,7 +20,9 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra")
 set(SRC_DIR src)
 set(INC_DIR inc)
 set(TEST_DIR test)
+set(BENCHMARK_DIR benchmark)
 set(TEST_INC_DIR test/inc)
+set(DEVEL_INC_DIR devel_inc)
 
 # sources
 set(SOURCES ${SRC_DIR}/board.c ${SRC_DIR}/chess.c ${SRC_DIR}/bot.c
@@ -36,7 +38,7 @@ set(TEST_SOURCES ${TEST_DIR}/unity.c ${TEST_DIR}/unit_test.c
 	${SOURCES})
 
 # sources specific only to benchmarking - containing benchmark main
-set(BENCHMARK_SOURCES ${SRC_DIR}/benchmark.c ${SOURCES})
+set(BENCHMARK_SOURCES ${BENCHMARK_DIR}/benchmark.c ${SOURCES})
 
 # executables
 add_executable(bot ${BOT_SOURCES})
@@ -45,8 +47,8 @@ add_executable(benchmark ${BENCHMARK_SOURCES})
 
 # includes
 target_include_directories(bot PRIVATE ${INC_DIR})
-target_include_directories(tests PRIVATE ${TEST_INC_DIR} ${INC_DIR})
-target_include_directories(benchmark PRIVATE ${INC_DIR})
+target_include_directories(tests PRIVATE ${DEVEL_INC_DIR} ${TEST_INC_DIR} ${INC_DIR})
+target_include_directories(benchmark PRIVATE ${DEVEL_INC_DIR} ${INC_DIR})
 
 # preprocessor variables
 target_compile_definitions(tests PRIVATE UNITY_OUTPUT_COLOR)
