@@ -12,7 +12,7 @@ hash_board(size_t size, struct piece* board, enum color moving)
 
 	// TODO(Aurel): Think about a better hash function.
 	size_t hash = 0;
-	for (size_t i = 0; i < 64; ++i) {
+	for (size_t i = 0; i < 64;) {
 		int val = get_piece_value(board[i++].type);
 		hash += i * val;
 	}
