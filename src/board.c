@@ -194,8 +194,9 @@ fen_to_chess(char* fen, struct chess* game)
 	// get current move parameter
 	j = 0;
 	c += 1; // skip space
-	while (fen[++c] != '\0' && fen[++c] != ' ') {
+	while (fen[c] != '\n' && fen[c] != '\0' && fen[c] != ' ') {
 		j++;
+		c++;
 	}
 	char* current_move = calloc(j, sizeof(char));
 	memcpy(current_move, &fen[c-j], j);
