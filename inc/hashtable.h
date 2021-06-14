@@ -24,7 +24,7 @@ struct ht_entry {
 struct ht* init_ht(struct ht* ht, size_t size);
 void free_ht(struct ht* ht);
 
-struct ht_entry* ht_update_entry(struct ht* ht, struct piece* board,
+struct ht_entry* ht_update_entry(struct ht* ht, struct piece* board, enum color moving,
 #ifdef DEBUG_NEGAMAX_USE_LIST
                                  struct move_list* moves
 #else  /* DEBUG_NEGAMAX_USE_LIST */
@@ -33,6 +33,6 @@ struct ht_entry* ht_update_entry(struct ht* ht, struct piece* board,
                                  ,
                                  size_t rating, size_t depth);
 
-struct ht_entry* ht_get_entry(struct ht* ht, struct piece* board);
+struct ht_entry* ht_get_entry(struct ht* ht, struct piece* board, enum color moving);
 
 #endif /* HASHTABLE_H */
