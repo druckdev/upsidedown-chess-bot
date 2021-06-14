@@ -5,7 +5,7 @@
 #include "hashtable.h"
 
 ssize_t
-hash_board(size_t size, struct piece* board)
+hash_board(size_t size, struct piece* board, enum color moving)
 {
 	if (!size || !board)
 		return -1;
@@ -16,6 +16,7 @@ hash_board(size_t size, struct piece* board)
 		int val = get_piece_value(board[i++].type);
 		hash += i * val;
 	}
+	hash += moving;
 	// NOTE(Aurel): size needs to be a power of 2
 	hash &= size - 1;
 	//hash %= size;
@@ -51,7 +52,7 @@ free_ht(struct ht* ht)
 }
 
 struct ht_entry*
-ht_update_entry(struct ht* ht, struct piece* board,
+ht_update_entry(struct ht* ht, struct piece* board, enum color moving,
 #ifdef DEBUG_NEGAMAX_USE_LIST
                 struct move_list* moves
 #else  /* DEBUG_NEGAMAX_USE_LIST */
@@ -69,7 +70,7 @@ ht_update_entry(struct ht* ht, struct piece* board,
 	)
 		return NULL;
 
-	ssize_t hash = hash_board(ht->size, board);
+	ssize_t hash = hash_board(ht->size, board, moving);
 	if (hash < 0)
 		return NULL;
 
@@ -104,12 +105,12 @@ ht_update_entry(struct ht* ht, struct piece* board,
 }
 
 struct ht_entry*
-ht_get_entry(struct ht* ht, struct piece* board)
+ht_get_entry(struct ht* ht, struct piece* board, enum color moving)
 {
 	if (!ht || !board)
 		return NULL;
 
-	ssize_t hash = hash_board(ht->size, board);
+	ssize_t hash = hash_board(ht->size, board, moving);
 	if (hash < 0)
 		return NULL;
 
