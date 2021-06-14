@@ -6,4 +6,4 @@ cd "$(dirname "$0")" || exit
 # $2 totalTime as double
 # $3 maxMoves as int
 
-./build/bot $1 $2 $3
+./build/bot "$@"
