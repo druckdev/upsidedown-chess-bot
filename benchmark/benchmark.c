@@ -133,7 +133,11 @@ benchmark_negamax()
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_cpu); // CPU time
 		clock_gettime(CLOCK_MONOTONIC, &t_start_wall); // "actual" time
 
+#ifdef TRANSPOSITION_TABLES
+		for (size_t j = 0; j < BENCHMARK_ITERATION_COUNT * 10; ++j)
+#else /* TRANSPOSITION_TABLES */
 		for (size_t j = 0; j < BENCHMARK_ITERATION_COUNT; ++j)
+#endif /* TRANSPOSITION_TABLES */
 			negamax(&game, 15, INT_MIN + 1, INT_MAX);
 
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_cpu);
