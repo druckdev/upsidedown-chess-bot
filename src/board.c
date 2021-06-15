@@ -175,32 +175,27 @@ fen_to_chess(char* fen, struct chess* game)
 		}
 	}
 
+	++c; // skip space
+
 	// get color parameter
-	if (fen[++c] == 'w')
+	if (fen[c] == 'w')
 		game->moving = WHITE;
-	else if (fen[++c] == 'b')
+	else if (fen[c] == 'b')
 		game->moving = BLACK;
 
+	// skip this parameter to read in the next
+	while (fen[++c] != ' ');
+	++c;
+
 	// get remaining time parameter
-	int j = 0;
-	c += 1; // skip space
-	while (fen[++c] != ' ') {
-		j++;
-	}
-	char* remaining_time = calloc(j, sizeof(char));
-	memcpy(remaining_time, &fen[c-j], j);
-	game->t_remaining_s = atof(remaining_time);
+	game->t_remaining_s = atof(fen + c);
+
+	// skip this parameter to read in the next
+	while (fen[++c] != ' ');
+	++c;
 
 	// get current move parameter
-	j = 0;
-	c += 1; // skip space
-	while (fen[c] != '\n' && fen[c] != '\0' && fen[c] != ' ') {
-		j++;
-		c++;
-	}
-	char* current_move = calloc(j, sizeof(char));
-	memcpy(current_move, &fen[c-j], j);
-	game->move_count = atoi(current_move);
+	game->move_count = atoi(fen + c);
 
 	return;	
 }
