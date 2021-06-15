@@ -183,14 +183,14 @@ fen_to_chess(char* fen, struct chess* game)
 	else if (fen[c] == 'b')
 		game->moving = BLACK;
 
-	// skip this parameter to read in the next
+	// skip the parameter to read the next
 	while (fen[++c] != ' ');
 	++c;
 
 	// get current move parameter
 	game->move_count = atoi(fen + c);
 
-	// skip this parameter to read in the next
+	// skip the parameter to read the next
 	while (fen[++c] != ' ');
 	++c;
 
