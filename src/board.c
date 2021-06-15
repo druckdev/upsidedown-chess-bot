@@ -187,17 +187,17 @@ fen_to_chess(char* fen, struct chess* game)
 	while (fen[++c] != ' ');
 	++c;
 
-	// get remaining time parameter
-	game->t_remaining_s = atof(fen + c);
+	// get current move parameter
+	game->move_count = atoi(fen + c);
 
 	// skip this parameter to read in the next
 	while (fen[++c] != ' ');
 	++c;
 
-	// get current move parameter
-	game->move_count = atoi(fen + c);
+	// get remaining time parameter
+	game->t_remaining_s = atof(fen + c);
 
-	return;	
+	return;
 }
 
 // returns true if the position is attacked by one of the given moves
