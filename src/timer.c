@@ -50,6 +50,8 @@ uniform_distribution(struct chess_timer* timer, struct chess* game)
 
 	// uniformly distribute the remaining time over the remaining moves
 	int remaining_moves = game->max_moves - game->move_count;
+	if(!remaining_moves)
+		return (struct timespec){ 0 };
 	// clang-format off
 	struct timespec t_move = {
 		t_remaining.tv_sec / remaining_moves,
