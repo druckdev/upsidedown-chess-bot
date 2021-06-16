@@ -21,4 +21,7 @@ void fen_to_chess(char* fen, struct chess* game);
 bool* are_attacked(struct move_list* moves, bool* targets);
 void print_board(struct piece board[], struct move_list* moves);
 
+struct piece* board_cpy(struct piece* board);
+bool is_same_board(struct piece* board_1, struct piece* board_2);
+
 #endif /* BOARD_H */
