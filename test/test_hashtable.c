@@ -25,8 +25,8 @@ test_hashfunction()
 	char* fen_1 = "RNBQK2R/PPPPP1BP/7N/3N4/8/n1nn1Q1b/pbq1pp1p/r2bk1qr w";
 	char* fen_2 = "RNBQKQ1R/PPPPP1BP/7N/3N4/8/n1n2n2/pbq1pppp/r1nrkb1r w";
 
-	struct chess game_1 = init_chess();
-	struct chess game_2 = init_chess();
+	struct chess game_1 = init_chess('w', 600.0, 50);
+	struct chess game_2 = init_chess('w', 600.0, 50);
 
 	fen_to_chess(fen_1, &game_1);
 	fen_to_chess(fen_2, &game_2);

@@ -54,7 +54,7 @@ void
 test_negamax()
 {
 	printf("TEST: negamax\t");
-	struct chess game = init_chess();
+	struct chess game = init_chess('w', 600.0, 50);
 	fen_to_chess("R1BQKBNR/PPPPPPPP/N7/8/8/8/pppppppp/rnbqkbnr w", &game);
 
 	struct negamax_return ret = negamax(&game, 1, INT_MIN + 1, INT_MAX);
