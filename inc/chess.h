@@ -59,7 +59,7 @@ enum game_phase { EARLY_GAME, MID_GAME, LATE_GAME };
 
 // TODO(Aurel): Move this into hashtable.h
 struct ht {
-	struct ht_entry* table;
+	struct ht_entry* table[TRANSPOSITION_TABLE_SIZE];
 	size_t size;
 };
 struct chess {

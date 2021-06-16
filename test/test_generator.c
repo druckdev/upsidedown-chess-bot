@@ -56,7 +56,7 @@ test_generate_moves_piece()
 
 	if (list_len != test_boards[0].move_cnt) {
 		printf("\n");
-		print_board(chess.board, list);
+		fprint_board(stdout, chess.board, list);
 	} else {
 		move_list_free(list);
 	}
@@ -90,7 +90,7 @@ test_game_samples()
 		if ((i && list_len != old_len) ||
 		    list_len != test_boards[test_idx].move_cnt) {
 			printf("\n");
-			print_board(chess.board, list);
+			fprint_board(stdout, chess.board, list);
 		} else {
 			move_list_free(list);
 		}

@@ -105,7 +105,7 @@ run_chess(char color, float total_time, int max_moves)
 		fen_to_chess(fen, &game);
 
 #ifdef DEBUG_BOARD_WHEN_PLAYING
-		print_board(game.board, NULL);
+		fprint_board(DEBUG_PRINT_STREAM, game.board, NULL);
 #endif
 
 		struct move* move = choose_move(&game, timer);
@@ -117,7 +117,7 @@ run_chess(char color, float total_time, int max_moves)
 		do_move(&game, move);
 #ifdef DEBUG_BOARD_WHEN_PLAYING
 		struct move_list* list = move_list_push(NULL, move);
-		print_board(game.board, list);
+		fprint_board(DEBUG_PRINT_STREAM, game.board, list);
 #else
 		free(move);
 #endif

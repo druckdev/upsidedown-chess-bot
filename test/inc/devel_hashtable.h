@@ -7,6 +7,7 @@
 #include "chess.h"
 #include "move.h"
 struct ht_entry {
+	bool used;
 #ifdef DEBUG_NEGAMAX_USE_LIST
 	struct move_list* moves;
 #else  /* DEBUG_NEGAMAX_USE_LIST */
@@ -15,10 +16,10 @@ struct ht_entry {
 	size_t rating;
 	size_t depth;
 	size_t board_hash;
-	enum color moving;
 	struct piece* board;
-	struct ht_entry *next;
 };
+
+ssize_t hash_board(size_t size, struct piece* board, enum color moving);
 
 /**
  * @arg size should always be a power of 2!
