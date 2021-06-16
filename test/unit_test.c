@@ -4,6 +4,7 @@
 
 #include "test_bot.h"
 #include "test_generator.h"
+#include "test_hashtable.h"
 #include "test_types.h"
 
 // Necessary for Unity
@@ -23,5 +24,6 @@ main(int argc, char* argv[])
 	test_generator();
 	test_bot();
 	test_types();
+	test_hashtable();
 	return UNITY_END();
 }
