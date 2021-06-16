@@ -7,7 +7,6 @@
 #include "chess.h"
 #include "move.h"
 struct ht_entry {
-	bool used;
 #ifdef DEBUG_NEGAMAX_USE_LIST
 	struct move_list* moves;
 #else  /* DEBUG_NEGAMAX_USE_LIST */
@@ -16,6 +15,9 @@ struct ht_entry {
 	size_t rating;
 	size_t depth;
 	size_t board_hash;
+	enum color moving;
+	struct piece* board;
+	struct ht_entry *next;
 };
 
 /**
@@ -24,7 +26,8 @@ struct ht_entry {
 struct ht* init_ht(struct ht* ht, size_t size);
 void free_ht(struct ht* ht);
 
-struct ht_entry* ht_update_entry(struct ht* ht, struct piece* board, enum color moving,
+struct ht_entry* ht_update_entry(struct ht* ht, struct piece* board,
+                                 enum color moving,
 #ifdef DEBUG_NEGAMAX_USE_LIST
                                  struct move_list* moves
 #else  /* DEBUG_NEGAMAX_USE_LIST */
@@ -33,6 +36,7 @@ struct ht_entry* ht_update_entry(struct ht* ht, struct piece* board, enum color 
                                  ,
                                  size_t rating, size_t depth);
 
-struct ht_entry* ht_get_entry(struct ht* ht, struct piece* board, enum color moving);
+struct ht_entry* ht_get_entry(struct ht* ht, struct piece* board,
+                              enum color moving);
 
 #endif /* HASHTABLE_H */
