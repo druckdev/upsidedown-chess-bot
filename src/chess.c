@@ -67,12 +67,12 @@ struct chess
 init_chess()
 {
 	struct chess chess;
-	chess.checkmate  = false;
-	chess.moving     = UNDEFINED;
-	chess.phase      = EARLY_GAME;
-	chess.board      = calloc(64, sizeof(*(chess.board)));
-	chess.move_count = 0;
-	chess.max_moves  = MAX_MOVE_COUNT;
+	chess.checkmate   = false;
+	chess.moving      = UNDEFINED;
+	chess.phase       = EARLY_GAME;
+	chess.board       = calloc(64, sizeof(*(chess.board)));
+	chess.move_count  = 0;
+	chess.max_moves   = MAX_MOVE_COUNT;
 	chess.piece_count = 0;
 	assert(init_ht(&chess.trans_table, TRANSPOSITION_TABLE_SIZE) &&
 	       "Transposition table could not be initialized.");
