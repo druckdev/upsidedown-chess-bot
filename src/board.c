@@ -11,6 +11,43 @@
 #define ANSI_RED "\033[91m"
 #define ANSI_RESET "\033[0m"
 
+struct piece*
+board_cpy(struct piece* board)
+{
+	struct piece* board_cpy = malloc(64 * sizeof(*board_cpy));
+	if (!board_cpy)
+		return NULL;
+	memcpy(board_cpy, board, 64 * sizeof(*board_cpy));
+	return board_cpy;
+}
+
+bool
+is_same_piece(struct piece* p1, struct piece* p2)
+{
+	if (!p1 || !p2)
+		return false;
+
+	if (p1->type != p2->type)
+		return false;
+	if (p1->color != p2->color)
+		return false;
+
+	return true;
+}
+
+bool
+is_same_board(struct piece* b1, struct piece* b2)
+{
+	if (!b1 || !b2)
+		return false;
+
+	for (size_t i = 0; i < 64; ++i)
+		if (!is_same_piece(&b1[i], &b2[i]))
+			return false;
+
+	return true;
+}
+
 struct piece
 do_move(struct chess* game, struct move* move)
 {
