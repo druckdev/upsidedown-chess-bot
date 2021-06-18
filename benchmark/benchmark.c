@@ -21,14 +21,13 @@ benchmark_generate_moves()
 {
 	printf("Benchmarking function generate_moves()...\n");
 
-
 	double* cpu_secs[sample_size];
 	size_t* cpu_nsecs[sample_size];
 	double* wall_secs[sample_size];
 	size_t* wall_nsecs[sample_size];
 
 	for (size_t i = 0; i < sample_size; ++i) {
-		printf("BENCHMARK: %s \n", test_boards[i].fen);
+		//printf("BENCHMARK: %s \n", test_boards[i].fen);
 		// Reserve for average too
 		cpu_secs[i]   = calloc((N_FOR_AVG + 1), sizeof(**cpu_secs));
 		cpu_nsecs[i]  = calloc((N_FOR_AVG + 1), sizeof(**cpu_nsecs));
@@ -40,7 +39,7 @@ benchmark_generate_moves()
 		chess.board = calloc(64, sizeof(*chess.board));
 		fen_to_chess(test_boards[i].fen, &chess);
 
-		print_board(chess.board, NULL);
+		//print_board(chess.board, NULL);
 
 		struct move_list* moves;
 		struct timespec t_start_cpu, t_end_cpu, t_start_wall, t_end_wall;
@@ -81,11 +80,13 @@ benchmark_generate_moves()
 			wall_secs[i][N_FOR_AVG] += wall_sec;
 			wall_nsecs[i][N_FOR_AVG] += wall_nsec;
 
+#if 0
 			printf("Generated moves: %li\n", moves->count);
 			printf("Elapsed CPU-time over %i iterations:  %lf sec, %li nsec\n",
 			       BENCHMARK_ITERATION_COUNT, cpu_sec, cpu_nsec);
 			printf("Elapsed wall-time over %i iterations: %lf sec, %li nsec\n",
 			       BENCHMARK_ITERATION_COUNT, wall_sec, wall_nsec);
+#endif
 		}
 
 		cpu_secs[i][N_FOR_AVG] /= N_FOR_AVG;
@@ -93,17 +94,19 @@ benchmark_generate_moves()
 		wall_secs[i][N_FOR_AVG] /= N_FOR_AVG;
 		wall_nsecs[i][N_FOR_AVG] /= N_FOR_AVG;
 
+#if 0
 		printf("Average CPU-time (%ix):  %lf sec, %li nsec\n", N_FOR_AVG,
 		       cpu_secs[i][N_FOR_AVG], cpu_nsecs[i][N_FOR_AVG]);
 		printf("Average wall-time (%ix): %lf sec, %li nsec\n", N_FOR_AVG,
 		       wall_secs[i][N_FOR_AVG], wall_nsecs[i][N_FOR_AVG]);
 
 		printf("\n-------------------------------------------\n\n");
+#endif
 
 		free(chess.board);
 	}
 
-	printf("Summary:\n");
+	//printf("Summary:\n");
 	fprintf(CSV_STREAM, "FEN;cpu secs;cpu nsecs;wall secs; wall nsecs\n");
 	for (size_t i = 0; i < sample_size; ++i) {
 		fprintf(CSV_STREAM, "%s;%lf;%li;%lf;%li\n", test_boards[i].fen,
@@ -120,6 +123,8 @@ benchmark_generate_moves()
 void
 benchmark_negamax()
 {
+	printf("Benchmarking function negamax()...\n");
+
 	double cpu_secs[sample_size];
 	size_t cpu_nsecs[sample_size];
 	double wall_secs[sample_size];
@@ -133,11 +138,7 @@ benchmark_negamax()
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_cpu); // CPU time
 		clock_gettime(CLOCK_MONOTONIC, &t_start_wall); // "actual" time
 
-#ifdef TRANSPOSITION_TABLES
-		for (size_t j = 0; j < BENCHMARK_ITERATION_COUNT * 10; ++j)
-#else /* TRANSPOSITION_TABLES */
 		for (size_t j = 0; j < BENCHMARK_ITERATION_COUNT; ++j)
-#endif /* TRANSPOSITION_TABLES */
 			negamax(&game, 15, INT_MIN + 1, INT_MAX);
 
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_cpu);
@@ -161,11 +162,8 @@ benchmark_negamax()
 		wall_secs[i] /= BENCHMARK_ITERATION_COUNT;
 		wall_nsecs[i] = wall_nsec;
 		wall_nsecs[i] /= BENCHMARK_ITERATION_COUNT;
-		printf("%lu/%lu\r", i+1, sample_size);
 	}
-	printf("\n");
 
-	printf("Summary:\n");
 	fprintf(CSV_STREAM, "FEN;cpu secs;cpu nsecs;wall secs; wall nsecs\n");
 	for (size_t i = 0; i < sample_size; ++i) {
 		fprintf(CSV_STREAM, "%s;%lf;%li;%lf;%li\n", test_boards[i].fen,
