@@ -221,12 +221,6 @@ choose_move(struct chess* game, struct chess_timer* timer)
 	 */
 	int curr_max_depth = 1;
 	while (true) {
-		double t_remaining = get_remaining_move_time(timer);
-		double min_t_remaining =
-				3 * (t_prev_move.tv_sec + t_prev_move.tv_nsec * 1e-9);
-		if (t_remaining < min_t_remaining)
-			break;
-
 		// take beginning time
 		struct timespec t_beg;
 		if (clock_gettime(CLOCK_MONOTONIC, &t_beg))
@@ -275,6 +269,14 @@ choose_move(struct chess* game, struct chess_timer* timer)
 		t_prev_move.tv_nsec -= t_beg.tv_nsec;
 
 		curr_max_depth++;
+
+		double t_remaining = get_remaining_move_time(timer);
+		// TODO(Aurel): This is not sufficient most of the time.
+		double min_t_remaining =
+				3 * (t_prev_move.tv_sec + t_prev_move.tv_nsec * 1e-9);
+		if (t_remaining < min_t_remaining)
+			break;
+
 	}
 	return best;
 }
