@@ -39,7 +39,7 @@ benchmark_generate_moves()
 		chess.board = calloc(64, sizeof(*chess.board));
 		fen_to_chess(test_boards[i].fen, &chess);
 
-		//print_board(chess.board, NULL);
+		//fprint_board(stdout, chess.board, NULL);
 
 		struct move_list* moves;
 		struct timespec t_start_cpu, t_end_cpu, t_start_wall, t_end_wall;

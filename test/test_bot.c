@@ -1,8 +1,8 @@
-#include "board.h"
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "board.h"
 #include "chess.h"
 #include "devel_bot.h"
 #include "unity.h"
@@ -54,16 +54,8 @@ void
 test_negamax()
 {
 	printf("TEST: negamax\t");
-	struct chess game = {
-		.board       = calloc(64, sizeof(*game.board)),
-		.moving      = WHITE,
-		.trans_table = { 0 },
-	};
-	TEST_ASSERT_NOT_NULL_MESSAGE(init_ht(&game.trans_table,
-	                                     TRANSPOSITION_TABLE_SIZE),
-	                             "init_ht() failed.");
-
-	fen_to_chess("R1BQKBNR/PPPPPPPP/N7/8/8/8/pppppppp/rnbqkbnr", &game);
+	struct chess game = init_chess();
+	fen_to_chess("R1BQKBNR/PPPPPPPP/N7/8/8/8/pppppppp/rnbqkbnr w", &game);
 
 	struct negamax_return ret = negamax(&game, 1, INT_MIN + 1, INT_MAX);
 	struct move* best;
