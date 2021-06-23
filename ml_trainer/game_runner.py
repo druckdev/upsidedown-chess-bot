@@ -6,6 +6,7 @@ class GameRunner:
         self.b_player = b_player
         self.current_move = 0
         self.time_left = 100.0
+        self.max_moves = 100
         self.fen_state = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
         self.simplified_state = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 
                                  'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 
@@ -24,19 +25,18 @@ class GameRunner:
         """Executes a game between two players
 
         Returns:
+        bool: Whether it was a draw.
         bool: Whether white won that game.
 
         """
 
-        white_won = True
+        white_won = False
         white_turn = True
 
         # play game
-        while True: 
+        while self.current_move < self.max_moves: 
             self.current_move += 1
             current_player = self.w_player if white_turn else self.b_player
-            print("--------------------------------------------------------")
-            print(("White :" if white_turn else "Black :"), current_player)
 
             # setup input for bot
             in_str = self.fen_state 
@@ -44,7 +44,6 @@ class GameRunner:
             in_str += str(self.time_left) 
             in_str += ' ' + str(self.current_move)
             state_bytes = bytes(in_str, 'utf-8')
-            print("trigger bot with ", in_str)
 
             # trigger bot
             try:
@@ -63,12 +62,11 @@ class GameRunner:
             # get move current player wants to play and execute it
             for line in iter(current_player.stdout.readline, b''):
                 self.do_move(line)
-                print("new state ", self.fen_state)
                 break
             
             white_turn = not white_turn
 
-        return white_won
+        return (self.current_move >= self.max_moves), white_won
 
     #--------------
     # Helper
@@ -87,8 +85,7 @@ class GameRunner:
         move_split = str(move).split("'")[1] # casting because move contains ' as character
         move_split = move_split.split(",")
         from_pos, to_pos = int(move_split[0]), int(move_split[1])
-        print("Move ", move, " or from ", from_pos, " to ", to_pos)
-        
+
         # catch promotion
         moving_piece = self.simplified_state[from_pos]
         if (to_pos < 8 or to_pos > 56) and (moving_piece == 'p' or moving_piece == 'P'):
