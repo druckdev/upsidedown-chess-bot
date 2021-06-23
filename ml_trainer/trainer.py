@@ -82,9 +82,14 @@ class Trainer:
         move_split = move_split.split(",")
         from_pos, to_pos = int(move_split[0]), int(move_split[1])
         print("Move ", move, " or from ", from_pos, " to ", to_pos)
+        
+        # catch promotion
+        moving_piece = self.simplified_state[from_pos]
+        if (to_pos < 8 or to_pos > 56) and (moving_piece == 'p' or moving_piece == 'P'):
+            moving_piece = move_split[2][0]
 
         # do move
-        self.simplified_state[to_pos] = self.simplified_state[from_pos]
+        self.simplified_state[to_pos] = moving_piece
         self.simplified_state[from_pos] = '1'
 
         self.update_fen()
