@@ -77,6 +77,18 @@ class Trainer:
 
     # executes the move on the classes fen_state and simplified_state
     def do_move(self, move: str):
+        # deconstruct move string
+        move_split = str(move).split("'")[1] # casting because move contains ' as character
+        move_split = move_split.split(",")
+        from_pos, to_pos = int(move_split[0]), int(move_split[1])
+        print("Move ", move, " or from ", from_pos, " to ", to_pos)
+
+        # do move
+        self.simplified_state[to_pos] = self.simplified_state[from_pos]
+        self.simplified_state[from_pos] = '1'
+
+        self.update_fen()
+
     # updates the classes fen string from it's simplified state
     def update_fen(self):
 if __name__ == "__main__":
