@@ -24,6 +24,7 @@ class Tournament:
             for j in range(num_of_players):
                 if i == j:
                     continue
+                print(i, "as w vs", j, "as b")
 
                 # init game
                 w_player = self.player_processes[i] 

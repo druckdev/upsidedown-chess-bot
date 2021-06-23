@@ -30,6 +30,7 @@ class Generation:
         """
         
         # remove weakest and reproduce strongest (fitness = last performance)
+        print("Evolve based on ", performances)
         
         pass
     
