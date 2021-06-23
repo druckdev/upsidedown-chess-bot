@@ -1,3 +1,8 @@
+import subprocess, time, os, sys, errno
+
+path_to_executable = "../build/bot"
+cmd = [ path_to_executable ]
+
 class Trainer:
     def __init__(self):
         self.current_move = 0
@@ -17,6 +22,17 @@ class Trainer:
     #--------------
     def train(self, instances=2):
         # setup first generation
+        processes = []
+        for i in range(instances):
+            p = subprocess.Popen(cmd,
+                                 stdin=subprocess.PIPE,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.STDOUT)
+            processes.append(p)
+
+        # init game
+        b_player = processes[0]
+        w_player = processes[1] 
 if __name__ == "__main__":
     trainer = Trainer()
     trainer.train()
