@@ -91,6 +91,24 @@ class Trainer:
 
     # updates the classes fen string from it's simplified state
     def update_fen(self):
+        new_fen = ""
+        cnt = 0
+        for i in range(len(self.simplified_state)):
+            c = self.simplified_state[i]
+            if c == '1':
+                cnt += 1
+            else:
+                unoccupied = str(cnt) if cnt != 0 else ''
+                cnt = 0
+                new_fen = new_fen + unoccupied + c
+            
+            if i % 8 == 7 and i != 63:
+                unoccupied = str(cnt) if cnt != 0 else ''
+                cnt = 0
+                new_fen = new_fen + unoccupied + '/'
+        
+        self.fen_state = new_fen
+
 if __name__ == "__main__":
     trainer = Trainer()
     trainer.train()
