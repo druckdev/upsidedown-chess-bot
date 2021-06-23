@@ -17,7 +17,7 @@ class Tournament:
         """
 
         num_of_players = len(self.player_processes)
-        wins_by_player = [0 * num_of_players]
+        wins_by_player = [0] * num_of_players
 
         # let all players play against all others
         for i in range(num_of_players):
@@ -31,10 +31,16 @@ class Tournament:
                 
                 # run game
                 game = game_runner.GameRunner(w_player, b_player)
-                white_won = game.run()
+                draw, white_won = game.run()
 
                 # store performance information
-                winner_index = i if white_won else j
-                wins_by_player[winner_index] += 1
+                
+                if draw:
+                    # a draw is not as bad as loosing but not as good as winning
+                    wins_by_player[i] += 0.5 
+                    wins_by_player[j] += 0.5
+                else:
+                    winner_index = i if white_won else j
+                    wins_by_player[winner_index] += 1
 
         return wins_by_player
