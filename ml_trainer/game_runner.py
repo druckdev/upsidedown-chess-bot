@@ -120,4 +120,7 @@ class GameRunner:
                 cnt = 0
                 new_fen = new_fen + unoccupied + '/'
         
+        if cnt != 0:
+            new_fen = new_fen + str(cnt)
+
         self.fen_state = new_fen
