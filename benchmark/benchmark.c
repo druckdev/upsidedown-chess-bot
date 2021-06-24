@@ -15,7 +15,6 @@
 
 #define BENCHMARK_FILE_NAME_SIZE 30
 #define BENCHMARK_DIR_NAME "benchmarks"
-#define CSV_STREAM stderr
 
 #define N_FOR_AVG 3
 #define BENCHMARK_ITERATION_COUNT 10
@@ -27,10 +26,10 @@ void
 summarize_benchmark(FILE* file, char* benchmark, double cpu_secs[],
 		size_t cpu_nsecs[], double wall_secs[], size_t wall_nsecs[])
 {
-	fprintf(CSV_STREAM, "FEN;cpu secs;cpu nsecs;wall secs; wall nsecs\n");
+	fprintf(stdout, "FEN;cpu secs;cpu nsecs;wall secs; wall nsecs\n");
 	fprintf(file, "%s\n", benchmark);
 	for (size_t i = 0; i < sample_size; ++i) {
-		fprintf(CSV_STREAM, "%s;%lf;%li;%lf;%li\n", test_boards[i].fen,
+		fprintf(stdout, "%s;%lf;%li;%lf;%li\n", test_boards[i].fen,
 		        cpu_secs[i], cpu_nsecs[i], wall_secs[i], wall_nsecs[i]);
 
 		if (file)
@@ -132,10 +131,10 @@ benchmark_generate_moves(FILE* file)
 	}
 
 	//printf("Summary:\n");
-	fprintf(CSV_STREAM, "FEN;cpu secs;cpu nsecs;wall secs; wall nsecs\n");
+	fprintf(stdout, "FEN;cpu secs;cpu nsecs;wall secs; wall nsecs\n");
 	fprintf(file, "generate_moves\n");
 	for (size_t i = 0; i < sample_size; ++i) {
-		fprintf(CSV_STREAM, "%s;%lf;%li;%lf;%li\n", test_boards[i].fen,
+		fprintf(stdout, "%s;%lf;%li;%lf;%li\n", test_boards[i].fen,
 		        cpu_secs[i][N_FOR_AVG], cpu_nsecs[i][N_FOR_AVG],
 		        wall_secs[i][N_FOR_AVG], wall_nsecs[i][N_FOR_AVG]);
 
@@ -164,6 +163,9 @@ benchmark_negamax(FILE* file)
 	struct chess game = init_chess();
 	for (size_t i = 0; i < sample_size; ++i) {
 		fen_to_chess(test_boards[i].fen, &game);
+
+		printf("test %lu: %s\n",i, test_boards[i].fen);
+		fprint_board(stdout, game.board, NULL);
 
 		struct timespec t_start_cpu, t_end_cpu, t_start_wall, t_end_wall;
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_cpu); // CPU time
