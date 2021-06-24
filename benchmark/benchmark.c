@@ -17,6 +17,10 @@
 #define BENCHMARK_DIR_NAME "benchmarks"
 #define CSV_STREAM stderr
 
+#define N_FOR_AVG 3
+#define BENCHMARK_ITERATION_COUNT 10
+#define NEGAMAX_DEPTH 3
+
 size_t sample_size = sizeof(test_boards) / sizeof(*test_boards);
 
 void
@@ -166,7 +170,7 @@ benchmark_negamax(FILE* file)
 		clock_gettime(CLOCK_MONOTONIC, &t_start_wall); // "actual" time
 
 		for (size_t j = 0; j < BENCHMARK_ITERATION_COUNT; ++j)
-			negamax(&game, 15, INT_MIN + 1, INT_MAX);
+			negamax(&game, NEGAMAX_DEPTH, INT_MIN + 1, INT_MAX);
 
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_cpu);
 		clock_gettime(CLOCK_MONOTONIC, &t_end_wall);
