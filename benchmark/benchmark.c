@@ -3,6 +3,9 @@
 #include <time.h>
 #include <limits.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include "board.h"
 #include "chess.h"
 #include "generator.h"
@@ -10,14 +13,14 @@
 #include "move.h"
 #include "devel_bot.h"
 
-#define N_FOR_AVG 3
-#define BENCHMARK_ITERATION_COUNT 10000
+#define BENCHMARK_FILE_NAME_SIZE 30
+#define BENCHMARK_DIR_NAME "benchmarks"
 #define CSV_STREAM stderr
 
 size_t sample_size = sizeof(test_boards) / sizeof(*test_boards);
 
 void
-benchmark_generate_moves()
+benchmark_generate_moves(FILE* file)
 {
 	printf("Benchmarking function generate_moves()...\n");
 
@@ -121,7 +124,7 @@ benchmark_generate_moves()
 }
 
 void
-benchmark_negamax()
+benchmark_negamax(FILE* file)
 {
 	printf("Benchmarking function negamax()...\n");
 
@@ -177,6 +180,22 @@ main(int argc, char* argv[])
 	(void)argc;
 	(void)argv;
 
-	//benchmark_generate_moves();
-	benchmark_negamax();
+	struct stat st = { 0 };
+	// create dir if it does not exist
+	if (stat(BENCHMARK_DIR_NAME, &st) == -1)
+		mkdir(BENCHMARK_DIR_NAME, 0777);
+
+	char* fname = malloc(BENCHMARK_FILE_NAME_SIZE);
+	snprintf(fname, BENCHMARK_FILE_NAME_SIZE, "%s/benchmark%lu.csv", BENCHMARK_DIR_NAME, time(NULL));
+
+	// open file
+	FILE* file = fopen(fname, "w");
+
+	free(fname);
+
+	benchmark_generate_moves(file);
+	benchmark_negamax(file);
+
+	fflush(file);
+	fclose(file);
 }
