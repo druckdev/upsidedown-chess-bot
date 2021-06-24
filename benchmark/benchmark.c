@@ -13,12 +13,12 @@
 #include "move.h"
 #include "devel_bot.h"
 
-#define BENCHMARK_FILE_NAME_SIZE 30
+#define BENCHMARK_FILE_NAME_SIZE 40
 #define BENCHMARK_DIR_NAME "benchmarks"
 
 #define N_FOR_AVG 3
-#define BENCHMARK_ITERATION_COUNT 10
-#define NEGAMAX_DEPTH 3
+#define BENCHMARK_ITERATION_COUNT 100
+#define NEGAMAX_DEPTH 5
 
 size_t sample_size = sizeof(test_boards) / sizeof(*test_boards);
 
