@@ -20,6 +20,24 @@
 size_t sample_size = sizeof(test_boards) / sizeof(*test_boards);
 
 void
+summarize_benchmark(FILE* file, char* benchmark, double cpu_secs[],
+		size_t cpu_nsecs[], double wall_secs[], size_t wall_nsecs[])
+{
+	fprintf(CSV_STREAM, "FEN;cpu secs;cpu nsecs;wall secs; wall nsecs\n");
+	fprintf(file, "%s\n", benchmark);
+	for (size_t i = 0; i < sample_size; ++i) {
+		fprintf(CSV_STREAM, "%s;%lf;%li;%lf;%li\n", test_boards[i].fen,
+		        cpu_secs[i], cpu_nsecs[i], wall_secs[i], wall_nsecs[i]);
+
+		if (file)
+			fprintf(file, "%s;%lf;%li;%lf;%li\n", test_boards[i].fen,
+					cpu_secs[i], cpu_nsecs[i], wall_secs[i], wall_nsecs[i]);
+	}
+	if (file)
+		fprintf(file, "\n");
+}
+
+void
 benchmark_generate_moves(FILE* file)
 {
 	printf("Benchmarking function generate_moves()...\n");
