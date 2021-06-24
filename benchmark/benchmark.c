@@ -129,8 +129,13 @@ benchmark_generate_moves(FILE* file)
 
 	//printf("Summary:\n");
 	fprintf(CSV_STREAM, "FEN;cpu secs;cpu nsecs;wall secs; wall nsecs\n");
+	fprintf(file, "generate_moves\n");
 	for (size_t i = 0; i < sample_size; ++i) {
 		fprintf(CSV_STREAM, "%s;%lf;%li;%lf;%li\n", test_boards[i].fen,
+		        cpu_secs[i][N_FOR_AVG], cpu_nsecs[i][N_FOR_AVG],
+		        wall_secs[i][N_FOR_AVG], wall_nsecs[i][N_FOR_AVG]);
+
+		fprintf(file, "%s;%lf;%li;%lf;%li\n", test_boards[i].fen,
 		        cpu_secs[i][N_FOR_AVG], cpu_nsecs[i][N_FOR_AVG],
 		        wall_secs[i][N_FOR_AVG], wall_nsecs[i][N_FOR_AVG]);
 
@@ -139,6 +144,7 @@ benchmark_generate_moves(FILE* file)
 		free(wall_secs[i]);
 		free(wall_nsecs[i]);
 	}
+	fprintf(file, "\n");
 }
 
 void
@@ -183,13 +189,10 @@ benchmark_negamax(FILE* file)
 		wall_secs[i] /= BENCHMARK_ITERATION_COUNT;
 		wall_nsecs[i] = wall_nsec;
 		wall_nsecs[i] /= BENCHMARK_ITERATION_COUNT;
-	}
 
-	fprintf(CSV_STREAM, "FEN;cpu secs;cpu nsecs;wall secs; wall nsecs\n");
-	for (size_t i = 0; i < sample_size; ++i) {
-		fprintf(CSV_STREAM, "%s;%lf;%li;%lf;%li\n", test_boards[i].fen,
-		        cpu_secs[i], cpu_nsecs[i], wall_secs[i], wall_nsecs[i]);
+		printf("\n");
 	}
+	summarize_benchmark(file, "negamax\0", cpu_secs, cpu_nsecs, wall_secs, wall_nsecs);
 }
 
 int
