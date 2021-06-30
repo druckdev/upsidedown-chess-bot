@@ -17,7 +17,7 @@ test_checkmate()
 	printf("TEST: is_checkmate field of moves\t");
 
 	char* fen          = "8/8/8/8/8/5n2/pppppppN/rnbqkbr1 w";
-	struct chess chess = init_chess();
+	struct chess chess = init_chess(' ', 9999, 99);
 	fen_to_chess(fen, &chess);
 
 	struct move_list* moves = generate_moves(&chess, true, false);
@@ -47,7 +47,7 @@ test_generate_moves_piece()
 	printf("TEST: %s\n", test_boards[0].fen);
 
 	// init game
-	struct chess chess = init_chess();
+	struct chess chess = init_chess(' ', 9999, 99);
 	fen_to_chess(test_boards[0].fen, &chess);
 
 	// verify generator

@@ -51,7 +51,7 @@ benchmark_generate_moves(FILE* file)
 	size_t wall_nsecs[sample_size];
 
 	// Init game
-	struct chess chess = init_chess();
+	struct chess chess = init_chess(' ', 9999, 99);
 	for (size_t i = 0; i < sample_size; ++i) {
 		fen_to_chess(test_boards[i].fen, &chess);
 
@@ -107,7 +107,7 @@ benchmark_negamax(FILE* file)
 	double wall_secs[sample_size];
 	size_t wall_nsecs[sample_size];
 
-	struct chess game = init_chess();
+	struct chess game = init_chess(' ', 9999, 99);
 	struct timespec t_start_cpu, t_end_cpu, t_start_wall, t_end_wall;
 
 	for (size_t i = 0; i < sample_size; ++i) {

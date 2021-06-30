@@ -69,7 +69,7 @@ struct chess {
 	enum game_phase phase;
 	uint32_t checkmate;
 	int rating;
-	long t_remaining_s;
+	float t_remaining_s;
 	int max_moves, move_count;
 	int piece_count;
 };
@@ -77,7 +77,7 @@ struct chess {
 enum game_phase get_game_phase(struct chess* game);
 int get_piece_value(enum piece_type piece);
 struct move* opponent_move(struct move*);
-struct chess init_chess();
-void run_chess();
+struct chess init_chess(char color, float total_time_s, size_t max_moves);
+void run_chess(struct chess* game);
 
 #endif /* CHESS_H */
