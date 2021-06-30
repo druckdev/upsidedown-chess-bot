@@ -8,7 +8,6 @@
 #define WIDTH 8
 #define HEIGHT 8
 
-// TODO(Aurel): Is this right? What does the game-server team say?
 #define MAX_MOVE_COUNT 50
 
 #define EG_MOVE_COUNT_MAX 20
@@ -74,12 +73,11 @@ struct move {
 	struct PIECE promotes_to;
 };
 
-struct chess init_chess();
 enum game_phase get_game_phase(struct chess* game);
 int get_piece_value(enum PIECE_E piece);
 struct move* opponent_move(struct move*);
-struct chess init_chess();
-void run_chess();
+struct chess init_chess(char color, float total_time_s, size_t max_moves);
+void run_chess(struct chess* game);
 
 void fprint_move(FILE* stream, struct move* move);
 
