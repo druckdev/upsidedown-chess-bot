@@ -53,7 +53,6 @@ class Generation:
         """
         
         print("Evolve based on ", performances)
-        print("Configs before : ", self.entity_configs)
 
         # sort process indexes by performance
         indexes = range(len(performances))
@@ -68,11 +67,8 @@ class Generation:
         offspring = self.get_offspring(new_configs, len(self.entity_configs) - len(strongest))
         new_configs += offspring
         
-        self.entity_configs = new_configs
+        self.entity_configs = new_configs        
 
-        print("Configs after : ", self.entity_configs)
-        
-    
 
     def get_current_gen(self):
         '''Getter for configs'''
