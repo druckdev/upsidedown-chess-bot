@@ -1,6 +1,10 @@
 import generation
 import tournament
 
+# Description :
+# The trainer controls the training and
+# thereby connects the various parts.
+
 #--------------
 # Interface
 #--------------
@@ -14,7 +18,7 @@ def train(instances=2, num_of_generations=1):
 
     """
 
-    # setup player processes
+    # setup player configs
     gen = generation.Generation(instances)
 
     for i in range(num_of_generations):

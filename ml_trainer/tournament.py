@@ -1,4 +1,8 @@
 import game_runner
+# Description :
+# A tournament uses a generation (list of bot fitting configs)
+# to create bot processes which play against each other, to
+# determine which configs are superior.
 
 class Tournament:
     def __init__(self, player_processes):
