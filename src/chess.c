@@ -64,68 +64,63 @@ gs_print_move(struct move* move)
 }
 
 struct chess
-init_chess()
+init_chess(char color, float total_time_s, size_t max_moves)
 {
 	struct chess chess;
 	chess.checkmate   = false;
-	chess.moving      = UNDEFINED;
+	chess.moving      = color == 'w' ? WHITE : color == 'b' ? BLACK : UNDEFINED;
 	chess.phase       = EARLY_GAME;
 	chess.board       = calloc(64, sizeof(*(chess.board)));
 	chess.move_count  = 0;
-	chess.max_moves   = MAX_MOVE_COUNT;
+	chess.max_moves   = max_moves;
 	chess.piece_count = 0;
 	assert(init_ht(&chess.trans_table, TRANSPOSITION_TABLE_SIZE) &&
 	       "Transposition table could not be initialized.");
 
-	// TODO(Aurel): Once the server implements it, this will need to change.
-	//chess.t_remaining_s = -1;
-	chess.t_remaining_s = 1000; // Always update timer to have 1000s left
+	chess.t_remaining_s = total_time_s;
 
 	return chess;
 }
 
 void
-run_chess()
+run_chess(struct chess* game)
 {
-	struct chess game         = init_chess();
 	char fen[MAX_FEN_STR_LEN] = { 0 };
-	struct chess_timer* timer = start_timer(10 * 60);
+	struct chess_timer* timer = start_timer(game->t_remaining_s);
 
-	while (!game.checkmate) {
+	while (!game->checkmate) {
 		ssize_t bytes_read = read(STDIN_FILENO, fen, sizeof(fen) - 1);
 		if (bytes_read < 0) {
 			perror("Error reading");
-			free(game.board);
+			free(game->board);
 			exit(1);
 		}
 		fen[bytes_read] = '\0';
 
-		update_timer(timer, &game);
+		update_timer(timer, game);
 
-		fen_to_chess(fen, &game);
+		fen_to_chess(fen, game);
 
 #ifdef DEBUG_BOARD_WHEN_PLAYING
-		fprint_board(DEBUG_PRINT_STREAM, game.board, NULL);
+		fprint_board(DEBUG_PRINT_STREAM, game->board, NULL);
 #endif
 
-		struct move* move = choose_move(&game, timer);
+		struct move* move = choose_move(game, timer);
 		if (!move)
 			break;
 
 		gs_print_move(move);
 
-		do_move(&game, move);
+		do_move(game, move);
 #ifdef DEBUG_BOARD_WHEN_PLAYING
 		struct move_list* list = move_list_push(NULL, move);
-		fprint_board(DEBUG_PRINT_STREAM, game.board, list);
+		fprint_board(DEBUG_PRINT_STREAM, game->board, list);
 #else
 		free(move);
 #endif
-		game.move_count++;
-		game.phase = get_game_phase(&game);
+		game->move_count++;
+		game->phase = get_game_phase(game);
 	}
 
-	free_ht(&game.trans_table);
-	free(game.board);
 	free(timer);
 }

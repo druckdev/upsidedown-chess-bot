@@ -211,14 +211,30 @@ fen_to_chess(char* fen, struct chess* game)
 			game->piece_count++;
 		}
 	}
-	--c;
+	if (!fen[c]) // abort on \0
+		return;
 
-	while (fen[++c]) {
-		if (fen[c] == 'w')
-			game->moving = WHITE;
-		else if (fen[c] == 'b')
-			game->moving = BLACK;
-	}
+	if (!fen[++c]) // skip space
+		return;
+
+	// get moving color
+	game->moving = fen[c] == 'w' ? WHITE : fen[c] == 'b' ? BLACK : UNDEFINED;
+	if (!fen[++c])
+		return;
+
+	if (!fen[++c]) // skip space
+		return;
+
+	// get remaining move count
+	game->move_count = atoi(fen + c);
+	if (!fen[++c])
+		return;
+
+	if (!fen[++c]) // skip space
+		return;
+
+	// get remaining time
+	game->t_remaining_s = atof(fen + c);
 }
 
 // returns true if the position is attacked by one of the given moves

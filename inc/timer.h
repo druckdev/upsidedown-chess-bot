@@ -9,6 +9,7 @@ struct chess_timer {
 
 enum t_move_distribution_function {
 	UNIFORM_DISTRIBUTION,
+	PYRAMID_DISTRIBUTION
 };
 
 // NOTE(Aurel): This needs to included after the declaration of the struct.
@@ -17,7 +18,7 @@ enum t_move_distribution_function {
 /**
  * Constructs the timer object for a chess game.
  */
-struct chess_timer* start_timer(long t_total);
+struct chess_timer* start_timer(float t_total_s);
 
 /**
  * Call this function once, when the game server tells us it's this bots time to

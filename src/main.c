@@ -2,6 +2,7 @@
 
 #include "bot.h"
 #include "chess.h"
+#include "hashtable.h"
 
 void
 debug_print_chess_features()
@@ -19,8 +20,22 @@ debug_print_chess_features()
 int
 main(int argc, char* argv[])
 {
-	if (argc > 1)
-		MAX_NEGAMAX_DEPTH = atoi(argv[1]);
+	char color = 'w';
+	float total_time_s = 600.0;
+	size_t max_moves = MAX_MOVE_COUNT;
 
-	run_chess();
+	if (argc == 2) {
+		MAX_NEGAMAX_DEPTH = atoi(argv[1]);
+	} else if (argc == 4) {
+		color = *argv[1];
+		total_time_s = atof(argv[2]);
+		max_moves = atol(argv[3]);
+	}
+
+	struct chess game = init_chess(color, total_time_s, max_moves);
+
+	run_chess(&game);
+
+	free_ht(&game.trans_table);
+	free(game.board);
 }
