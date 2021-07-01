@@ -80,7 +80,6 @@ class GameRunner:
     # Helper
     #--------------
 
-    # executes the move on the classes fen_state and simplified_state
     def do_move(self, move: str):
         """Executes a given move on the internal board representations
 

@@ -53,6 +53,7 @@ class Tournament:
                     wins_by_player[j] += 0.5
                 else:
                     winner_index = i if white_won else j
+                    print("Player ", winner_index, " won")
                     wins_by_player[winner_index] += 1
 
         return wins_by_player
