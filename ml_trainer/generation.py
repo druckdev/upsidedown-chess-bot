@@ -4,20 +4,40 @@ import random
 # A generation is a set of configs as dictionaries, where 
 # the keys match those of the 'config_template' struct in
 # 'param_config.h' .
+# Each generation is based on the predecessing one, 
+# varying less with each iteration of the process.
 
 class Generation:
-    def __init__(self, instances, keep_from_gen=0.4):
-        # setup first generation
-        # TODO : read the default config from the current param_config.h 
-        #        and shift the values for every except one config
+    def __init__(self, instances, variation=1, keep_from_gen=0.4):
         default_config = {
-            "remaining_time_factor" : 3,
-            "pyramid_gradient" : 0.01,
-            "piece_values" : [ 0, 100, 400, 400, 500, 900, 1000000 ],
+            "remaining_time_factor" : 0,
+            "pyramid_gradient" : 0,
+            "piece_values" : [],
         }
-        self.entity_configs = [default_config] * instances
-        self.keep_from_gen = keep_from_gen
 
+        # read the current values in param_config.h
+        with open("../inc/param_config.h") as f:
+            for line in f:
+                if "struct config_template config" in line:
+                    line_split = line.split('=')
+                    line_reduced = line_split[1][:-5]
+                    num_str = line_reduced.replace('{', '').replace('}', '')
+                    num_list = num_str.split(',')
+
+                    default_config["remaining_time_factor"] = float(num_list[0])
+                    default_config["pyramid_gradient"] = float(num_list[1])
+                    default_config["piece_values"] = [ int(v) for v in num_list[2:] ]
+
+        # how much each generation should vary from the average of their predecessors 
+        # , in [0, 1]
+        self.variation = variation 
+        
+        # how many of each gen should be kept, in [0, 1]
+        self.keep_from_gen = keep_from_gen
+        
+        # get first gen
+        self.entity_configs = self.create_variations(default_config, instances)
+        
     #--------------
     # Interface
     #--------------
