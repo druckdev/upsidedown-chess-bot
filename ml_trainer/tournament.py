@@ -1,12 +1,19 @@
 import game_runner
+import subprocess
+
 # Description :
 # A tournament uses a generation (list of bot fitting configs)
 # to create bot processes which play against each other, to
 # determine which configs are superior.
 
+# TODO : this needs to be wrapped or parsed somehow
+path_to_executable = "../build/bot"
+parameters = " w 100 50"
+cmd = [ path_to_executable + parameters ]
+
 class Tournament:
-    def __init__(self, player_processes):
-        self.player_processes = player_processes
+    def __init__(self, player_configs):
+        self.player_configs = player_configs
     
     #--------------
     # Interface
@@ -20,7 +27,7 @@ class Tournament:
 
         """
 
-        num_of_players = len(self.player_processes)
+        num_of_players = len(self.player_configs)
         wins_by_player = [0] * num_of_players
 
         # let all players play against all others
@@ -31,8 +38,8 @@ class Tournament:
                 print(i, "as w vs", j, "as b")
 
                 # init game
-                w_player = self.player_processes[i] 
-                b_player = self.player_processes[j]
+                w_player = self.start_process(self.player_configs[i])
+                b_player = self.start_process(self.player_configs[j])
                 
                 # run game
                 game = game_runner.GameRunner(w_player, b_player)
@@ -49,3 +56,25 @@ class Tournament:
                     wins_by_player[winner_index] += 1
 
         return wins_by_player
+
+    #--------------
+    # HELPER
+    #--------------
+
+    def start_process(self, config):
+        """Starts a process based on a config.
+
+        Parameters:
+        config (dict): The config.
+        
+        Returns:
+        process: The process.
+
+        """
+        # TODO : rewrite param_config.h , compile
+        p = subprocess.Popen(cmd,
+                             shell=True,
+                             stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
+        return p
