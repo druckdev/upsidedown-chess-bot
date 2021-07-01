@@ -110,19 +110,32 @@ class Generation:
         return offspring_configs
 
 
-        l_b_time = parents[-1]["remaining_time_factor"]
-        l_b_gradient = parents[-1]["pyramid_gradient"]
-        l_b_pieces = parents[-1]["piece_values"]
+    def create_variations(self, config: dict, needed: int) -> list:
+        """Create configs that vary from the one given.
 
-        # generate new configs based on ranges
+        Parameters:
+        confi (list): The config to vary from.
+
+        Returns:
+        list: The new varying configs.
+        """
+        varying_configs = []
+
+        # calculate the upper and lower variation bounds
+        bounds = lambda x: (x - (x * self.variation), x + (x * self.variation))
+
+        p_time = config["remaining_time_factor"]
+        p_gradient = config["pyramid_gradient"]
+        p_piece_values = config["piece_values"]
+
+        # generate new configs whilst varying based on bounds
         for i in range(needed):
-            time_factor = l_b_time if l_b_time == up_b_time else random.uniform(l_b_time, up_b_time)
-            gradient = l_b_gradient if l_b_gradient == up_b_gradient else random.uniform(l_b_gradient, up_b_gradient)
+            time_factor = random.uniform(bounds(p_time)[0], bounds(p_time)[1])
+            gradient = random.uniform(bounds(p_gradient)[0], bounds(p_gradient)[1])
             
             piece_values = []
-            for l, u in zip(l_b_pieces, up_b_pieces):
-                l, u = min(l, u), max(l, u)
-                val = l if l == u else random.randrange(l, u)
+            for val in p_piece_values:
+                val = round(random.uniform(bounds(val)[0], bounds(val)[1]))
                 piece_values.append(val)
 
             new_config = {
@@ -130,6 +143,9 @@ class Generation:
                 "pyramid_gradient" : gradient,
                 "piece_values" : piece_values,
             }
-            offspring_configs.append(new_config)
+            varying_configs.append(new_config)
 
-        return offspring_configs
+        # reduce variation by 1/4 for next gen
+        self.variation = self.variation * 0.75
+
+        return varying_configs
