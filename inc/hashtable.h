@@ -13,7 +13,7 @@ struct ht_entry {
 	size_t board_hash;
 	enum color moving;
 	struct piece* board;
-	struct ht_entry *next;
+	struct ht_entry* next;
 };
 
 /**
