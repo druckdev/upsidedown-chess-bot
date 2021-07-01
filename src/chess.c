@@ -11,11 +11,12 @@
 #include "hashtable.h"
 #include "move.h"
 #include "timer.h"
+#include "param_config.h"
 
 #define MAX_FEN_STR_LEN 128
 
 struct piece empty_piece = { EMPTY, WHITE };
-int PIECE_VALUES[]       = { 0, 100, 400, 400, 500, 900, 1000000 };
+int* PIECE_VALUES      = config.piece_values;
 
 int
 get_piece_value(enum piece_type piece)
