@@ -50,7 +50,7 @@ class GameRunner:
             in_str = self.fen_state 
             in_str += ' w ' if white_turn else ' b ' 
             in_str += str(self.current_move)
-            in_str += ' ' + str(time_left) # TODO : reduce time
+            in_str += ' ' + str(time_left)
             state_bytes = bytes(in_str, 'utf-8')
 
             # trigger bot

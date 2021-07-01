@@ -6,7 +6,8 @@
 class Generation:
     def __init__(self, instances, keep_from_gen=0.4):
         # setup first generation
-        # TODO : read the default config from the current param_config.h
+        # TODO : read the default config from the current param_config.h 
+        #        and shift the values for every except one config
         default_config = {
             "remaining_time_factor" : 3,
             "pyramid_gradient" : 0.01,
