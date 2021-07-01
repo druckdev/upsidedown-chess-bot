@@ -17,8 +17,8 @@
 #define BENCHMARK_DIR_NAME "benchmarks"
 
 #define N_FOR_AVG 3
-#define BENCHMARK_ITERATION_COUNT 100
-#define NEGAMAX_DEPTH 5
+#define BENCHMARK_ITERATION_COUNT 1000
+#define NEGAMAX_DEPTH 7
 
 size_t sample_size = sizeof(test_boards) / sizeof(*test_boards);
 
