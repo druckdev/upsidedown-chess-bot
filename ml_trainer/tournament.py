@@ -103,6 +103,15 @@ class Tournament:
         with open(config_path, 'w') as f:
             f.writelines(new_config)
 
+        # recompile bot.c
+        p = subprocess.Popen("cd ../build/ && make && cd ../ml_trainer",
+                             shell=True,
+                             stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
+        p.kill()
+        
+        # start new bot
         p = subprocess.Popen(cmd,
                              shell=True,
                              stdin=subprocess.PIPE,
