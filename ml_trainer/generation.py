@@ -83,25 +83,32 @@ class Generation:
     #--------------
 
     def get_offspring(self, parents: list, needed: int) -> dict:
-        """Computes new, slightly randomized configs based on given ones.
+        """Computes new, varying configs based on given ones.
 
         Parameters:
-        parents (list): list of parent configs.
-        needed   (int): how many new configs are needed 
+        parents (list): List of parent configs.
+        needed   (int): How many new configs are needed 
 
         Returns:
         list: The new offspring configs.
-
         """
+        
         offspring_configs = []
 
-        # the best and worst player (in the upper x percent)
-        # define the value range for children
-        # TODO : don't ignore the others
-        print("parents ", parents)
-        up_b_time = parents[0]["remaining_time_factor"]
-        up_b_gradient = parents[0]["pyramid_gradient"]
-        up_b_pieces = parents[0]["piece_values"]
+        avg_conf = {
+            "remaining_time_factor": 0,
+            "pyramid_gradient": 0,
+            "piece_values": []
+        }
+        for config in parents:
+            avg_conf["remaining_time_factor"] += config["remaining_time_factor"] / len(parents)
+            avg_conf["pyramid_gradient"] += config["pyramid_gradient"] / len(parents)
+            avg_conf["piece_values"] += [x / len(parents) for x in config["piece_values"]]
+
+        offspring_configs = self.create_variations(avg_conf, needed)
+
+        return offspring_configs
+
 
         l_b_time = parents[-1]["remaining_time_factor"]
         l_b_gradient = parents[-1]["pyramid_gradient"]
