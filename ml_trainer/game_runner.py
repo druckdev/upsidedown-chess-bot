@@ -5,7 +5,7 @@ class GameRunner:
         self.w_player = w_player
         self.b_player = b_player
         self.current_move = 0
-        self.time_left = 100.0
+        self.time_left = 100.0 # TODO : this needs to be wrapped or parsed somehow
         self.max_moves = 100
         self.fen_state = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
         self.simplified_state = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 
@@ -37,12 +37,13 @@ class GameRunner:
         while self.current_move < self.max_moves: 
             self.current_move += 1
             current_player = self.w_player if white_turn else self.b_player
+            print ("Move ", self.current_move, " of ", self.max_moves, end="\r")
 
             # setup input for bot
             in_str = self.fen_state 
             in_str += ' w ' if white_turn else ' b ' 
-            in_str += str(self.time_left) 
-            in_str += ' ' + str(self.current_move)
+            in_str += str(self.current_move)
+            in_str += ' ' + str(self.time_left) # TODO : reduce time
             state_bytes = bytes(in_str, 'utf-8')
 
             # trigger bot
