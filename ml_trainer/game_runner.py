@@ -1,11 +1,14 @@
 import errno
+import time
 
+# Description :
+# GameRunner runs a game between two given processes.
 class GameRunner:
     def __init__(self, w_player, b_player):
         self.w_player = w_player
         self.b_player = b_player
         self.current_move = 0
-        self.time_left = 100.0 # TODO : this needs to be wrapped or parsed somehow
+        self.total_time = 100.0 # TODO : this needs to be wrapped or parsed somehow
         self.max_moves = 100
         self.fen_state = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
         self.simplified_state = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 
@@ -32,6 +35,7 @@ class GameRunner:
 
         white_won = False
         white_turn = True
+        self.end_time = time.time() + self.total_time
 
         # play game
         while self.current_move < self.max_moves: 
@@ -40,10 +44,13 @@ class GameRunner:
             print ("Move ", self.current_move, " of ", self.max_moves, end="\r")
 
             # setup input for bot
+            curr_time = time.time()
+            time_left = self.end_time - curr_time
+
             in_str = self.fen_state 
             in_str += ' w ' if white_turn else ' b ' 
             in_str += str(self.current_move)
-            in_str += ' ' + str(self.time_left) # TODO : reduce time
+            in_str += ' ' + str(time_left) # TODO : reduce time
             state_bytes = bytes(in_str, 'utf-8')
 
             # trigger bot
