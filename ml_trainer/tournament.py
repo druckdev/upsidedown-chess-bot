@@ -9,7 +9,8 @@ import subprocess
 # TODO : this needs to be wrapped or parsed somehow
 path_to_executable = "../build/bot"
 parameters = " w 100 50"
-cmd = [ path_to_executable + parameters ]
+cmd = path_to_executable + parameters
+config_path = "../inc/param_config.h"
 
 class Tournament:
     def __init__(self, player_configs):
@@ -72,7 +73,36 @@ class Tournament:
         process: The process.
 
         """
-        # TODO : rewrite param_config.h , compile
+        # read param_config.h and generate the new 
+        # one by substituting the config instance
+        new_config = []
+        with open(config_path, 'r') as f:
+            for line in f:
+                if "struct config_template config" in line:
+
+                    # generate the new line
+                    new_line = "struct config_template config="
+                    
+                    time_factor = config["remaining_time_factor"]
+                    new_line += '{' + str(time_factor) + ','
+
+                    gradient = config["pyramid_gradient"]
+                    new_line += str(gradient) + ",{"
+
+                    for v in config["piece_values"]:
+                        new_line += str(v) + ','
+
+                    new_line = new_line[:-1] # remove trailing ','
+                    new_line += "}};\n"
+
+                    new_config.append(new_line)
+                else:
+                    new_config.append(line)
+        
+        # write the new config
+        with open(config_path, 'w') as f:
+            f.writelines(new_config)
+
         p = subprocess.Popen(cmd,
                              shell=True,
                              stdin=subprocess.PIPE,
