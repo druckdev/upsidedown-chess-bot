@@ -50,7 +50,7 @@ uniform_distribution(struct chess_timer* timer, struct chess* game)
 
 	// uniformly distribute the remaining time over the remaining moves
 	int remaining_moves = game->max_moves - game->move_count;
-	if(!remaining_moves)
+	if (!remaining_moves)
 		return (struct timespec){ 0 };
 	// clang-format off
 	struct timespec t_move = {
@@ -112,11 +112,11 @@ pyramid_distribution(struct chess_timer* timer, struct chess* game)
 
 	// get the uniform distribution of the remaining time
 	// over the remaining moves
-	time_t uniform_sec = t_remaining.tv_sec / remaining_moves;
+	time_t uniform_sec  = t_remaining.tv_sec / remaining_moves;
 	time_t uniform_nsec = t_remaining.tv_nsec / remaining_moves;
 
 	// get the y (time) value for the given x (current move)
-	time_t sec = f((float)(uniform_sec), game->max_moves, game->move_count);
+	time_t sec  = f((float)(uniform_sec), game->max_moves, game->move_count);
 	time_t nsec = f((float)(uniform_nsec), game->max_moves, game->move_count);
 
 	// clang-format off
