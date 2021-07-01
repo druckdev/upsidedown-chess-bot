@@ -49,11 +49,7 @@ free_ht(struct ht* ht)
 		struct ht_entry* cur = ht->table[i];
 		while (cur) {
 			struct ht_entry* tmp = cur->next;
-#ifdef DEBUG_NEGAMAX_USE_LIST
 			move_list_free(cur->moves);
-#else  /* DEBUG_NEGAMAX_USE_LIST */
-			free(cur->move);
-#endif /* DEBUG_NEGAMAX_USE_LIST */
 			free(cur->board);
 			free(cur);
 			cur = tmp;
@@ -65,21 +61,9 @@ free_ht(struct ht* ht)
 
 struct ht_entry*
 ht_update_entry(struct ht* ht, struct piece* board, enum color moving,
-#ifdef DEBUG_NEGAMAX_USE_LIST
-                struct move_list* moves
-#else  /* DEBUG_NEGAMAX_USE_LIST */
-                struct move* move
-#endif /* DEBUG_NEGAMAX_USE_LIST */
-                ,
-                size_t rating, size_t depth)
+                struct move_list* moves, size_t rating, size_t depth)
 {
-	if (!ht || !board ||
-#ifdef DEBUG_NEGAMAX_USE_LIST
-	    !moves
-#else  /* DEBUG_NEGAMAX_USE_LIST */
-	    !move
-#endif /* DEBUG_NEGAMAX_USE_LIST */
-	)
+	if (!ht || !board || !moves)
 		return NULL;
 
 	ssize_t hash = hash_board(ht->size, board, moving);
@@ -93,13 +77,8 @@ ht_update_entry(struct ht* ht, struct piece* board, enum color moving,
 			// found entry
 			if (depth > cur->depth) {
 				// only update if depth is higher
-#ifdef DEBUG_NEGAMAX_USE_LIST
 				move_list_free(cur->moves);
-				cur->moves = moves;
-#else  /* DEBUG_NEGAMAX_USE_LIST */
-				free(entry->move);
-				entry->move = move;
-#endif /* DEBUG_NEGAMAX_USE_LIST */
+				cur->moves  = moves;
 				cur->depth  = depth;
 				cur->rating = rating;
 			}
@@ -114,11 +93,7 @@ ht_update_entry(struct ht* ht, struct piece* board, enum color moving,
 		if (!new_entry)
 			return NULL;
 
-#ifdef DEBUG_NEGAMAX_USE_LIST
-		new_entry->moves = moves;
-#else
-		new_entry->move = move;
-#endif
+		new_entry->moves  = moves;
 		new_entry->depth  = depth;
 		new_entry->rating = rating;
 		new_entry->moving = moving;

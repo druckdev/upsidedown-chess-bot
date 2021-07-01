@@ -19,11 +19,7 @@ size_t MAX_NEGAMAX_DEPTH = 3;
 
 struct negamax_return {
 	int val;
-#ifdef DEBUG_NEGAMAX_USE_LIST
 	struct move_list* moves;
-#else  /* DEBUG_NEGAMAX_USE_LIST */
-	struct move* move;
-#endif /* DEBUG_NEGAMAX_USE_LIST */
 };
 
 int
@@ -66,13 +62,9 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	struct ht_entry* entry =
 			ht_get_entry(&game->trans_table, game->board, game->moving);
 	if (entry && entry->depth >= depth) {
-#ifdef DEBUG_NEGAMAX_USE_LIST
 		struct move_list* ret_moves = malloc(sizeof(*ret_moves));
 		move_list_cpy(ret_moves, entry->moves);
 		return (struct negamax_return){ entry->rating, ret_moves };
-#else  /* DEBUG_NEGAMAX_USE_LIST */
-		return (struct negamax_return){ entry->rating, entry->move };
-#endif /* DEBUG_NEGAMAX_USE_LIST */
 	}
 #endif /* TRANSPOSITION_TABLES */
 
@@ -155,20 +147,11 @@ negamax(struct chess* game, size_t depth, int a, int b)
 
 		// replace the current best move, if move guarantees a better score.
 		if (ret.val > best.val) {
-#ifdef DEBUG_NEGAMAX_USE_LIST
 			move_list_free(best.moves);
 			best       = ret;
 			best.moves = move_list_push(best.moves, move);
 		} else {
 			move_list_free(ret.moves);
-#else  /* DEBUG_NEGAMAX_USE_LIST */
-			free(best.move);
-			best      = ret;
-			best.move = move;
-			free(ret.move);
-		} else {
-			free(ret.move);
-#endif /* DEBUG_NEGAMAX_USE_LIST */
 			free(move);
 		}
 
@@ -229,7 +212,6 @@ choose_move(struct chess* game, struct chess_timer* timer)
 
 		struct negamax_return ret = negamax(game, i, INT_MIN + 1, INT_MAX);
 
-#ifdef DEBUG_NEGAMAX_USE_LIST
 		if (!ret.moves)
 			return NULL;
 
@@ -238,9 +220,6 @@ choose_move(struct chess* game, struct chess_timer* timer)
 #endif
 		best = move_list_pop(ret.moves);
 		move_list_free(ret.moves);
-#else  /* DEBUG_NEGAMAX_USE_LIST */
-		best = ret.move;
-#endif /* DEBUG_NEGAMAX_USE_LIST */
 		if (!best)
 			return NULL;
 
