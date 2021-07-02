@@ -8,11 +8,7 @@
 
 struct negamax_return {
 	int val;
-#ifdef DEBUG_NEGAMAX_USE_LIST
 	struct move_list* moves;
-#else
-	struct move* move;
-#endif
 };
 
 int rate_board(struct chess* chess);

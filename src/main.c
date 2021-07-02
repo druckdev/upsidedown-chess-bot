@@ -20,16 +20,16 @@ debug_print_chess_features()
 int
 main(int argc, char* argv[])
 {
-	char color = 'w';
+	char color         = 'w';
 	float total_time_s = 600.0;
-	size_t max_moves = MAX_MOVE_COUNT;
+	size_t max_moves   = MAX_MOVE_COUNT;
 
 	if (argc == 2) {
 		MAX_NEGAMAX_DEPTH = atoi(argv[1]);
 	} else if (argc == 4) {
-		color = *argv[1];
+		color        = *argv[1];
 		total_time_s = atof(argv[2]);
-		max_moves = atol(argv[3]);
+		max_moves    = atol(argv[3]);
 	}
 
 	struct chess game = init_chess(color, total_time_s, max_moves);
