@@ -9,7 +9,7 @@ class GameRunner:
         self.b_player = b_player
         self.current_move = 0
         self.total_time = 100.0 # TODO : this needs to be wrapped or parsed somehow
-        self.max_moves = 100
+        self.max_moves = 50
         self.fen_state = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
         self.simplified_state = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 
                                  'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 
@@ -74,6 +74,7 @@ class GameRunner:
             
             white_turn = not white_turn
 
+        self.print_board()
         return (self.current_move >= self.max_moves), white_won
 
     #--------------
@@ -128,3 +129,17 @@ class GameRunner:
             new_fen = new_fen + str(cnt)
 
         self.fen_state = new_fen
+    
+    def print_board(self):
+        """Prints the internal 'simplified_state' but human-readable."""
+
+        tmp = ""
+        for i in range(len(self.simplified_state)):
+            if i % 8 == 7:
+                print(tmp)
+                tmp = ""
+                continue
+            
+            c = ' ' if self.simplified_state[i] == '1' else self.simplified_state[i]
+            tmp += '[ ' + c + ' ]'
+            
