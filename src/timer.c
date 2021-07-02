@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
+#include "param_config.h"
 
 // clang-format off
 // NOTE(Aurel): these need to be included in this order
@@ -67,7 +68,7 @@ uniform_distribution(struct chess_timer* timer, struct chess* game)
 float
 f(float uniform, int n, int x)
 {
-	float uniform_percent = uniform * 0.01;
+	float uniform_percent = uniform * config.pyramid_gradient;
 	if (x < n * 0.5) {
 		// first half, function rise
 
