@@ -20,6 +20,8 @@ int rate_move(struct chess* game, struct move* move);
 void fprint_move(FILE* stream, struct move* move);
 
 /**
+ * Wrappers around the actual functions to avoid casting and improve
+ * readability.
  */
 struct move* move_list_pop(struct list* list);
 struct move* move_list_peek(struct list* list);
