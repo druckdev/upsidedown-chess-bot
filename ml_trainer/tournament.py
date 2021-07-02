@@ -10,7 +10,7 @@ import subprocess
 path_to_executable = "../build/bot"
 parameters = " w 100 50"
 cmd = path_to_executable + parameters
-config_path = "../inc/param_config.h"
+config_path = "../src/param_config.c"
 
 class Tournament:
     def __init__(self, player_configs):
@@ -72,7 +72,7 @@ class Tournament:
         process: The process.
 
         """
-        # read param_config.h and generate the new 
+        # read param_config.c and generate the new 
         # one by substituting the config instance
         new_config = []
         with open(config_path, 'r') as f:

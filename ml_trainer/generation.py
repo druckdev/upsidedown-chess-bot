@@ -7,7 +7,7 @@ import random
 # Each generation is based on the predecessing one, 
 # varying less with each iteration of the process.
 
-config_path = "../inc/param_config.h" # TODO : this also needs to go somewhere else
+config_path = "../src/param_config.c" # TODO : this also needs to go somewhere else
 
 class Generation:
     def __init__(self, instances, variation=1, keep_from_gen=0.4):
@@ -17,7 +17,7 @@ class Generation:
             "piece_values" : [],
         }
 
-        # read the current values in param_config.h
+        # read the current values in param_config.c
         with open(config_path) as f:
             for line in f:
                 if "struct config_template config" in line:
