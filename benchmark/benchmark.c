@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include "list.h"
 #include "board.h"
 #include "chess.h"
 #include "devel_bot.h"
@@ -58,7 +59,7 @@ benchmark_generate_moves(FILE* file)
 		//printf("BENCHMARK: %s \n", test_boards[i].fen);
 		//fprint_board(stdout, chess.board, NULL);
 
-		struct move_list* moves;
+		struct list* moves;
 		struct timespec t_start_cpu, t_end_cpu, t_start_wall, t_end_wall;
 
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_start_cpu); // CPU time
@@ -67,7 +68,7 @@ benchmark_generate_moves(FILE* file)
 		for (size_t j = 0; j < BENCHMARK_ITERATION_COUNT; ++j) {
 			moves = generate_moves(&chess, true, false);
 			if (j != BENCHMARK_ITERATION_COUNT - 1)
-				move_list_free(moves);
+				list_free(moves);
 		}
 
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t_end_cpu);

@@ -7,10 +7,10 @@
 /**
  * Generates all moves possible in the current chess-game state.
  */
-struct move_list* generate_moves(struct chess* game, int check_checkless,
+struct list* generate_moves(struct chess* game, int check_checkless,
                                  bool hit_allies);
 
-struct move_list* generate_moves_piece(struct chess* game, enum pos pos,
+struct list* generate_moves_piece(struct chess* game, enum pos pos,
                                        int check_checkless, bool hit_allies);
 
 #endif /* GENERATOR_H */

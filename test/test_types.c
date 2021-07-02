@@ -13,17 +13,17 @@ test_move_list_sort()
 	int prios_unsorted[]   = { 10, 3, 4, 23, 234, -1 };
 	int prios_sorted[]     = { -1, 3, 4, 10, 23, 234 };
 	struct move moves[len] = { 0 };
-	struct move_list* list = NULL;
+	struct list* list = NULL;
 	for (int i = 0; i < len; ++i) {
 		moves[i].rating = prios_unsorted[i];
-		list            = move_list_push(list, &moves[i]);
+		list            = list_push(list, &moves[i]);
 	}
 
 	move_list_sort(list);
 
-	struct move_list_elem* cur = list->first;
-	struct move_list_elem* old = NULL;
-	struct move_list_elem *before, *after;
+	struct list_elem* cur = list->first;
+	struct list_elem* old = NULL;
+	struct list_elem *before, *after;
 	for (size_t i = 0; i < len; ++i) {
 		TEST_ASSERT_NOT_NULL(cur);
 
@@ -40,7 +40,7 @@ test_move_list_sort()
 			TEST_ASSERT_NULL(after);
 
 		TEST_ASSERT_EQUAL_PTR(old, cur->prev);
-		TEST_ASSERT_EQUAL_INT(prios_sorted[i], cur->move->rating);
+		TEST_ASSERT_EQUAL_INT(prios_sorted[i], ((struct move*)cur->elem)->rating);
 
 		free(old);
 

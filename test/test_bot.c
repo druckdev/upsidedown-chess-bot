@@ -60,7 +60,7 @@ test_negamax()
 	struct negamax_return ret = negamax(&game, 1, INT_MIN + 1, INT_MAX);
 	struct move* best;
 	best = move_list_pop(ret.moves);
-	move_list_free(ret.moves);
+	list_free(ret.moves);
 
 	// clang-format off
 	struct move expected = {

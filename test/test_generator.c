@@ -5,6 +5,7 @@
 #include "board.h"
 #include "chess.h"
 #include "unity.h"
+#include "list.h"
 
 #include "devel_chess.h"
 #include "devel_generator.h"
@@ -20,11 +21,11 @@ test_checkmate()
 	struct chess chess = init_chess(' ', 9999, 99);
 	fen_to_chess(fen, &chess);
 
-	struct move_list* moves = generate_moves(&chess, true, false);
+	struct list* moves = generate_moves(&chess, true, false);
 
-	TEST_ASSERT_EQUAL_INT(3, move_list_count(moves));
+	TEST_ASSERT_EQUAL_INT(3, list_count(moves));
 
-	while (move_list_count(moves)) {
+	while (list_count(moves)) {
 		struct move* move = move_list_pop(moves);
 
 		if (move->start != H2 || move->target != F3) {
@@ -36,7 +37,7 @@ test_checkmate()
 		                    "Move should be a checkmate move.");
 		free(move);
 	}
-	move_list_free(moves);
+	list_free(moves);
 	free(chess.board);
 }
 
@@ -51,14 +52,14 @@ test_generate_moves_piece()
 	fen_to_chess(test_boards[0].fen, &chess);
 
 	// verify generator
-	struct move_list* list = generate_moves_piece(&chess, D3, true, false);
-	int list_len           = move_list_count(list);
+	struct list* list = generate_moves_piece(&chess, D3, true, false);
+	int list_len           = list_count(list);
 
 	if (list_len != test_boards[0].move_cnt) {
 		printf("\n");
 		fprint_board(stdout, chess.board, list);
 	} else {
-		move_list_free(list);
+		list_free(list);
 	}
 
 	free(chess.board);
@@ -81,18 +82,18 @@ test_game_samples()
 	fen_to_chess(test_boards[test_idx].fen, &chess);
 
 	// verify generator
-	struct move_list* list;
+	struct list* list;
 	int old_len = 0;
 	for (size_t i = 0; i < TEST_SAMPLES_ITERATIONS; i++) {
 		list = generate_moves(&chess, true, false);
 
-		int list_len = move_list_count(list);
+		int list_len = list_count(list);
 		if ((i && list_len != old_len) ||
 		    list_len != test_boards[test_idx].move_cnt) {
 			printf("\n");
 			fprint_board(stdout, chess.board, list);
 		} else {
-			move_list_free(list);
+			list_free(list);
 		}
 
 		if (i)

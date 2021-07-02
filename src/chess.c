@@ -113,7 +113,7 @@ run_chess(struct chess* game)
 
 		do_move(game, move);
 #ifdef DEBUG_BOARD_WHEN_PLAYING
-		struct move_list* list = move_list_push(NULL, move);
+		struct list* list = list_push(NULL, move);
 		fprint_board(DEBUG_PRINT_STREAM, game->board, list);
 #else
 		free(move);
