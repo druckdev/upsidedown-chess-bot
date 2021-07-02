@@ -75,6 +75,8 @@ class GameRunner:
             white_turn = not white_turn
 
         self.print_board()
+        print("white_won ", white_won, " draw ", self.current_move >= self.max_moves)
+        
         return (self.current_move >= self.max_moves), white_won
 
     #--------------
@@ -133,13 +135,16 @@ class GameRunner:
     def print_board(self):
         """Prints the internal 'simplified_state' but human-readable."""
 
+        print(self.fen_state)
+
         tmp = ""
         for i in range(len(self.simplified_state)):
-            if i % 8 == 7:
+            if i % 8 == 0:
                 print(tmp)
                 tmp = ""
-                continue
             
             c = ' ' if self.simplified_state[i] == '1' else self.simplified_state[i]
             tmp += '[ ' + c + ' ]'
+        
+        print('')
             
