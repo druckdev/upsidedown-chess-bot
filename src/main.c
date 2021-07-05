@@ -46,7 +46,7 @@ main(int argc, char* argv[])
 	} else if (argc == 4) {
 		color        = *argv[1];
 		total_time_s = atof(argv[2]);
-		max_moves    = atol(argv[3]);
+		max_moves    = atol(argv[3]) / 2; // the given moves is for two players
 	}
 
 	struct chess game = init_chess(color, total_time_s, max_moves);

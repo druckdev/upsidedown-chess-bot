@@ -226,7 +226,7 @@ fen_to_chess(char* fen, struct chess* game)
 		return;
 
 	// get remaining move count
-	game->move_count = atoi(fen + c);
+	game->move_count = atoi(fen + c) / 2; // the given moves is for two players
 	if (!fen[++c])
 		return;
 
