@@ -7,9 +7,14 @@ class GameRunner:
     def __init__(self, w_player, b_player):
         self.w_player = w_player
         self.b_player = b_player
+
+        # TODO : all the following needs to be wrapped or parsed
+        self.time_left_w = 30.0 # game time in seconds
+        self.time_left_b = 30.0 # game time in seconds
+
         self.current_move = 0
-        self.total_time = 100.0 # TODO : this needs to be wrapped or parsed somehow
-        self.max_moves = 50
+        self.max_moves = 10
+
         self.fen_state = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
         self.simplified_state = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 
                                  'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 
@@ -35,25 +40,25 @@ class GameRunner:
 
         white_won = False
         white_turn = True
-        self.end_time = time.time() + self.total_time
 
         # play game
         while self.current_move < self.max_moves: 
             self.current_move += 1
+
+            # get variables for current player
             current_player = self.w_player if white_turn else self.b_player
-            print ("Move ", self.current_move, " of ", self.max_moves, end="\r")
+            player_char = ' w ' if white_turn else ' b '
+            time_left = self.time_left_w if white_turn else self.time_left_b
 
             # setup input for bot
-            curr_time = time.time()
-            time_left = self.end_time - curr_time
-
             in_str = self.fen_state 
-            in_str += ' w ' if white_turn else ' b ' 
+            in_str += player_char 
             in_str += str(self.current_move)
             in_str += ' ' + str(time_left)
             state_bytes = bytes(in_str, 'utf-8')
 
-            # trigger bot
+            # trigger bot (also start the timer)
+            move_start_time = time.time()
             try:
                 current_player.stdin.write(state_bytes)
                 current_player.stdin.flush()
@@ -66,6 +71,15 @@ class GameRunner:
                 else:
                     print(e)
                     raise
+            
+            # bot is done calculating the move, so compute the used time 
+            # for the current player
+            move_end_time = time.time()
+            used_time = move_end_time - move_start_time
+            if white_turn:
+                self.time_left_w -= used_time
+            else:
+                self.time_left_b -= used_time
 
             # get move current player wants to play and execute it
             for line in iter(current_player.stdout.readline, b''):
