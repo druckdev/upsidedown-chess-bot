@@ -9,11 +9,11 @@ class GameRunner:
         self.b_player = b_player
 
         # TODO : all the following needs to be wrapped or parsed
-        self.time_left_w = 30.0 # game time in seconds
-        self.time_left_b = 30.0 # game time in seconds
+        self.time_left_w = 100.0 # game time in seconds
+        self.time_left_b = 100.0 # game time in seconds
 
         self.current_move = 0
-        self.max_moves = 10
+        self.max_moves = 50
 
         self.fen_state = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
         self.simplified_state = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 
@@ -44,6 +44,7 @@ class GameRunner:
         # play game
         while self.current_move < self.max_moves: 
             self.current_move += 1
+            print("Move ", self.current_move, " of ", self.max_moves, end="\r")
 
             # get variables for current player
             current_player = self.w_player if white_turn else self.b_player
@@ -83,7 +84,7 @@ class GameRunner:
                     self.time_left_w -= used_time
                 else:
                     self.time_left_b -= used_time
-                            
+                
                 self.do_move(line)
                 break
             

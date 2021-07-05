@@ -108,7 +108,7 @@ class Tournament:
                              stderr=subprocess.STDOUT)
         p.kill()
 
-        parameters = ' ' + player_token + " 30 10" # TODO : these parameters must be linked with those in game_runner
+        parameters = ' ' + player_token + " 100.0 50" # TODO : these parameters must be linked with those in game_runner
         cmd = path_to_executable + parameters
 
         # start new bot
