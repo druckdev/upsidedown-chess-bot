@@ -8,8 +8,6 @@ import subprocess
 
 # TODO : this needs to be wrapped or parsed somehow
 path_to_executable = "../build/bot"
-parameters = " w 100 50"
-cmd = path_to_executable + parameters
 config_path = "../src/param_config.c"
 
 class Tournament:
@@ -39,8 +37,8 @@ class Tournament:
                 print(i, "as w vs", j, "as b")
 
                 # init game
-                w_player = self.start_process(self.player_configs[i])
-                b_player = self.start_process(self.player_configs[j])
+                w_player = self.start_process(self.player_configs[i], 'w')
+                b_player = self.start_process(self.player_configs[j], 'b')
                 
                 # run game
                 game = game_runner.GameRunner(w_player, b_player)
@@ -62,7 +60,7 @@ class Tournament:
     # HELPER
     #--------------
 
-    def start_process(self, config):
+    def start_process(self, config, player_token):
         """Starts a process based on a config.
 
         Parameters:
@@ -109,6 +107,9 @@ class Tournament:
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)
         p.kill()
+
+        parameters = ' ' + player_token + " 30 10" # TODO : these parameters must be linked with those in game_runner
+        cmd = path_to_executable + parameters
 
         # start new bot
         p = subprocess.Popen(cmd,
