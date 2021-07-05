@@ -146,5 +146,5 @@ class GameRunner:
             c = ' ' if self.simplified_state[i] == '1' else self.simplified_state[i]
             tmp += '[ ' + c + ' ]'
         
-        print('')
+        print(tmp)
             
