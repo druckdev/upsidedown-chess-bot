@@ -51,6 +51,11 @@ class GameRunner:
             player_char = ' w ' if white_turn else ' b '
             time_left = self.time_left_w if white_turn else self.time_left_b
 
+            # player lost on time (happened in last turn)
+            if time_left <= 0:
+                white_won = False if white_turn else True
+                break
+
             # setup input for bot
             in_str = self.fen_state 
             in_str += player_char 
