@@ -71,18 +71,19 @@ class GameRunner:
                 else:
                     print(e)
                     raise
-            
-            # bot is done calculating the move, so compute the used time 
-            # for the current player
-            move_end_time = time.time()
-            used_time = move_end_time - move_start_time
-            if white_turn:
-                self.time_left_w -= used_time
-            else:
-                self.time_left_b -= used_time
 
             # get move current player wants to play and execute it
             for line in iter(current_player.stdout.readline, b''):
+                
+                # bot is done calculating the move, so compute the used time 
+                # for the current player
+                move_end_time = time.time()
+                used_time = move_end_time - move_start_time
+                if white_turn:
+                    self.time_left_w -= used_time
+                else:
+                    self.time_left_b -= used_time
+                            
                 self.do_move(line)
                 break
             
