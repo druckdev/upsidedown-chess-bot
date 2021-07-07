@@ -6,6 +6,7 @@
 
 #include "chess.h"
 #include "move.h"
+#include "list.h"
 
 #define WHITE_TO_BLACK_OFF ('a' - 'A')
 
@@ -18,9 +19,9 @@ char piece_e_to_chr(enum piece_type piece);
 char piece_to_chr(struct piece piece);
 struct piece chr_to_piece(char fen_piece);
 void fen_to_chess(char* fen, struct chess* game);
-bool* are_attacked(struct move_list* moves, bool* targets);
+bool* are_attacked(struct list* moves, bool* targets);
 
-void fprint_board(FILE* stream, struct piece board[], struct move_list* moves);
+void fprint_board(FILE* stream, struct piece board[], struct list* moves);
 
 struct piece* board_cpy(struct piece* board);
 bool is_same_board(struct piece* board_1, struct piece* board_2);

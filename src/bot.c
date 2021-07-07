@@ -14,12 +14,13 @@
 #include "move.h"
 #include "pst.h"
 #include "timer.h"
+#include "list.h"
 
 size_t MAX_NEGAMAX_DEPTH = 3;
 
 struct negamax_return {
 	int val;
-	struct move_list* moves;
+	struct list* moves;
 };
 
 int
@@ -36,17 +37,17 @@ rate_board(struct chess* chess)
 }
 
 void
-rate_move_list(struct chess* game, struct move_list* list)
+rate_move_list(struct chess* game, struct list* list)
 {
 	if (!list)
 		return;
 
-	struct move_list_elem* cur = move_list_get_first(list);
+	struct list_elem* cur = list_get_first(list);
 	while (cur) {
-		struct move* move = cur->move;
+		struct move* move = cur->elem;
 		move->rating      = rate_move(game, move);
 
-		cur = move_list_get_next(cur);
+		cur = list_get_next(cur);
 	}
 }
 
@@ -62,21 +63,21 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	struct ht_entry* entry =
 			ht_get_entry(&game->trans_table, game->board, game->moving);
 	if (entry && entry->depth >= depth) {
-		struct move_list* ret_moves = malloc(sizeof(*ret_moves));
+		struct list* ret_moves = malloc(sizeof(*ret_moves));
 		move_list_cpy(ret_moves, entry->moves);
 		return (struct negamax_return){ entry->rating, ret_moves };
 	}
 #endif /* TRANSPOSITION_TABLES */
 
-	struct move_list* moves = generate_moves(game, true, false);
+	struct list* moves = generate_moves(game, true, false);
 
 	// draw by stalemate - terminal node in tree
 	// NOTE: If the list is empty because of a checkmate move, we will recognize
 	//       that by checking move->is_checkmate later and overwrite
 	//       ret.mate_for there.
 	//       TODO(Aurel): This is not true anymore.
-	if (!move_list_count(moves)) {
-		move_list_free(moves);
+	if (!list_count(moves)) {
+		list_free(moves);
 		return (struct negamax_return){ 0, NULL };
 	}
 
@@ -106,7 +107,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 	 */
 	size_t val_depth_factor = ((depth * depth) >> 3) + 1;
 
-	while (move_list_count(moves)) {
+	while (list_count(moves)) {
 		struct move* move = move_list_pop(moves);
 
 		struct negamax_return ret;
@@ -147,11 +148,11 @@ negamax(struct chess* game, size_t depth, int a, int b)
 
 		// replace the current best move, if move guarantees a better score.
 		if (ret.val > best.val) {
-			move_list_free(best.moves);
+			list_free(best.moves);
 			best       = ret;
-			best.moves = move_list_push(best.moves, move);
+			best.moves = list_push(best.moves, move);
 		} else {
-			move_list_free(ret.moves);
+			list_free(ret.moves);
 			free(move);
 		}
 
@@ -169,7 +170,7 @@ negamax(struct chess* game, size_t depth, int a, int b)
 			break;
 #endif /* ALPHA_BETA_CUTOFFS */
 	}
-	move_list_free(moves);
+	list_free(moves);
 
 	game->moving *= -1;
 #ifdef VANILLA_MINIMAX
@@ -179,13 +180,13 @@ negamax(struct chess* game, size_t depth, int a, int b)
 
 #ifdef TRANSPOSITION_TABLES
 	// if this fails no entry is created - ignore that case
-	struct move_list* tp_moves = malloc(sizeof(*tp_moves));
+	struct list* tp_moves = malloc(sizeof(*tp_moves));
 	move_list_cpy(tp_moves, best.moves);
 	struct ht_entry* ret =
 			ht_update_entry(&game->trans_table, game->board, game->moving,
 	                        tp_moves, best.val, depth);
 	if (!ret || ret->moves != tp_moves)
-		move_list_free(tp_moves);
+		list_free(tp_moves);
 #endif /* ENABLE_TRANSPOSITION_TABLE */
 
 	return best;
@@ -219,7 +220,7 @@ choose_move(struct chess* game, struct chess_timer* timer)
 		fprint_move_list(DEBUG_PRINT_STREAM, ret.moves);
 #endif
 		best = move_list_pop(ret.moves);
-		move_list_free(ret.moves);
+		list_free(ret.moves);
 		if (!best)
 			return NULL;
 

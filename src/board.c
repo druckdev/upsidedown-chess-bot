@@ -239,17 +239,17 @@ fen_to_chess(char* fen, struct chess* game)
 
 // returns true if the position is attacked by one of the given moves
 bool
-is_attacked(struct move_list* moves, enum pos pos)
+is_attacked(struct list* moves, enum pos pos)
 {
 	if (!moves)
 		return false;
 
-	struct move_list_elem* cur = move_list_get_first(moves);
+	struct list_elem* cur = list_get_first(moves);
 	while (cur) {
-		struct move* move = cur->move;
+		struct move* move = cur->elem;
 		if (move->target == pos)
 			return true;
-		cur = move_list_get_next(cur);
+		cur = list_get_next(cur);
 	}
 	return false;
 }
@@ -259,7 +259,7 @@ is_attacked(struct move_list* moves, enum pos pos)
 // `moves` is consumed and freed.
 // Allocates memory if the passed pointer equals to NULL.
 bool*
-are_attacked(struct move_list* moves, bool* targets)
+are_attacked(struct list* moves, bool* targets)
 {
 	if (!targets) {
 		targets = calloc(sizeof(bool), 64);
@@ -270,12 +270,12 @@ are_attacked(struct move_list* moves, bool* targets)
 	if (!moves)
 		return targets;
 
-	while (move_list_count(moves)) {
+	while (list_count(moves)) {
 		struct move* move     = move_list_pop(moves);
 		targets[move->target] = true;
 		free(move);
 	}
-	move_list_free(moves);
+	list_free(moves);
 
 	return targets;
 }
@@ -285,7 +285,7 @@ are_attacked(struct move_list* moves, bool* targets)
  *             Because of efficiency reasons, moves is 'consumed' and freed.
  */
 void
-fprint_board(FILE* stream, struct piece board[], struct move_list* moves)
+fprint_board(FILE* stream, struct piece board[], struct list* moves)
 {
 	bool* targets = are_attacked(moves, NULL);
 	char* padding = "     ";

@@ -6,6 +6,8 @@
 #include "move.h"
 #include "pst.h"
 
+#include "list.h"
+
 /**
  * Rates a move from the point of view of the moving player.
  *
@@ -66,167 +68,19 @@ fprint_move(FILE* stream, struct move* move)
 	//fflush(stream);
 }
 
-struct move_list*
-move_list_push(struct move_list* list, struct move* move)
-{
-	// NOTE: generator.c depends on this break condition!
-	if (!move)
-		return list;
-
-	if (!list) {
-		list = calloc(1, sizeof(struct move_list));
-		if (!list)
-			return NULL;
-	}
-
-	struct move_list_elem* list_elem = calloc(1, sizeof(struct move_list_elem));
-	if (!list_elem) {
-		if (!list->last)
-			// list is empty so we free it as we probably have created it
-			free(list);
-		return NULL;
-	}
-
-	list->count++;
-
-	list_elem->move = move;
-
-	if (!list->last) {
-		list->first = list_elem;
-		list->last  = list_elem;
-		return list;
-	}
-
-	list->last->next = list_elem;
-	list_elem->prev  = list->last;
-	list->last       = list_elem;
-	return list;
-}
-
 struct move*
-move_list_pop(struct move_list* list)
+move_list_pop(struct list* list)
 {
-	if (!list || !list->last)
-		return NULL;
-
-	struct move_list_elem* list_elem = list->last;
-	struct move* move                = list_elem->move;
-
-	list->last = list_elem->prev;
-	if (list->last)
-		list->last->next = NULL;
-
-	if (list->first == list_elem)
-		list->first = NULL;
-
-	list->count--;
-	free(list_elem);
-	return move;
+	return list_pop(list);
 }
-
 struct move*
-move_list_peek(struct move_list* list)
+move_list_peek(struct list* list)
 {
-	if (!list)
-		return NULL;
-	return list->first->move;
+	return list_peek(list);
 }
 
-struct move_list_elem*
-move_list_remove(struct move_list* list, struct move_list_elem* elem)
-{
-	if (elem->prev)
-		elem->prev->next = elem->next;
-	if (elem->next)
-		elem->next->prev = elem->prev;
-
-	if (list->first == elem)
-		list->first = elem->next;
-	if (list->last == elem)
-		list->last = elem->prev;
-
-	list->count--;
-
-	struct move_list_elem* next = elem->next;
-	free(elem->move);
-	free(elem);
-
-	return next;
-}
-
-void
-move_list_insert(struct move_list* list, struct move_list_elem* new_elem,
-                 struct move_list_elem* before)
-{
-	if (!list || !new_elem)
-		return;
-
-	new_elem->prev = before;
-	if (before) {
-		new_elem->next = before->next;
-		before->next   = new_elem;
-	} else {
-		new_elem->next = list->first;
-		list->first    = new_elem;
-	}
-	if (new_elem->next)
-		new_elem->next->prev = new_elem;
-	else
-		list->last = new_elem;
-
-	list->count++;
-}
-
-struct move_list*
-move_list_append_move_list(struct move_list* first, struct move_list* second)
-{
-	// if null or empty return other list
-	if (!first || !first->first) {
-		free(first);
-		return second;
-	}
-	if (!second || !second->first) {
-		free(second);
-		return first;
-	}
-
-	// link the two lists together
-	first->last->next   = second->first;
-	second->first->prev = first->last;
-
-	// update first and free second instance
-	first->last = second->last;
-	first->count += second->count;
-
-	free(second);
-
-	return first;
-}
-
-size_t
-move_list_count(struct move_list* list)
-{
-	return list ? list->count : 0;
-}
-
-void
-move_list_free(struct move_list* list)
-{
-	if (!list)
-		return;
-
-	struct move_list_elem* cur = list->first;
-	while (cur) {
-		struct move_list_elem* tmp = cur->next;
-		free(cur->move);
-		free(cur);
-		cur = tmp;
-	}
-	free(list);
-}
-
-struct move_list*
-move_list_cpy(struct move_list* dest, struct move_list* src)
+struct list*
+move_list_cpy(struct list* dest, struct list* src)
 {
 	if (!src)
 		return NULL;
@@ -238,16 +92,16 @@ move_list_cpy(struct move_list* dest, struct move_list* src)
 	dest->first = NULL;
 	dest->last  = NULL;
 
-	struct move_list_elem* cur_elem = src->last;
-	struct move_list_elem* last     = NULL;
+	struct list_elem* cur_elem = src->last;
+	struct list_elem* last     = NULL;
 	while (cur_elem) {
-		struct move* move           = malloc(sizeof(*move));
-		struct move_list_elem* elem = malloc(sizeof(*elem));
+		struct move* move      = malloc(sizeof(*move));
+		struct list_elem* elem = malloc(sizeof(*elem));
 		if (!move || !elem)
 			return NULL;
 
-		memcpy(move, cur_elem->move, sizeof(*move));
-		elem->move = move;
+		memcpy(move, cur_elem->elem, sizeof(*move));
+		elem->elem = move;
 		elem->prev = NULL;
 		elem->next = last;
 		if (last)
@@ -262,32 +116,21 @@ move_list_cpy(struct move_list* dest, struct move_list* src)
 	return dest;
 }
 
-struct move_list_elem*
-move_list_get_first(struct move_list* list)
-{
-	return list ? list->first : NULL;
-}
-
-struct move_list_elem*
-move_list_get_next(struct move_list_elem* elem)
-{
-	return elem ? elem->next : NULL;
-}
-
 // Sort a list inplace.
 // This uses insertion sort as the lists that we typically use are rather small
 // in length.
 void
-move_list_sort(struct move_list* list)
+move_list_sort(struct list* list)
 {
 	if (!list || !list->count)
 		return;
 
-	struct move_list_elem* cur = list->first->next;
-	struct move_list_elem *before, *next;
+	struct list_elem* cur = list->first->next;
+	struct list_elem *before, *next;
 	while (cur) {
 		before = cur->prev;
-		while (before && before->move->rating > cur->move->rating)
+		while (before && ((struct move*)before->elem)->rating >
+		                         ((struct move*)cur->elem)->rating)
 			before = before->prev;
 
 		if (before == cur->prev) {
@@ -300,7 +143,7 @@ move_list_sort(struct move_list* list)
 		next = cur->next;
 
 		// Move `cur` from current position behind `before`
-		// This is a hybrid form of `list_remove` and `move_list_insert` but without
+		// This is a hybrid form of `list_remove` and `list_insert` but without
 		// unnecessary instructions.
 
 		// Remove --------------------------------------------------------------
@@ -329,15 +172,15 @@ move_list_sort(struct move_list* list)
 }
 
 void
-fprint_move_list(FILE* stream, struct move_list* list)
+fprint_move_list(FILE* stream, struct list* list)
 {
 	if (!list)
 		return;
 
-	struct move_list_elem* cur_elem = list->last;
-	int i                           = 0;
+	struct list_elem* cur_elem = list->last;
+	int i                      = 0;
 	while (cur_elem) {
-		struct move* cur_move = cur_elem->move;
+		struct move* cur_move = cur_elem->elem;
 		fprintf(stream, "%i ", i++);
 		fprint_move(stream, cur_move);
 		cur_elem = cur_elem->prev;

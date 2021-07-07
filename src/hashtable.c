@@ -49,7 +49,7 @@ free_ht(struct ht* ht)
 		struct ht_entry* cur = ht->table[i];
 		while (cur) {
 			struct ht_entry* tmp = cur->next;
-			move_list_free(cur->moves);
+			list_free(cur->moves);
 			free(cur->board);
 			free(cur);
 			cur = tmp;
@@ -61,7 +61,7 @@ free_ht(struct ht* ht)
 
 struct ht_entry*
 ht_update_entry(struct ht* ht, struct piece* board, enum color moving,
-                struct move_list* moves, size_t rating, size_t depth)
+                struct list* moves, size_t rating, size_t depth)
 {
 	if (!ht || !board || !moves)
 		return NULL;
@@ -77,7 +77,7 @@ ht_update_entry(struct ht* ht, struct piece* board, enum color moving,
 			// found entry
 			if (depth > cur->depth) {
 				// only update if depth is higher
-				move_list_free(cur->moves);
+				list_free(cur->moves);
 				cur->moves  = moves;
 				cur->depth  = depth;
 				cur->rating = rating;

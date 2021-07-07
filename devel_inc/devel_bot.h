@@ -8,7 +8,7 @@
 
 struct negamax_return {
 	int val;
-	struct move_list* moves;
+	struct list* moves;
 };
 
 int rate_board(struct chess* chess);
