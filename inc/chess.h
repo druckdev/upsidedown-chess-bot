@@ -28,7 +28,7 @@ enum piece_type {
 	QUEEN  = 5,
 	KING   = 6
 };
-extern int PIECE_VALUES[];
+extern int* PIECE_VALUES;
 
 /*
  * TODO: These are just stubs to get a general idea of what we need.

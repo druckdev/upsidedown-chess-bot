@@ -27,7 +27,7 @@ set(DEVEL_INC_DIR devel_inc)
 # sources
 set(SOURCES ${SRC_DIR}/board.c ${SRC_DIR}/chess.c ${SRC_DIR}/bot.c
     ${SRC_DIR}/generator.c ${SRC_DIR}/move.c ${SRC_DIR}/timer.c
-    ${SRC_DIR}/pst.c ${SRC_DIR}/hashtable.c)
+    ${SRC_DIR}/pst.c ${SRC_DIR}/hashtable.c ${SRC_DIR}/param_config.c)
 
 # sources specific to the bot itself - cotaining bot main
 set(BOT_SOURCES ${SRC_DIR}/main.c ${SOURCES})
@@ -56,9 +56,13 @@ target_compile_definitions(tests PRIVATE UNITY_INCLUDE_EXEC_TIME)
 
 target_compile_definitions(tests PRIVATE TEST_SAMPLES_ITERATIONS=1)
 
+# only use debug printing if it's a debug build
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+    add_compile_definitions(DEBUG_PRINTS)
+    add_compile_definitions(DEBUG_BOARD_WHEN_PLAYING)
+endif (CMAKE_BUILD_TYPE MATCHES Debug)
+
 add_compile_definitions(DEBUG_PRINT_STREAM=stderr)
-add_compile_definitions(DEBUG_PRINTS)
-add_compile_definitions(DEBUG_BOARD_WHEN_PLAYING)
 
 # Optimizations toggles for benchmarking #######################################
 
