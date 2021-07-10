@@ -1,10 +1,10 @@
 import random
 
 # Description :
-# A generation is a set of configs as dictionaries, where 
+# A generation is a set of configs as dictionaries, where
 # the keys match those of the 'config_template' struct in
 # 'param_config.h' .
-# Each generation is based on the predecessing one, 
+# Each generation is based on the predecessing one,
 # varying less with each iteration of the process.
 
 config_path = "../src/param_config.c" # TODO : this also needs to go somewhere else
@@ -30,20 +30,20 @@ class Generation:
                     default_config["pyramid_gradient"] = float(num_list[1])
                     default_config["piece_values"] = [ int(v) for v in num_list[2:] ]
 
-        # how much each generation should vary from the average of their predecessors 
+        # how much each generation should vary from the average of their predecessors
         # , in [0, 1]
-        self.variation = variation 
-        
+        self.variation = variation
+
         # how many of each gen should be kept, in [0, 1]
         self.keep_from_gen = keep_from_gen
-        
+
         # get first gen
         self.entity_configs = self.create_variations(default_config, instances)
-        
+
     #--------------
     # Interface
     #--------------
-    
+
     def evolve(self, performances):
         """Prepares next gen of processes.
 
@@ -53,7 +53,7 @@ class Generation:
                               of the corresponding config.
 
         """
-        
+
         print("Evolve based on ", performances)
 
         # sort process indexes by performance
@@ -68,14 +68,14 @@ class Generation:
         new_configs = [self.entity_configs[i] for i in strongest]
         offspring = self.get_offspring(new_configs, len(self.entity_configs) - len(strongest))
         new_configs += offspring
-        
-        self.entity_configs = new_configs        
+
+        self.entity_configs = new_configs
 
 
     def get_current_gen(self):
         '''Getter for configs'''
         return self.entity_configs
-    
+
     #--------------
     # Helper
     #--------------
@@ -85,12 +85,12 @@ class Generation:
 
         Parameters:
         parents (list): List of parent configs.
-        needed   (int): How many new configs are needed 
+        needed   (int): How many new configs are needed
 
         Returns:
         list: The new offspring configs.
         """
-        
+
         offspring_configs = []
 
         avg_conf = {
@@ -130,7 +130,7 @@ class Generation:
         for i in range(needed):
             time_factor = random.uniform(bounds(p_time)[0], bounds(p_time)[1])
             gradient = random.uniform(bounds(p_gradient)[0], bounds(p_gradient)[1])
-            
+
             piece_values = []
             for val in p_piece_values:
                 val = round(random.uniform(bounds(val)[0], bounds(val)[1]))

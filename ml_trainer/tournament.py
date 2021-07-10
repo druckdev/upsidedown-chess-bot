@@ -13,7 +13,7 @@ config_path = "../src/param_config.c"
 class Tournament:
     def __init__(self, player_configs):
         self.player_configs = player_configs
-    
+
     #--------------
     # Interface
     #--------------
@@ -22,7 +22,7 @@ class Tournament:
         """Runs a tournament between all players
 
         Returns:
-        array: Contains the performance of each player. 
+        array: Contains the performance of each player.
 
         """
 
@@ -39,16 +39,16 @@ class Tournament:
                 # init game
                 w_player = self.start_process(self.player_configs[i], 'w')
                 b_player = self.start_process(self.player_configs[j], 'b')
-                
+
                 # run game
                 game = game_runner.GameRunner(w_player, b_player)
                 draw, white_won = game.run()
 
                 # store performance information
-                
+
                 if draw:
                     # a draw is not as bad as loosing but not as good as winning
-                    wins_by_player[i] += 0.5 
+                    wins_by_player[i] += 0.5
                     wins_by_player[j] += 0.5
                 else:
                     winner_index = i if white_won else j
@@ -65,12 +65,12 @@ class Tournament:
 
         Parameters:
         config (dict): The config.
-        
+
         Returns:
         process: The process.
 
         """
-        # read param_config.c and generate the new 
+        # read param_config.c and generate the new
         # one by substituting the config instance
         new_config = []
         with open(config_path, 'r') as f:
@@ -79,7 +79,7 @@ class Tournament:
 
                     # generate the new line
                     new_line = "struct config_template config="
-                    
+
                     time_factor = config["remaining_time_factor"]
                     new_line += '{' + str(time_factor) + ','
 
@@ -95,7 +95,7 @@ class Tournament:
                     new_config.append(new_line)
                 else:
                     new_config.append(line)
-        
+
         # write the new config
         with open(config_path, 'w') as f:
             f.writelines(new_config)

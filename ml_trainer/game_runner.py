@@ -16,8 +16,8 @@ class GameRunner:
         self.max_moves = 50
 
         self.fen_state = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
-        self.simplified_state = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 
-                                 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 
+        self.simplified_state = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R',
+                                 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
                                  '1', '1', '1', '1', '1', '1', '1', '1',
                                  '1', '1', '1', '1', '1', '1', '1', '1',
                                  '1', '1', '1', '1', '1', '1', '1', '1',
@@ -42,7 +42,7 @@ class GameRunner:
         white_turn = True
 
         # play game
-        while self.current_move < self.max_moves: 
+        while self.current_move < self.max_moves:
             self.current_move += 1
             print("Move ", self.current_move, " of ", self.max_moves, end="\r")
 
@@ -57,8 +57,8 @@ class GameRunner:
                 break
 
             # setup input for bot
-            in_str = self.fen_state 
-            in_str += player_char 
+            in_str = self.fen_state
+            in_str += player_char
             in_str += str(self.current_move)
             in_str += ' ' + str(time_left)
             state_bytes = bytes(in_str, 'utf-8')
@@ -68,7 +68,7 @@ class GameRunner:
             try:
                 current_player.stdin.write(state_bytes)
                 current_player.stdin.flush()
-            
+
             except IOError as e:
                 # expected error when bot terminates because they lost
                 if e.errno == errno.EPIPE:
@@ -80,8 +80,8 @@ class GameRunner:
 
             # get move current player wants to play and execute it
             for line in iter(current_player.stdout.readline, b''):
-                
-                # bot is done calculating the move, so compute the used time 
+
+                # bot is done calculating the move, so compute the used time
                 # for the current player
                 move_end_time = time.time()
                 used_time = move_end_time - move_start_time
@@ -89,15 +89,15 @@ class GameRunner:
                     self.time_left_w -= used_time
                 else:
                     self.time_left_b -= used_time
-                
+
                 self.do_move(line)
                 break
-            
+
             white_turn = not white_turn
 
         self.print_board()
         print("white_won ", white_won, " draw ", self.current_move >= self.max_moves)
-        
+
         return (self.current_move >= self.max_moves), white_won
 
     #--------------
@@ -142,17 +142,17 @@ class GameRunner:
                 unoccupied = str(cnt) if cnt != 0 else ''
                 cnt = 0
                 new_fen = new_fen + unoccupied + c
-            
+
             if i % 8 == 7 and i != 63:
                 unoccupied = str(cnt) if cnt != 0 else ''
                 cnt = 0
                 new_fen = new_fen + unoccupied + '/'
-        
+
         if cnt != 0:
             new_fen = new_fen + str(cnt)
 
         self.fen_state = new_fen
-    
+
     def print_board(self):
         """Prints the internal 'simplified_state' but human-readable."""
 
@@ -163,9 +163,8 @@ class GameRunner:
             if i % 8 == 0:
                 print(tmp)
                 tmp = ""
-            
+
             c = ' ' if self.simplified_state[i] == '1' else self.simplified_state[i]
             tmp += '[ ' + c + ' ]'
-        
+
         print(tmp)
-            
