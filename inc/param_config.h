@@ -2,9 +2,9 @@
 #define HELPER_H
 
 struct config_template {
-    float remaining_time_factor;
-    float pyramid_gradient;
-    int piece_values[7];
+	float remaining_time_factor;
+	float pyramid_gradient;
+	int piece_values[7];
 };
 
 extern struct config_template config;

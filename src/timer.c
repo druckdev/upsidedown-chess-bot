@@ -1,8 +1,8 @@
+#include "param_config.h"
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
-#include "param_config.h"
 
 // clang-format off
 // NOTE(Aurel): these need to be included in this order
