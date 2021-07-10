@@ -8,6 +8,6 @@
 extern size_t MAX_NEGAMAX_DEPTH;
 
 int rate_board(struct chess* chess);
-struct move* choose_move(struct chess* game, struct chess_timer* timer);
+struct move* choose_move(struct chess* game);
 
 #endif /* BOT_H */

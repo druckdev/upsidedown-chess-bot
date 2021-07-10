@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <pthread.h>
 
 #include "bot.h"
 #include "chess.h"
