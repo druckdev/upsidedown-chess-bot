@@ -5,9 +5,10 @@ import tournament
 # The trainer controls the training and
 # thereby connects the various parts.
 
-#--------------
+# --------------
 # Interface
-#--------------
+# --------------
+
 
 def train(instances=2, num_of_generations=1):
     """Main function for the ML driven training
@@ -31,6 +32,7 @@ def train(instances=2, num_of_generations=1):
 
         # evolve the current generation based on tournament results
         gen.evolve(res)
+
 
 if __name__ == "__main__":
     train()

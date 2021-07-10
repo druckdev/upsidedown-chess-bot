@@ -3,14 +3,16 @@ import time
 
 # Description :
 # GameRunner runs a game between two given processes.
+
+
 class GameRunner:
     def __init__(self, w_player, b_player):
         self.w_player = w_player
         self.b_player = b_player
 
         # TODO : all the following needs to be wrapped or parsed
-        self.time_left_w = 100.0 # game time in seconds
-        self.time_left_b = 100.0 # game time in seconds
+        self.time_left_w = 100.0  # game time in seconds
+        self.time_left_b = 100.0  # game time in seconds
 
         self.current_move = 0
         self.max_moves = 50
@@ -23,11 +25,11 @@ class GameRunner:
                                  '1', '1', '1', '1', '1', '1', '1', '1',
                                  '1', '1', '1', '1', '1', '1', '1', '1',
                                  'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',
-                                 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r' ]
+                                 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r']
 
-    #--------------
+    # --------------
     # Interface
-    #--------------
+    # --------------
 
     def run(self):
         """Executes a game between two players
@@ -96,13 +98,14 @@ class GameRunner:
             white_turn = not white_turn
 
         self.print_board()
-        print("white_won ", white_won, " draw ", self.current_move >= self.max_moves)
+        print("white_won ", white_won, " draw ",
+              self.current_move >= self.max_moves)
 
         return (self.current_move >= self.max_moves), white_won
 
-    #--------------
+    # --------------
     # Helper
-    #--------------
+    # --------------
 
     def do_move(self, move: str):
         """Executes a given move on the internal board representations
@@ -113,7 +116,8 @@ class GameRunner:
         """
 
         # deconstruct move string
-        move_split = str(move).split("'")[1] # casting because move contains ' as character
+        # casting because move contains ' as character
+        move_split = str(move).split("'")[1]
         move_split = move_split.split(",")
         from_pos, to_pos = int(move_split[0]), int(move_split[1])
 

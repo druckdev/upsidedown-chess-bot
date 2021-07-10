@@ -10,13 +10,14 @@ import subprocess
 path_to_executable = "../build/bot"
 config_path = "../src/param_config.c"
 
+
 class Tournament:
     def __init__(self, player_configs):
         self.player_configs = player_configs
 
-    #--------------
+    # --------------
     # Interface
-    #--------------
+    # --------------
 
     def run_tournament(self):
         """Runs a tournament between all players
@@ -56,9 +57,9 @@ class Tournament:
 
         return wins_by_player
 
-    #--------------
+    # --------------
     # HELPER
-    #--------------
+    # --------------
 
     def start_process(self, config, player_token):
         """Starts a process based on a config.
@@ -89,7 +90,7 @@ class Tournament:
                     for v in config["piece_values"]:
                         new_line += str(v) + ','
 
-                    new_line = new_line[:-1] # remove trailing ','
+                    new_line = new_line[:-1]  # remove trailing ','
                     new_line += "}};\n"
 
                     new_config.append(new_line)
@@ -108,7 +109,8 @@ class Tournament:
                              stderr=subprocess.STDOUT)
         p.kill()
 
-        parameters = ' ' + player_token + " 100.0 50" # TODO : these parameters must be linked with those in game_runner
+        # TODO : these parameters must be linked with those in game_runner
+        parameters = ' ' + player_token + " 100.0 50"
         cmd = path_to_executable + parameters
 
         # start new bot
