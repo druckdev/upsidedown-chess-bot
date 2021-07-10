@@ -63,7 +63,6 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
 endif (CMAKE_BUILD_TYPE MATCHES Debug)
 
 add_compile_definitions(DEBUG_PRINT_STREAM=stderr)
-add_compile_definitions(DEBUG_NEGAMAX_USE_LIST)
 
 # Optimizations toggles for benchmarking #######################################
 
