@@ -120,7 +120,11 @@ run_chess(struct chess* game)
 		double move_time     = get_remaining_move_time(timer);
 		int move_secs        = (int)move_time;
 		struct timespec time = { move_secs, (move_time - move_secs) * 1e9 };
-		nanosleep(&time, NULL);
+		if (-1 == nanosleep(&time, NULL)) {
+#ifdef DEBUG_PRINTS
+			fprintf(DEBUG_PRINT_STREAM, "Interrupted.\n");
+#endif
+		}
 		pthread_cancel(tid);
 
 		if (!game->cur_best_move)
