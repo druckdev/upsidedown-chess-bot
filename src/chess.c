@@ -117,8 +117,8 @@ run_chess(struct chess* game)
 		pthread_t tid;
 		pthread_create(&tid, NULL, choose_move_thread_wrapper, game);
 
-		double move_time = get_remaining_move_time(timer);
-		int move_secs = (int)move_time;
+		double move_time     = get_remaining_move_time(timer);
+		int move_secs        = (int)move_time;
 		struct timespec time = { move_secs, (move_time - move_secs) * 1e9 };
 		nanosleep(&time, NULL);
 		pthread_cancel(tid);
