@@ -157,9 +157,10 @@ negamax(struct chess* game, size_t depth, int a, int b)
 		}
 
 #if defined(PRINCIPAL_VARIATION_SEARCH)
-		if (best.val >= b)
+		if (best.val >= b) {
+			best.val = b;
 			break;
-		if (best.val > a) {
+		} else if (best.val > a) {
 			a           = best.val;
 			b_search_pv = false;
 		}
