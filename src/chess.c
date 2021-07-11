@@ -139,6 +139,8 @@ run_chess(struct chess* game)
 #else
 		free(game->cur_best_move);
 #endif
+		// This is overwritten in almost every case by fen_to_chess, but is kept
+		// just for safety if the string is too short for example.
 		game->move_count++;
 		game->phase = get_game_phase(game);
 	}
