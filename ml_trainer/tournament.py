@@ -1,5 +1,8 @@
 import game_runner
 import subprocess
+from threading import Thread
+from threading import Lock
+import time
 
 # Description :
 # A tournament uses a generation (list of bot fitting configs)
@@ -14,8 +17,11 @@ config_path = "../src/param_config.c"
 class Tournament:
     def __init__(self, player_configs):
         self.player_configs = player_configs
-
-    # --------------
+        self.num_of_players = len(self.player_configs)
+        self.wins_by_player = [0] * self.num_of_players
+        self.running_games = []
+    
+    #--------------
     # Interface
     # --------------
 
@@ -27,12 +33,9 @@ class Tournament:
 
         """
 
-        num_of_players = len(self.player_configs)
-        wins_by_player = [0] * num_of_players
-
         # let all players play against all others
-        for i in range(num_of_players):
-            for j in range(num_of_players):
+        for i in range(self.num_of_players):
+            for j in range(self.num_of_players):
                 if i == j:
                     continue
                 print(i, "as w vs", j, "as b")
@@ -43,23 +46,51 @@ class Tournament:
 
                 # run game
                 game = game_runner.GameRunner(w_player, b_player)
-                draw, white_won = game.run()
+                
+                win_list_lock = Lock()
+                t = Thread(target = self.game_run_thread, args =(game, win_list_lock, i, j))
+                t.start()
+                self.running_games.append(t)
+        
+        # wait till all games are finished
+        all_finished = False
+        while(not all_finished):
+            all_finished = True
+            for t in self.running_games:
+                if t.is_alive():
+                    all_finished = False
+            
+            time.sleep(1)
 
-                # store performance information
-
-                if draw:
-                    # a draw is not as bad as loosing but not as good as winning
-                    wins_by_player[i] += 0.5
-                    wins_by_player[j] += 0.5
-                else:
-                    winner_index = i if white_won else j
-                    wins_by_player[winner_index] += 1
-
-        return wins_by_player
+        return self.wins_by_player
 
     # --------------
     # HELPER
     # --------------
+
+    def game_run_thread(self, game, win_list_lock, w_index, b_index):
+        """Runs the game in a new thread
+
+        Parameters:
+        game (game_runner): The gamer_runner instance that is to be run.
+        wins_by_player(list): The list that holds the points scored by each player.
+        win_list_lock(lock): A lock for wins_by_player.
+
+        """
+        draw, white_won = game.run()
+
+        # store performance information
+        win_list_lock.acquire()
+        
+        if draw:
+            # a draw is not as bad as loosing but not as good as winning
+            self.wins_by_player[w_index] += 0.5 
+            self.wins_by_player[b_index] += 0.5
+        else:
+            winner_index = w_index if white_won else b_index
+            self.wins_by_player[winner_index] += 1
+
+        win_list_lock.release()
 
     def start_process(self, config, player_token):
         """Starts a process based on a config.
