@@ -10,7 +10,7 @@ import tournament
 # --------------
 
 
-def train(instances=2, num_of_generations=1):
+def train(instances=20, num_of_generations=100):
     """Main function for the ML driven training
 
     Parameters:

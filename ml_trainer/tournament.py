@@ -110,7 +110,7 @@ class Tournament:
         p.kill()
 
         # TODO : these parameters must be linked with those in game_runner
-        parameters = ' ' + player_token + " 100.0 50"
+        parameters = ' ' + player_token + " 60.0 60"
         cmd = path_to_executable + parameters
 
         # start new bot

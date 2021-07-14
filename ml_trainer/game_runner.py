@@ -11,11 +11,11 @@ class GameRunner:
         self.b_player = b_player
 
         # TODO : all the following needs to be wrapped or parsed
-        self.time_left_w = 100.0  # game time in seconds
-        self.time_left_b = 100.0  # game time in seconds
+        self.time_left_w = 45.0 # game time in seconds
+        self.time_left_b = 45.0 # game time in seconds
 
         self.current_move = 0
-        self.max_moves = 50
+        self.max_moves = 60
 
         self.fen_state = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
         self.simplified_state = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R',
