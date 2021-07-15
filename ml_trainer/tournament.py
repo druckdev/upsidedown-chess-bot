@@ -3,6 +3,7 @@ import subprocess
 from threading import Thread
 from threading import Lock
 import time
+import shlex
 
 # Description :
 # A tournament uses a generation (list of bot fitting configs)
@@ -68,7 +69,7 @@ class Tournament:
     # HELPER
     # --------------
 
-    def game_run_thread(self, game, win_list_lock, w_index, b_index):
+    def game_run_thread(self, game, win_list_lock, w_index: int, b_index: int):
         """Runs the game in a new thread
 
         Parameters:
@@ -133,8 +134,8 @@ class Tournament:
             f.writelines(new_config)
 
         # recompile bot.c
-        p = subprocess.Popen("cd ../build/ && make && cd ../ml_trainer",
-                             shell=True,
+        p = subprocess.Popen(shlex.split("make -C ../build"),
+                             shell=False,
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)
@@ -145,8 +146,8 @@ class Tournament:
         cmd = path_to_executable + parameters
 
         # start new bot
-        p = subprocess.Popen(cmd,
-                             shell=True,
+        p = subprocess.Popen(shlex.split(cmd),
+                             shell=False,
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)

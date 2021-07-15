@@ -55,7 +55,7 @@ class GameRunner:
 
             # player lost on time (happened in last turn)
             if time_left <= 0:
-                white_won = False if white_turn else True
+                self.handle_game_end(white_turn, True)
                 break
 
             # setup input for bot
@@ -74,7 +74,7 @@ class GameRunner:
             except IOError as e:
                 # expected error when bot terminates because they lost
                 if e.errno == errno.EPIPE:
-                    white_won = False if white_turn else True
+                    white_won = self.handle_game_end(white_turn, False)
                     break
                 else:
                     print(e)
@@ -106,6 +106,29 @@ class GameRunner:
     # --------------
     # Helper
     # --------------
+
+    def handle_game_end(self, white_turn: bool, lost_on_time: bool) -> bool:
+        """Get who won the game and as a sideeffect terminate the remaining process.
+
+        Parameters:
+        white_turn (bool):  Whether the move on which the end was detected was 
+                            whites to play.
+        lost_on_time (bool): Whether the game was lost on time.
+
+        Returns:
+        bool: Whether white won.
+
+        """
+
+        if lost_on_time :
+            self.b_player.kill()
+            self.w_player.kill()
+        elif white_turn:
+            self.b_player.kill()
+        else:
+            self.w_player.kill()
+
+        return False if white_turn else True
 
     def do_move(self, move: str):
         """Executes a given move on the internal board representations
