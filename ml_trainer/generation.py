@@ -75,6 +75,7 @@ class Generation:
             self.entity_configs) - len(strongest))
         new_configs += offspring
 
+        print("\n\n strongest ", new_configs[0], "\n\n")
         self.entity_configs = new_configs
 
     def get_current_gen(self):

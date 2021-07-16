@@ -46,7 +46,6 @@ class GameRunner:
         # play game
         while self.current_move < self.max_moves:
             self.current_move += 1
-            print("Move ", self.current_move, " of ", self.max_moves, end="\r")
 
             # get variables for current player
             current_player = self.w_player if white_turn else self.b_player
@@ -77,7 +76,6 @@ class GameRunner:
                     white_won = self.handle_game_end(white_turn, False)
                     break
                 else:
-                    print(e)
                     raise
 
             # get move current player wants to play and execute it
@@ -97,11 +95,7 @@ class GameRunner:
 
             white_turn = not white_turn
 
-        self.print_board()
-        print("white_won ", white_won, " draw ",
-              self.current_move >= self.max_moves)
-
-        return (self.current_move >= self.max_moves), white_won
+       return (self.current_move >= self.max_moves), white_won
 
     # --------------
     # Helper
