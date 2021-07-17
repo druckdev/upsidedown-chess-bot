@@ -109,11 +109,12 @@ class Generation:
                 len(parents)
             avg_conf["pyramid_gradient"] += config["pyramid_gradient"] / \
                 len(parents)
-            
+
             avg_piece_values = []
             for x, i in zip(config["piece_values"], range(7)):
-                avg_piece_values.append(avg_conf["piece_values"][i] + x / len(parents))
-            
+                avg_piece_values.append(
+                    avg_conf["piece_values"][i] + x / len(parents))
+
             avg_conf["piece_values"] = avg_piece_values
 
         offspring_configs = self.create_variations(avg_conf, needed)

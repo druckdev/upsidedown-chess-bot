@@ -15,14 +15,15 @@ import os
 config_path = "../src/param_config.c"
 build_path = "../build"
 
+
 class Tournament:
     def __init__(self, player_configs):
         self.player_configs = player_configs
         self.num_of_players = len(self.player_configs)
         self.wins_by_player = [0] * self.num_of_players
         self.running_games = []
-    
-    #--------------
+
+    # --------------
     # Interface
     # --------------
 
@@ -47,12 +48,14 @@ class Tournament:
 
                 # run game
                 game = game_runner.GameRunner(w_player, b_player)
-                
+
                 win_list_lock = Lock()
-                t = Thread(target = self.game_run_thread, args =(game, win_list_lock, i, j))
+                t = Thread(
+                    target=self.game_run_thread, args=(
+                        game, win_list_lock, i, j))
                 t.start()
                 self.running_games.append(t)
-        
+
         # wait till all games are finished
         all_finished = False
         while(not all_finished):
@@ -60,7 +63,7 @@ class Tournament:
             for t in self.running_games:
                 if t.is_alive():
                     all_finished = False
-            
+
             time.sleep(1)
 
         return self.wins_by_player
@@ -82,10 +85,10 @@ class Tournament:
 
         # store performance information
         win_list_lock.acquire()
-        
+
         if draw:
             # a draw is not as bad as loosing but not as good as winning
-            self.wins_by_player[w_index] += 0.5 
+            self.wins_by_player[w_index] += 0.5
             self.wins_by_player[b_index] += 0.5
         else:
             winner_index = w_index if white_won else b_index

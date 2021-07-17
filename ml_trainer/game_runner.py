@@ -1,6 +1,6 @@
 import errno
 import time
-import os 
+import os
 import signal
 
 # Description :
@@ -13,8 +13,8 @@ class GameRunner:
         self.b_player = b_player
 
         # TODO : all the following needs to be wrapped or parsed
-        self.time_left_w = 45.0 # game time in seconds
-        self.time_left_b = 45.0 # game time in seconds
+        self.time_left_w = 45.0  # game time in seconds
+        self.time_left_b = 45.0  # game time in seconds
 
         self.current_move = 0
         self.max_moves = 60
@@ -107,7 +107,7 @@ class GameRunner:
         """Get who won the game and as a sideeffect terminate the remaining process.
 
         Parameters:
-        white_turn (bool):  Whether the move on which the end was detected was 
+        white_turn (bool):  Whether the move on which the end was detected was
                             whites to play.
         lost_on_time (bool): Whether the game was lost on time.
 
@@ -117,7 +117,7 @@ class GameRunner:
         """
         # self.print_board()
 
-        if lost_on_time :
+        if lost_on_time:
             os.killpg(os.getpgid(self.b_player.pid), signal.SIGTERM)
             os.killpg(os.getpgid(self.w_player.pid), signal.SIGTERM)
         elif white_turn:
@@ -143,7 +143,8 @@ class GameRunner:
 
         # catch promotion
         moving_piece = self.simplified_state[from_pos]
-        if (to_pos < 8 or to_pos > 56) and (moving_piece == 'p' or moving_piece == 'P'):
+        if (to_pos < 8 or to_pos > 56) and (
+                moving_piece == 'p' or moving_piece == 'P'):
             moving_piece = move_split[2][0]
 
         # do move

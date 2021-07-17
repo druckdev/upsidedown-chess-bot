@@ -33,13 +33,14 @@ def train(instances=30, num_of_generations=10):
         # evolve the current generation based on tournament results
         gen.evolve(res)
 
+
 def run_single_game():
     """More of a helper function to let just two specific entities compete."""
 
     old_config = {}
     old_config["remaining_time_factor"] = 3
     old_config["pyramid_gradient"] = 0.01
-    old_config["piece_values"] = [0,100,400,400,500,900,1000000]
+    old_config["piece_values"] = [0, 100, 400, 400, 500, 900, 1000000]
 
     new_config = {}
     new_config["remaining_time_factor"] = 2.820726304362136
@@ -52,6 +53,7 @@ def run_single_game():
 
     print("Points old config : ", res[0])
     print("Points old config : ", res[1])
+
 
 if __name__ == "__main__":
     train()
