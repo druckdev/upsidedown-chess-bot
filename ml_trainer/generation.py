@@ -102,15 +102,19 @@ class Generation:
         avg_conf = {
             "remaining_time_factor": 0,
             "pyramid_gradient": 0,
-            "piece_values": []
+            "piece_values": [0] * 7
         }
         for config in parents:
             avg_conf["remaining_time_factor"] += config["remaining_time_factor"] / \
                 len(parents)
             avg_conf["pyramid_gradient"] += config["pyramid_gradient"] / \
                 len(parents)
-            avg_conf["piece_values"] += [x /
-                                         len(parents) for x in config["piece_values"]]
+            
+            avg_piece_values = []
+            for x, i in zip(config["piece_values"], range(7)):
+                avg_piece_values.append(avg_conf["piece_values"][i] + x / len(parents))
+            
+            avg_conf["piece_values"] = avg_piece_values
 
         offspring_configs = self.create_variations(avg_conf, needed)
 
