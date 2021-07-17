@@ -129,12 +129,13 @@ class Tournament:
                 else:
                     new_config.append(line)
 
+        print("NEW ", new_config[-2])
         # write the new config
         with open(config_path, 'w') as f:
             f.writelines(new_config)
 
         # recompile bot.c
-        os.system("make -C " + build_path)
+        os.system("make -C " + build_path + " > /dev/null")
 
         # TODO : these parameters must be linked with those in game_runner
         parameters = ' ' + player_token + " 60.0 60"

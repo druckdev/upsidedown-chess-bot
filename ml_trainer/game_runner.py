@@ -180,6 +180,7 @@ class GameRunner:
     def print_board(self):
         """Prints the internal 'simplified_state' but human-readable."""
 
+        print("----------------------------------")
         print(self.fen_state)
 
         tmp = ""
@@ -191,4 +192,4 @@ class GameRunner:
             c = ' ' if self.simplified_state[i] == '1' else self.simplified_state[i]
             tmp += '[ ' + c + ' ]'
 
-        print(tmp)
+        print(tmp + "\n")
