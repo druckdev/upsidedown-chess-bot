@@ -4,6 +4,7 @@ from threading import Thread
 from threading import Lock
 import time
 import shlex
+import os
 
 # Description :
 # A tournament uses a generation (list of bot fitting configs)
@@ -11,9 +12,8 @@ import shlex
 # determine which configs are superior.
 
 # TODO : this needs to be wrapped or parsed somehow
-path_to_executable = "../build/bot"
 config_path = "../src/param_config.c"
-
+build_path = "../build"
 
 class Tournament:
     def __init__(self, player_configs):
@@ -36,10 +36,10 @@ class Tournament:
 
         # let all players play against all others
         for i in range(self.num_of_players):
+            print("run games for ", i)
             for j in range(self.num_of_players):
                 if i == j:
                     continue
-                print(i, "as w vs", j, "as b")
 
                 # init game
                 w_player = self.start_process(self.player_configs[i], 'w')
@@ -134,21 +134,17 @@ class Tournament:
             f.writelines(new_config)
 
         # recompile bot.c
-        p = subprocess.Popen(shlex.split("make -C ../build"),
-                             shell=False,
-                             stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.STDOUT)
-        p.kill()
+        os.system("make -C " + build_path)
 
         # TODO : these parameters must be linked with those in game_runner
         parameters = ' ' + player_token + " 60.0 60"
-        cmd = path_to_executable + parameters
+        cmd = build_path + "/bot" + parameters
 
         # start new bot
         p = subprocess.Popen(shlex.split(cmd),
                              shell=False,
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
-                             stderr=subprocess.STDOUT)
+                             stderr=subprocess.STDOUT,
+                             preexec_fn=os.setsid)
         return p

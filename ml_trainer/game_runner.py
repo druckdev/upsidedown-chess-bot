@@ -1,5 +1,7 @@
 import errno
 import time
+import os 
+import signal
 
 # Description :
 # GameRunner runs a game between two given processes.
@@ -95,7 +97,7 @@ class GameRunner:
 
             white_turn = not white_turn
 
-       return (self.current_move >= self.max_moves), white_won
+        return (self.current_move >= self.max_moves), white_won
 
     # --------------
     # Helper
@@ -113,14 +115,15 @@ class GameRunner:
         bool: Whether white won.
 
         """
+        self.print_board()
 
         if lost_on_time :
-            self.b_player.kill()
-            self.w_player.kill()
+            os.killpg(os.getpgid(self.b_player.pid), signal.SIGTERM)
+            os.killpg(os.getpgid(self.w_player.pid), signal.SIGTERM)
         elif white_turn:
-            self.b_player.kill()
+            os.killpg(os.getpgid(self.b_player.pid), signal.SIGTERM)
         else:
-            self.w_player.kill()
+            os.killpg(os.getpgid(self.w_player.pid), signal.SIGTERM)
 
         return False if white_turn else True
 
