@@ -10,7 +10,7 @@ import tournament
 # --------------
 
 
-def train(instances=20, num_of_generations=100):
+def train(instances=30, num_of_generations=10):
     """Main function for the ML driven training
 
     Parameters:
@@ -54,4 +54,4 @@ def run_single_game():
     print("Points old config : ", res[1])
 
 if __name__ == "__main__":
-    pass
+    train()

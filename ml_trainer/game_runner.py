@@ -115,7 +115,7 @@ class GameRunner:
         bool: Whether white won.
 
         """
-        self.print_board()
+        # self.print_board()
 
         if lost_on_time :
             os.killpg(os.getpgid(self.b_player.pid), signal.SIGTERM)

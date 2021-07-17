@@ -129,7 +129,6 @@ class Tournament:
                 else:
                     new_config.append(line)
 
-        print("NEW ", new_config[-2])
         # write the new config
         with open(config_path, 'w') as f:
             f.writelines(new_config)
