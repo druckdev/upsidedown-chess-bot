@@ -32,11 +32,10 @@ rate_move(struct chess* game, struct move* move)
 
 	struct piece from        = game->board[move->start];
 	enum piece_type promo_to = move->promotes_to.type;
-	if (promo_to) {
+	if (promo_to)
 		// add the difference in value between the old and new piece to the
 		// rating
 		rating += PIECE_VALUES[promo_to] - PIECE_VALUES[from.type];
-	}
 
 	// piece square tables
 #ifdef PIECE_SQUARE_TABLES
