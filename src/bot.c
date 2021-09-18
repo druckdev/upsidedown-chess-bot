@@ -51,6 +51,12 @@ rate_move_list(struct chess* game, struct list* list)
 	}
 }
 
+struct move*
+mcts()
+{
+	return NULL;
+}
+
 struct negamax_return
 negamax(struct chess* game, size_t depth, int a, int b)
 {
@@ -193,6 +199,63 @@ negamax(struct chess* game, size_t depth, int a, int b)
 }
 
 struct move*
+choose_negamax(struct chess* game, size_t i)
+{
+	struct negamax_return ret = negamax(game, i, INT_MIN + 1, INT_MAX);
+	if (!ret.moves)
+		return NULL;
+
+#ifdef DEBUG_PRINTS
+	fprint_move_list(DEBUG_PRINT_STREAM, ret.moves);
+#endif
+	struct move* best = move_list_pop(ret.moves);
+	list_free(ret.moves);
+	if (!best)
+		return NULL;
+
+#ifdef DEBUG_PRINTS
+	fprintf(DEBUG_PRINT_STREAM, "cur best move: ");
+	fprint_move(DEBUG_PRINT_STREAM, best);
+	fprintf(DEBUG_PRINT_STREAM, "depth: %lu\n", i);
+	fprintf(DEBUG_PRINT_STREAM, "value: %i\n", ret.val);
+	fprintf(DEBUG_PRINT_STREAM, "\n");
+#endif /* DEBUG_PRINTS */
+
+	return best;
+}
+
+void
+traverse(struct chess* game)
+{
+	/*
+	 * while (fully_expanded(node))
+	 *	  node = best_uct(node);
+	 *
+	 * return pick_unvisited(node.children) or node
+	 */
+
+	while (true) {
+		struct list* moves = generate_moves(game, true, false);
+		if (moves->count == 0)
+			break;
+	}
+}
+
+struct move*
+choose_mcts()
+{
+	/*
+	 * pseudocode for mcts:
+	 *
+	 * leaf = traverse(root);
+	 * simulation_result = rollout(leaf);
+	 * backpropagate (leafe, simulation_result);
+	 */
+	assert(false && "Not implemented yet.\n");
+	return NULL;
+}
+
+struct move*
 choose_move(struct chess* game, struct chess_timer* timer)
 {
 	struct timespec t_prev_move = { 0 };
@@ -211,26 +274,11 @@ choose_move(struct chess* game, struct chess_timer* timer)
 
 		free(best);
 
-		struct negamax_return ret = negamax(game, i, INT_MIN + 1, INT_MAX);
-
-		if (!ret.moves)
-			return NULL;
-
-#ifdef DEBUG_PRINTS
-		fprint_move_list(DEBUG_PRINT_STREAM, ret.moves);
+#ifdef CHOOSE_BY_NEGAMAX
+		best = choose_negamax(game, i);
+#elif CHOOSE_BY_MCTS
+		best = choose_mcts(game, i);
 #endif
-		best = move_list_pop(ret.moves);
-		list_free(ret.moves);
-		if (!best)
-			return NULL;
-
-#ifdef DEBUG_PRINTS
-		fprintf(DEBUG_PRINT_STREAM, "cur best move: ");
-		fprint_move(DEBUG_PRINT_STREAM, best);
-		fprintf(DEBUG_PRINT_STREAM, "depth: %lu\n", i);
-		fprintf(DEBUG_PRINT_STREAM, "value: %i\n", ret.val);
-		fprintf(DEBUG_PRINT_STREAM, "\n");
-#endif /* DEBUG_PRINTS */
 
 		if (best->is_checkmate) {
 			// ret.move leads to checkmate
