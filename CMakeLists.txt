@@ -82,3 +82,12 @@ add_compile_definitions(TRANSPOSITION_TABLE_SIZE=2048) # use a power of two!
 # tests
 include(CTest)
 add_test(NAME tests COMMAND tests)
+
+# Multithreading
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads REQUIRED)
+target_link_libraries(bot Threads::Threads)
+if (CMAKE_USE_PTHREADS_INIT)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
+endif()

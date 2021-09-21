@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <time.h>
 
@@ -193,22 +194,11 @@ negamax(struct chess* game, size_t depth, int a, int b)
 }
 
 struct move*
-choose_move(struct chess* game, struct chess_timer* timer)
+choose_move(struct chess* game)
 {
-	struct timespec t_prev_move = { 0 };
-	struct move* best           = NULL;
+	struct move* best = NULL;
 
-	/*
-	 * TODO(Aurel): Think about the calculation for the time a little more.
-	 * Currently the remaining move time must be larger than 3 times the time
-	 * the previous move's calculations took.
-	 */
 	for (size_t i = 1; i <= MAX_NEGAMAX_DEPTH; ++i) {
-		// take beginning time
-		struct timespec t_beg;
-		if (clock_gettime(CLOCK_MONOTONIC, &t_beg))
-			return NULL;
-
 		free(best);
 
 		struct negamax_return ret = negamax(game, i, INT_MIN + 1, INT_MAX);
@@ -232,27 +222,12 @@ choose_move(struct chess* game, struct chess_timer* timer)
 		fprintf(DEBUG_PRINT_STREAM, "\n");
 #endif /* DEBUG_PRINTS */
 
+		memcpy(game->cur_best_move, best, sizeof(*best));
 		if (best->is_checkmate) {
 			// ret.move leads to checkmate
 			game->checkmate = true;
 			break;
 		}
-
-		// update the clock
-		struct timespec t_end;
-		if (clock_gettime(CLOCK_MONOTONIC, &t_end))
-			return NULL;
-
-		t_prev_move = t_end;
-		t_prev_move.tv_sec -= t_beg.tv_sec;
-		t_prev_move.tv_nsec -= t_beg.tv_nsec;
-
-		double t_remaining = get_remaining_move_time(timer);
-		double min_t_remaining =
-				config.remaining_time_factor *
-				(t_prev_move.tv_sec + t_prev_move.tv_nsec * 1e-9);
-		if (t_remaining < min_t_remaining)
-			break;
 	}
 	return best;
 }

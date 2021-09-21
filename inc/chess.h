@@ -72,6 +72,7 @@ struct chess {
 	float t_remaining_s;
 	int max_moves, move_count;
 	int piece_count;
+	struct move* cur_best_move;
 };
 
 enum game_phase get_game_phase(struct chess* game);

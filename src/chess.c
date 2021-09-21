@@ -1,4 +1,6 @@
 #include <assert.h>
+#include <pthread.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -79,8 +81,17 @@ init_chess(char color, float total_time_s, size_t max_moves)
 	       "Transposition table could not be initialized.");
 
 	chess.t_remaining_s = total_time_s;
+	chess.cur_best_move = NULL;
 
 	return chess;
+}
+
+void*
+choose_move_thread_wrapper(void* args)
+{
+	choose_move((struct chess*)args);
+	raise(SIGALRM);
+	return NULL;
 }
 
 void
@@ -102,23 +113,42 @@ run_chess(struct chess* game)
 
 		fen_to_chess(fen, game);
 
+		game->cur_best_move = calloc(1, sizeof(*game->cur_best_move));
+
 #ifdef DEBUG_BOARD_WHEN_PLAYING
 		fprint_board(DEBUG_PRINT_STREAM, game->board, NULL);
 #endif
 
-		struct move* move = choose_move(game, timer);
-		if (!move)
+		pthread_t tid;
+		pthread_create(&tid, NULL, choose_move_thread_wrapper, game);
+
+		double move_time     = get_remaining_move_time(timer);
+		int move_secs        = (int)move_time;
+		struct timespec time = { move_secs, (move_time - move_secs) * 1e9 };
+		if (-1 == nanosleep(&time, NULL)) {
+#ifdef DEBUG_PRINTS
+			fprintf(DEBUG_PRINT_STREAM, "Interrupted.\n");
+#endif
+		}
+		pthread_cancel(tid);
+
+		if (!game->cur_best_move)
+			break;
+		if (game->cur_best_move->start == game->cur_best_move->target)
 			break;
 
-		gs_print_move(move);
+		gs_print_move(game->cur_best_move);
 
-		do_move(game, move);
+		do_move(game, game->cur_best_move);
 #ifdef DEBUG_BOARD_WHEN_PLAYING
-		struct move_list* list = move_list_push(NULL, move);
+		struct move_list* list = move_list_push(NULL, game->cur_best_move);
 		fprint_board(DEBUG_PRINT_STREAM, game->board, list);
 #else
-		free(move);
+		free(game->cur_best_move);
 #endif
+		// This is overwritten in almost every case by fen_to_chess, but is kept
+		// just for safety if the string is too short for example.
+		game->cur_best_move = NULL;
 		game->move_count++;
 		game->phase = get_game_phase(game);
 	}

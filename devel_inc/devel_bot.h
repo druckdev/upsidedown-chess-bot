@@ -13,6 +13,6 @@ struct negamax_return {
 
 int rate_board(struct chess* chess);
 struct negamax_return negamax(struct chess* game, size_t depth, int a, int b);
-struct move* choose_move(struct chess* game, struct chess_timer* timer);
+struct move* choose_move(struct chess* game);
 
 #endif /* BOT_H */
