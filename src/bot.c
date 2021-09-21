@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <time.h>
 
@@ -221,7 +222,7 @@ choose_move(struct chess* game)
 		fprintf(DEBUG_PRINT_STREAM, "\n");
 #endif /* DEBUG_PRINTS */
 
-		game->cur_best_move = best;
+		memcpy(game->cur_best_move, best, sizeof(*best));
 		if (best->is_checkmate) {
 			// ret.move leads to checkmate
 			game->checkmate = true;

@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <pthread.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -88,7 +89,9 @@ init_chess(char color, float total_time_s, size_t max_moves)
 void*
 choose_move_thread_wrapper(void* args)
 {
-	return choose_move((struct chess*)args);
+	choose_move((struct chess*)args);
+	raise(SIGALRM);
+	return NULL;
 }
 
 void
@@ -110,6 +113,8 @@ run_chess(struct chess* game)
 
 		fen_to_chess(fen, game);
 
+		game->cur_best_move = calloc(1, sizeof(*game->cur_best_move));
+
 #ifdef DEBUG_BOARD_WHEN_PLAYING
 		fprint_board(DEBUG_PRINT_STREAM, game->board, NULL);
 #endif
@@ -129,6 +134,8 @@ run_chess(struct chess* game)
 
 		if (!game->cur_best_move)
 			break;
+		if (game->cur_best_move->start == game->cur_best_move->target)
+			break;
 
 		gs_print_move(game->cur_best_move);
 
@@ -141,6 +148,7 @@ run_chess(struct chess* game)
 #endif
 		// This is overwritten in almost every case by fen_to_chess, but is kept
 		// just for safety if the string is too short for example.
+		game->cur_best_move = NULL;
 		game->move_count++;
 		game->phase = get_game_phase(game);
 	}
