@@ -37,12 +37,10 @@ rate_move(struct chess* game, struct move* move)
 	}
 
 	// piece square tables
-#ifdef PIECE_SQUARE_TABLES
 	// Add difference between position weights. Use promotes_to on target when
 	// promoting.
 	rating += get_pst_val(game, move->target, promo_to ? promo_to : from.type);
 	rating -= get_pst_val(game, move->start, from.type);
-#endif /* PIECE_SQUARE_TABLES */
 
 	return rating;
 }
