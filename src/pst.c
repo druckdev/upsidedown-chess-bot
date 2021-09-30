@@ -103,6 +103,11 @@ int eg_psts[6][64] = {
 		-50, -30, -30, -30, -30, -30, -30, -50
 	},
 };
+
+/* TODO
+int mg_psts[6][64] = {}
+int lg_psts[6][64] = {}
+*/
 // clang-format on
 
 int
@@ -122,6 +127,7 @@ get_pst_val(struct chess* game, enum pos pos, enum piece_type piece_type)
 	case LATE_GAME: pst = lg_psts[piece_type]; break;
 	}
 #else
+	// TODO
 	// only the early game pst is actually done yet
 	pst = eg_psts[piece_type];
 #endif

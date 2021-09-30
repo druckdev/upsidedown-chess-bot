@@ -102,10 +102,6 @@ run_chess(struct chess* game)
 
 		fen_to_chess(fen, game);
 
-#ifdef DEBUG_BOARD_WHEN_PLAYING
-		fprint_board(DEBUG_PRINT_STREAM, game->board, NULL);
-#endif
-
 		struct move* move = choose_move(game, timer);
 		if (!move)
 			break;
@@ -113,12 +109,7 @@ run_chess(struct chess* game)
 		gs_print_move(move);
 
 		do_move(game, move);
-#ifdef DEBUG_BOARD_WHEN_PLAYING
-		struct move_list* list = move_list_push(NULL, move);
-		fprint_board(DEBUG_PRINT_STREAM, game->board, list);
-#else
 		free(move);
-#endif
 		game->move_count++;
 		game->phase = get_game_phase(game);
 	}
