@@ -1,5 +1,7 @@
 import errno
 import time
+import os
+import signal
 
 # Description :
 # GameRunner runs a game between two given processes.
@@ -11,11 +13,11 @@ class GameRunner:
         self.b_player = b_player
 
         # TODO : all the following needs to be wrapped or parsed
-        self.time_left_w = 100.0  # game time in seconds
-        self.time_left_b = 100.0  # game time in seconds
+        self.time_left_w = 45.0  # game time in seconds
+        self.time_left_b = 45.0  # game time in seconds
 
         self.current_move = 0
-        self.max_moves = 50
+        self.max_moves = 60
 
         self.fen_state = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
         self.simplified_state = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R',
@@ -46,7 +48,6 @@ class GameRunner:
         # play game
         while self.current_move < self.max_moves:
             self.current_move += 1
-            print("Move ", self.current_move, " of ", self.max_moves, end="\r")
 
             # get variables for current player
             current_player = self.w_player if white_turn else self.b_player
@@ -55,7 +56,7 @@ class GameRunner:
 
             # player lost on time (happened in last turn)
             if time_left <= 0:
-                white_won = False if white_turn else True
+                self.handle_game_end(white_turn, True)
                 break
 
             # setup input for bot
@@ -74,10 +75,9 @@ class GameRunner:
             except IOError as e:
                 # expected error when bot terminates because they lost
                 if e.errno == errno.EPIPE:
-                    white_won = False if white_turn else True
+                    white_won = self.handle_game_end(white_turn, False)
                     break
                 else:
-                    print(e)
                     raise
 
             # get move current player wants to play and execute it
@@ -97,15 +97,35 @@ class GameRunner:
 
             white_turn = not white_turn
 
-        self.print_board()
-        print("white_won ", white_won, " draw ",
-              self.current_move >= self.max_moves)
-
         return (self.current_move >= self.max_moves), white_won
 
     # --------------
     # Helper
     # --------------
+
+    def handle_game_end(self, white_turn: bool, lost_on_time: bool) -> bool:
+        """Get who won the game and as a sideeffect terminate the remaining process.
+
+        Parameters:
+        white_turn (bool):  Whether the move on which the end was detected was
+                            whites to play.
+        lost_on_time (bool): Whether the game was lost on time.
+
+        Returns:
+        bool: Whether white won.
+
+        """
+        # self.print_board()
+
+        if lost_on_time:
+            os.killpg(os.getpgid(self.b_player.pid), signal.SIGTERM)
+            os.killpg(os.getpgid(self.w_player.pid), signal.SIGTERM)
+        elif white_turn:
+            os.killpg(os.getpgid(self.b_player.pid), signal.SIGTERM)
+        else:
+            os.killpg(os.getpgid(self.w_player.pid), signal.SIGTERM)
+
+        return False if white_turn else True
 
     def do_move(self, move: str):
         """Executes a given move on the internal board representations
@@ -123,7 +143,8 @@ class GameRunner:
 
         # catch promotion
         moving_piece = self.simplified_state[from_pos]
-        if (to_pos < 8 or to_pos > 56) and (moving_piece == 'p' or moving_piece == 'P'):
+        if (to_pos < 8 or to_pos > 56) and (
+                moving_piece == 'p' or moving_piece == 'P'):
             moving_piece = move_split[2][0]
 
         # do move
@@ -160,6 +181,7 @@ class GameRunner:
     def print_board(self):
         """Prints the internal 'simplified_state' but human-readable."""
 
+        print("----------------------------------")
         print(self.fen_state)
 
         tmp = ""
@@ -171,4 +193,4 @@ class GameRunner:
             c = ' ' if self.simplified_state[i] == '1' else self.simplified_state[i]
             tmp += '[ ' + c + ' ]'
 
-        print(tmp)
+        print(tmp + "\n")

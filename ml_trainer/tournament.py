@@ -1,5 +1,10 @@
 import game_runner
 import subprocess
+from threading import Thread
+from threading import Lock
+import time
+import shlex
+import os
 
 # Description :
 # A tournament uses a generation (list of bot fitting configs)
@@ -7,13 +12,16 @@ import subprocess
 # determine which configs are superior.
 
 # TODO : this needs to be wrapped or parsed somehow
-path_to_executable = "../build/bot"
 config_path = "../src/param_config.c"
+build_path = "../build"
 
 
 class Tournament:
     def __init__(self, player_configs):
         self.player_configs = player_configs
+        self.num_of_players = len(self.player_configs)
+        self.wins_by_player = [0] * self.num_of_players
+        self.running_games = []
 
     # --------------
     # Interface
@@ -27,15 +35,12 @@ class Tournament:
 
         """
 
-        num_of_players = len(self.player_configs)
-        wins_by_player = [0] * num_of_players
-
         # let all players play against all others
-        for i in range(num_of_players):
-            for j in range(num_of_players):
+        for i in range(self.num_of_players):
+            print("run games for ", i)
+            for j in range(self.num_of_players):
                 if i == j:
                     continue
-                print(i, "as w vs", j, "as b")
 
                 # init game
                 w_player = self.start_process(self.player_configs[i], 'w')
@@ -43,23 +48,53 @@ class Tournament:
 
                 # run game
                 game = game_runner.GameRunner(w_player, b_player)
-                draw, white_won = game.run()
 
-                # store performance information
+                win_list_lock = Lock()
+                t = Thread(
+                    target=self.game_run_thread, args=(
+                        game, win_list_lock, i, j))
+                t.start()
+                self.running_games.append(t)
 
-                if draw:
-                    # a draw is not as bad as loosing but not as good as winning
-                    wins_by_player[i] += 0.5
-                    wins_by_player[j] += 0.5
-                else:
-                    winner_index = i if white_won else j
-                    wins_by_player[winner_index] += 1
+        # wait till all games are finished
+        all_finished = False
+        while(not all_finished):
+            all_finished = True
+            for t in self.running_games:
+                if t.is_alive():
+                    all_finished = False
 
-        return wins_by_player
+            time.sleep(1)
+
+        return self.wins_by_player
 
     # --------------
     # HELPER
     # --------------
+
+    def game_run_thread(self, game, win_list_lock, w_index: int, b_index: int):
+        """Runs the game in a new thread
+
+        Parameters:
+        game (game_runner): The gamer_runner instance that is to be run.
+        wins_by_player(list): The list that holds the points scored by each player.
+        win_list_lock(lock): A lock for wins_by_player.
+
+        """
+        draw, white_won = game.run()
+
+        # store performance information
+        win_list_lock.acquire()
+
+        if draw:
+            # a draw is not as bad as loosing but not as good as winning
+            self.wins_by_player[w_index] += 0.5
+            self.wins_by_player[b_index] += 0.5
+        else:
+            winner_index = w_index if white_won else b_index
+            self.wins_by_player[winner_index] += 1
+
+        win_list_lock.release()
 
     def start_process(self, config, player_token):
         """Starts a process based on a config.
@@ -102,21 +137,17 @@ class Tournament:
             f.writelines(new_config)
 
         # recompile bot.c
-        p = subprocess.Popen("cd ../build/ && make && cd ../ml_trainer",
-                             shell=True,
-                             stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.STDOUT)
-        p.kill()
+        os.system("make -C " + build_path + " > /dev/null")
 
         # TODO : these parameters must be linked with those in game_runner
-        parameters = ' ' + player_token + " 100.0 50"
-        cmd = path_to_executable + parameters
+        parameters = ' ' + player_token + " 60.0 60"
+        cmd = build_path + "/bot" + parameters
 
         # start new bot
-        p = subprocess.Popen(cmd,
-                             shell=True,
+        p = subprocess.Popen(shlex.split(cmd),
+                             shell=False,
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
-                             stderr=subprocess.STDOUT)
+                             stderr=subprocess.STDOUT,
+                             preexec_fn=os.setsid)
         return p
